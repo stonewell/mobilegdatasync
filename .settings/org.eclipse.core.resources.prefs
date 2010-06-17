@@ -1,0 +1,25 @@
+#Thu Jun 17 17:59:21 CST 2010
+eclipse.preferences.version=1
+encoding//.processed/src/com/angelstone/sync/contact/ContactsSync.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GContactClient.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataEntry.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataEvent.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataFeeds.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataFeedsException.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataFeedsParser.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataFeedsParserFactory.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataOrganization.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataPhoneNumber.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataStructuredPostalAddress.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/contact/gcontact/GDataWhen.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/gclient/GDataClient.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/gclient/GDataException.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/gclient/GDataXmlParser.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/utils/DateUtil.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/utils/HttpUtil.java=UTF-8
+encoding//.processed/src/com/angelstone/sync/utils/HttpsUtil.java=UTF-8
+encoding//.processed/src/primo/L10nConstants.java=UTF-8
+encoding//.processed/src/primo/L10nResources.java=UTF-8
+encoding//.processed/src/sync/gclient/GDataClient.java=UTF-8
+encoding//.processed/src/sync/gclient/GDataException.java=UTF-8
+encoding//.processed/src/sync/gclient/GDataXmlParser.java=UTF-8
