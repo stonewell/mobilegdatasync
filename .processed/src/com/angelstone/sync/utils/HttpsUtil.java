@@ -1,38 +1,14 @@
 package com.angelstone.sync.utils;
-/*
-   Copyright 2007 primosync
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
-
-
-import javax.microedition.io.Connector;
-import javax.microedition.io.HttpsConnection;
-import javax.microedition.pki.CertificateException;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import com.primosync.cal.gcal.NoSuchCalendarException;
+import javax.microedition.io.Connector;
+import javax.microedition.io.HttpsConnection;
+import javax.microedition.pki.CertificateException;
 
-/**
- * @author Thomas Oldervoll, thomas@zenior.no
- * @author Gennadi Kudrjavtsev, ydanneg@gmail.com
- * @author $Author$
- * @version $Rev: 7 $
- * @date $Date$
- */
 public class HttpsUtil {
 
 	private static final String DEFAULT_REDIRECT_URL = "???";
@@ -66,7 +42,7 @@ public class HttpsUtil {
 		DataInputStream in = null;
 		byte[] responseData = null;
 		int status = -1;
-		
+
 		try {
 
 			// Open the connection and check for re-directs
@@ -222,12 +198,7 @@ public class HttpsUtil {
 
 		if (status != 200) {
 			String responseString = new String(responseData);
-			if (responseString
-					.indexOf("Cannot access the calendar you requested") >= 0) {
-				throw new NoSuchCalendarException();
-			} else {
-				lastResponseMsg += ": " + responseString;
-			}
+			lastResponseMsg += "[" + responseString + "]";
 		}
 
 		return responseData;

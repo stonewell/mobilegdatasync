@@ -1,4 +1,4 @@
-package primo;
+package com.angelstone;
 /**
  *	L10nConstants class is auto generated. DO NOT CHANGE IT.
  */

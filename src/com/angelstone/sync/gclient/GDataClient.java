@@ -3,7 +3,7 @@ package com.angelstone.sync.gclient;
 import javax.microedition.io.HttpsConnection;
 import javax.microedition.lcdui.Form;
 
-import com.primosync.util.HttpsUtil;
+import com.angelstone.sync.utils.HttpsUtil;
 
 public class GDataClient {
 	protected static class GDataLoginResult {

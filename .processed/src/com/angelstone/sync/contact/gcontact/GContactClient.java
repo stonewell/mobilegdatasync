@@ -6,12 +6,10 @@ import java.util.Vector;
 
 import javax.microedition.io.HttpsConnection;
 
-
 import com.angelstone.sync.gclient.GDataClient;
 import com.angelstone.sync.gclient.GDataException;
-import com.primosync.cal.gcal.GCalClient;
-import com.primosync.util.DateUtil;
-import com.primosync.util.HttpUtil;
+import com.angelstone.sync.utils.DateUtil;
+import com.angelstone.sync.utils.HttpUtil;
 
 public class GContactClient extends GDataClient {
 	public static final String DEFAULT_CONTACTS_URL_PREFIX = "http://www.google.com/m8/feeds/contacts/";

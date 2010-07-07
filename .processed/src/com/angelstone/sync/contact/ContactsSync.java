@@ -11,13 +11,11 @@ import javax.microedition.pim.ContactList;
 import javax.microedition.pim.PIM;
 import javax.microedition.pim.PIMException;
 
-
 import com.angelstone.sync.contact.gcontact.GContactClient;
 import com.angelstone.sync.contact.gcontact.GDataEntry;
 import com.angelstone.sync.contact.gcontact.GDataFeeds;
 import com.angelstone.sync.contact.gcontact.GDataPhoneNumber;
 import com.angelstone.sync.gclient.GDataException;
-import com.primosync.log.ErrorHandler;
 
 public class ContactsSync {
 	private String userName_ = null;
@@ -32,24 +30,25 @@ public class ContactsSync {
 		password_ = password;
 	}
 
-	public void syncContacts() {
-		try {
-			GContactClient gContactClient = new GContactClient();
-			gContactClient.login(userName_, password_);
+	public void syncContacts() throws GDataException {
+		if (userName_ == null || userName_.length() == 0 || password_ == null
+				|| password_.length() == 0) {
+			throw new GDataException("Invalid userName or password: UserName:" + userName_ + ", Password:" + password_);
+		}
 
-			if (gContactClient.isAuthorized()) {
-				GDataFeeds groupFeeds = gContactClient.downloadGroups(true, 0);
+		GContactClient gContactClient = new GContactClient();
+		gContactClient.login(userName_, password_);
 
-				Vector groups = new Vector();
-				groups.addElement(findMyContactsGroup(groupFeeds));
+		if (gContactClient.isAuthorized()) {
+			GDataFeeds groupFeeds = gContactClient.downloadGroups(true, 0);
 
-				GDataFeeds contacts = gContactClient.downloadContacts(false, 0,
-						groups);
+			Vector groups = new Vector();
+			groups.addElement(findMyContactsGroup(groupFeeds));
 
-				syncContacts(groupFeeds, contacts);
-			}
-		} catch (Throwable t) {
-			ErrorHandler.showError(t);
+			GDataFeeds contacts = gContactClient.downloadContacts(false, 0,
+					groups);
+
+			syncContacts(groupFeeds, contacts);
 		}
 	}
 

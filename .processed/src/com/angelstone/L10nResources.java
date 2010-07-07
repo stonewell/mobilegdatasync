@@ -1,4 +1,4 @@
-package primo;
+package com.angelstone;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
