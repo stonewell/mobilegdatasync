@@ -56,7 +56,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
 	private String mUsername;
 	private EditText mUsernameEdit;
-	private Spinner mAccountType;
+	
+	private Spinner mAccountTypeSpinner;
+	private String mAccountType;
 
 	/**
 	 * {@inheritDoc}
@@ -87,11 +89,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 		mUsernameEdit.setText(mUsername);
 		mMessage.setText(getMessage());
 		
-		mAccountType = (Spinner) findViewById(R.id.accountType_spinner);
+		mAccountTypeSpinner = (Spinner) findViewById(R.id.accountType_spinner);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, new String[] { "Google Account" });
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountType.setAdapter(adapter);
+		mAccountTypeSpinner.setAdapter(adapter);
 	}
 
 	/*
@@ -127,8 +129,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 			mUsername = mUsernameEdit.getText().toString();
 		}
 		mPassword = mPasswordEdit.getText().toString();
+		mAccountType = mAccountTypeSpinner.getSelectedItem().toString();
 		if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
-			mMessage.setText(getMessage());
+			mMessage.setText(getMessage() + "," + mAccountType);
 		} else {
 			showProgress();
 			// Start authenticating...

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   	android:orientation="vertical"
+   	android:layout_width="fill_parent"
+   	android:layout_height="fill_parent"
+	android:background="@drawable/background"
+	android:gravity="center_horizontal"
+   	>
+   	
+   	<ScrollView 
+	   	android:orientation="vertical"
+	   	android:layout_width="fill_parent"
+	   	android:layout_height="fill_parent"
+	   	android:layout_weight="1.0"
+	   	>
+   	
+	   	<LinearLayout android:layout_width="fill_parent" 
+	       	android:layout_height="wrap_content"
+	       	android:baselineAligned="false"
+	       	android:orientation="vertical"
+	       	android:paddingLeft="10dip"
+	       	android:paddingRight="10dip"
+	       	>
+	   	
+	    	<TextView android:id="@+id/blName"
+	        		  android:layout_width="wrap_content"
+	            	  android:layout_height="wrap_content"
+	                  android:textSize="14sp"
+	                  android:textStyle="bold"
+	                  android:layout_gravity="center_vertical" 
+	                  android:text="@string/phoneNumberStr"/>
+	                  
+	        <LinearLayout android:layout_width="fill_parent" 
+	       		android:layout_height="wrap_content"
+	       		android:baselineAligned="false"
+	       		android:orientation="horizontal"
+	       		android:gravity="center">   
+	       		      
+		        <EditText android:id="@+id/phoneNumberEditor"
+		            	  android:layout_width="fill_parent"
+		                  android:layout_height="wrap_content"
+		                  android:layout_gravity="center_vertical" 
+		                  android:phoneNumber="true" 
+		                  android:singleLine="true"
+		                  android:numeric="integer"
+		                  android:maxLength="20"
+		                  />       
+		       	
+		   </LinearLayout>
+		   
+		   <TextView android:id="@+id/tagName"
+	        		  android:layout_width="wrap_content"
+	            	  android:layout_height="wrap_content"
+	                  android:textSize="14sp"
+	                  android:textStyle="bold"
+	                  android:layout_gravity="center_vertical" 
+                      android:text="@string/add_number_tag"
+ 
+                      />
+		   
+	        <LinearLayout android:layout_width="fill_parent" 
+	       		android:layout_height="wrap_content"
+	       		android:baselineAligned="false"
+	       		android:orientation="horizontal"
+	       		android:gravity="center"
+	       		>         
+	                          
+		        <EditText android:id="@+id/tagEditor"
+		            	  android:layout_width="200dip"
+		                  android:layout_height="wrap_content"
+		                  android:layout_gravity="center_vertical" 
+		                  android:singleLine="true"
+		                  android:maxLength="15"
+		                  />	
+		        
+		         <Button  android:id="@+id/tag_select_btn" 
+	       		 	 	android:layout_width="100dip"
+	       		 	 	android:layout_height="wrap_content"
+	       		 	 	android:clickable="true"
+	       		 	 	android:background="@drawable/my_bl_tag_btn_selector_background"
+	       		 	 	/>               
+		       	
+		   </LinearLayout>
+	                  
+	                          
+	        <TextView android:layout_width="fill_parent"
+	           	  android:layout_height="fill_parent"
+	           	  android:textSize="14sp"
+	           	  android:textStyle="bold"
+	           	  android:text="@string/or_string"
+
+	           	  />
+	           	  
+	       		  
+	       	<Button  android:id="@+id/add_from_contact" 
+	       		 	 android:layout_width="fill_parent"
+	       		 	 android:layout_height="wrap_content"
+	       		 	 android:clickable="true"
+	       		 	 android:text="@string/add_from_contact_string"
+	       		 	 />
+	       		 	 
+	       	<Button  android:id="@+id/add_from_call_record" 
+	       		 	 android:layout_width="fill_parent"
+	       		 	 android:layout_height="wrap_content"
+	       		 	 android:clickable="true"
+	       		 	 android:text="@string/add_from_call_record_string"
+	       		 	 />
+	       		 	 
+	       	<Button  android:id="@+id/add_from_sms_record" 
+	       		 	 android:layout_width="fill_parent"
+	       		 	 android:layout_height="wrap_content"
+	       		 	 android:clickable="true"
+	       		 	 android:text="@string/add_from_sms_record_string"
+	       		 	 />
+	       		 	 
+	       		 	 
+	       	<TextView android:id="@+id/blName"
+	       		  android:layout_width="fill_parent"
+	           	  android:layout_height="fill_parent"
+	           	  android:textSize="14sp"
+	           	  android:textStyle="bold"
+	           	  android:text="@string/block_option_text"
+	       
+	           	  />	    	 	 
+	       	 	 
+	       		 	 
+	       	<LinearLayout android:layout_width="fill_parent" 
+	        	android:layout_height="wrap_content"
+	       		android:baselineAligned="false"
+	       		android:orientation="horizontal"
+	       		android:gravity="center_horizontal"
+
+	       		>
+					  
+				<CheckBox android:id="@+id/call_block_check_box"
+                    android:text="@string/add_number_block_call"
+				      android:layout_width="wrap_content"
+				      android:layout_height="wrap_content"
+				      />
+				      
+				 <CheckBox android:id="@+id/sms_block_check_box"
+                     android:text="@string/add_number_block_sms"
+				      android:layout_width="wrap_content"
+				      android:layout_height="wrap_content"
+				      />     
+	       	
+	    	</LinearLayout>	 	 
+	       
+	   	</LinearLayout>
+   	
+   	</ScrollView>
+	
+	<LinearLayout android:layout_width="fill_parent"
+		        android:layout_height="60dip"
+		        android:orientation="horizontal"
+		        android:background="@color/lightgray"
+		        android:gravity="center"   
+        		> 
+        
+	        <Button android:id="@+id/add_number_view_ok_btn"
+                android:text="@string/btn_ok"
+	        		android:layout_width="150dip"
+	        		android:layout_height="wrap_content"
+	        		/>
+	        		
+	        <Button android:id="@+id/add_number_view_cancel_btn"
+                android:text="@string/btn_cancel"
+	        		android:layout_width="150dip"
+	        		android:layout_height="wrap_content"
+	        		/>
+	        		    
+	</LinearLayout>
+		
+</LinearLayout>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:id="@+id/screen"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/background_image"
+    android:gravity="center_horizontal"
+    >
+    
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:padding="10dip"
+        >
+        
+        <TextView android:id="@+id/sms_scene_filter_term"
+        		  android:layout_width="wrap_content"
+            	  android:layout_height="fill_parent"
+                  android:textStyle="bold"
+                  android:gravity="center_vertical" 
+            	  android:text="@string/add_new_filter_term_string" />
+            	  
+        <EditText android:id="@+id/sms_scene_filter_term_editor"
+            	  android:layout_width="150dip"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="5dip"
+                  android:singleLine="true"
+                  android:maxLength="30"
+                  /> 
+        		  
+        		
+        <ImageButton  android:id="@+id/sms_scene_add_term_btn" 
+        		 	  android:layout_width="36dip"
+        		 	  android:layout_height="36dip"
+        		 	  android:clickable="true"
+        		 	  android:background="@drawable/my_add_btn_selector_background"
+        		 	  android:layout_marginLeft="10dip" 
+        		 	  />
+    
+    </LinearLayout>
+    
+    
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:baselineAligned="false"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingBottom="10dip"
+        android:layout_weight="1.0"
+        >
+
+        <TextView android:id="@+id/sms_scene_term_list_text"
+        		  android:layout_width="fill_parent"
+            	  android:layout_height="wrap_content"
+            	  android:text="@string/sms_scene_term_list_string" 
+            	  android:paddingBottom="5dip"
+            	  />
+            	  
+        		  
+        <ListView android:id="@+id/sms_scene_term_list"
+    		  	  android:layout_width="fill_parent"
+    		      android:layout_height="wrap_content"
+    		      android:cacheColorHint="@color/transparent"
+    		      />
+    
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+        
+        <ImageView android:id="@+id/norton_logo_image_view"
+        	   android:layout_width="85dip"
+	           android:layout_height="35dip"
+	           android:gravity="center"
+	           android:src="@drawable/norton_logo"
+	           />
+       
+	           
+	</LinearLayout>
+    
+</LinearLayout>

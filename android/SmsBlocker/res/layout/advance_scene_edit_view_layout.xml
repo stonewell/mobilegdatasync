@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   	android:orientation="vertical"
+   	android:layout_width="fill_parent"
+   	android:layout_height="fill_parent"
+   	android:background="@drawable/background"
+   	android:gravity="center_horizontal"
+   	>
+   	
+   	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+   		android:orientation="vertical"
+   		android:layout_width="fill_parent"
+   		android:layout_height="fill_parent"
+   		android:layout_weight="1.0"
+   		>
+   	
+	   	<LinearLayout android:layout_width="fill_parent" 
+	       	android:layout_height="fill_parent"
+	       	android:orientation="vertical"
+	       	android:gravity="center_horizontal"
+	       	android:paddingLeft="10dip"
+	       	android:paddingRight="10dip"
+	       	android:paddingBottom="10dip"
+	       	>
+	   	
+	   		<LinearLayout android:layout_width="fill_parent" 
+	       		android:layout_height="wrap_content"
+	       		android:orientation="vertical"
+	       		>
+	       		
+	       		<TextView android:id="@+id/advance_scene_edit_name_text"
+	        		  android:layout_width="fill_parent"
+	            	  android:layout_height="wrap_content"
+	                  android:textSize="16sp"
+	                  android:textStyle="bold"
+	                  android:layout_gravity="center_vertical" 
+	                  android:text="@string/adv_scene_edit_name_string"
+	                  />
+	       		          
+	        	<EditText android:id="@+id/advance_scene_edit_name_editor"
+	            	  android:layout_width="fill_parent"
+	                  android:layout_height="wrap_content"
+	                  android:layout_gravity="center_vertical" 
+	                  android:singleLine="true"
+	                  android:maxLength="15"
+	                  />
+	 
+	    	</LinearLayout>
+		   	
+	
+		    
+		     <LinearLayout android:layout_width="fill_parent" 
+		        	android:layout_height="wrap_content"
+		       		android:orientation="horizontal"
+		       		android:gravity="center_horizontal">
+					  
+					<CheckBox android:id="@+id/advance_scene_edit_all_contact_check_box"
+                        android:text="@string/advance_scene_apply_contract"
+					      android:layout_width="wrap_content"
+					      android:layout_height="wrap_content"
+					      />
+				      
+					<CheckBox android:id="@+id/advance_scene_edit_all_unknown_call_check_box"
+                        android:text="@string/advance_scene_apply_unknown_call"
+					      android:layout_width="wrap_content"
+					      android:layout_height="wrap_content"
+					      />     
+	       	
+	    	</LinearLayout>
+		    
+		    <LinearLayout android:layout_width="fill_parent" 
+		        	android:layout_height="wrap_content"
+		       		android:orientation="horizontal"
+		       		android:gravity="center"
+		       		android:paddingBottom="10dip"
+		       		>
+		    
+			    <TextView android:id="@+id/advance_scene_edit_reply_sms_text"
+		        		  android:layout_width="fill_parent"
+		            	  android:layout_height="wrap_content"
+		                  android:textSize="16sp"
+		                  android:textStyle="bold"
+		                  android:text="@string/adv_scene_edit_reply_sms_string"
+		                  android:layout_marginLeft="90dip"
+		                  />
+		                  
+		        <ImageButton  android:id="@+id/advance_scene_edit_modify_reply_sms_btn" 
+			       		 	 	 android:layout_width="36dip"
+			       		 	 	 android:layout_height="36dip"
+			       		 	 	 android:clickable="true"
+			       		 	 	 android:text="@string/adv_scene_edit_modify_reply_sms_btn_string"
+			       		 	 	 android:layout_marginRight="10dip"
+			       		 	 	 android:background="@drawable/my_reply_sms_edit_btn_selector_background"
+			       		 	 	 />  
+		    
+			    <ImageButton  android:id="@+id/advance_scene_edit_import_reply_sms_btn" 
+			       		 	 	 android:layout_width="36dip"
+			       		 	 	 android:layout_height="36dip"
+			       		 	 	 android:clickable="true"
+			       		 	 	 android:text="@string/adv_scene_edit_import_reply_sms_btn_string"
+			       		 	 	 android:layout_marginRight="90dip"
+			       		 	 	 android:background="@drawable/my_import_template_btn_selector_background"
+			       		 	 	 />
+		        
+	 	  
+	    	</LinearLayout>	
+	    	
+			
+		   <ListView android:id="@+id/advance_scene_reply_sms_list"
+	   		  	  	 android:layout_width="fill_parent"
+	   		  	  	 android:layout_height="wrap_content"
+  				     android:cacheColorHint="@color/transparent"
+	    		      />    		
+		    		      	  
+	    		      
+		 </LinearLayout>
+	</ScrollView>
+	
+	
+	
+	<LinearLayout android:layout_width="fill_parent"
+		        android:layout_height="60dip"
+		        android:orientation="horizontal"
+		        android:background="@color/lightgray"
+		        android:gravity="center"   
+        		> 
+        
+	        <Button android:id="@+id/advance_scene_edit_ok_btn"
+                android:text="@string/btn_ok"
+	        		android:layout_width="150dip"
+	        		android:layout_height="wrap_content"
+	        		/>
+	        		
+	        <Button android:id="@+id/advance_scene_edit_cancel_btn"
+                android:text="@string/btn_cancel"
+	        		android:layout_width="150dip"
+	        		android:layout_height="wrap_content"
+	        		/>     		    
+	</LinearLayout>
+
+</LinearLayout>

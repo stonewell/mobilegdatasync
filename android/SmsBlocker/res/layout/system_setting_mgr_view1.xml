@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="left">
+	
+	<LinearLayout android:id="@+id/sys_setting_layout"
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	>	
+             
+	            	  
+           	 <Button  android:id="@+id/show_filter_editor" 
+      		 	 	  android:layout_width="fill_parent"
+      		 	 	  android:layout_height="wrap_content"
+      		 	      android:clickable="true"
+                      android:text="@string/system_setting_filter_setting"
+     		 	 	  />
+	        
+	        <ListView android:id="@+id/sys_setting_list"
+    		  	  	  android:layout_width="fill_parent"
+    		          android:layout_height="wrap_content" 
+    		          android:divider="@color/black"
+    		          android:dividerHeight="10dip"
+    		          />
+
+    </LinearLayout>
+</LinearLayout>

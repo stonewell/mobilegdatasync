@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
+    android:gravity="center_horizontal"
+    >
+	
+	<LinearLayout android:id="@+id/sys_setting_layout"
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:padding="10dip"
+    	android:gravity="center"
+    	>
+	            	  
+	        <Spinner android:id="@+id/sys_setting_Hungup_tone_spinner"
+	        		 android:layout_width="fill_parent"
+      		 	 	 android:layout_height="0dip"
+      		 	 	 android:drawSelectorOnTop="true"
+      		 	 	 android:prompt="@string/pls_select"
+	        		 />
+             
+	</LinearLayout>  
+	
+	 
+	 <LinearLayout android:id="@+id/sys_setting_layout"
+    			android:orientation="vertical"
+		    	android:layout_width="fill_parent"
+		    	android:layout_height="fill_parent"
+		    	android:padding="10dip"
+		    	android:layout_weight="1.0"
+    			>	       
+	        <ListView android:id="@+id/sys_setting_list"
+    		  	  	  android:layout_width="fill_parent"
+    		          android:layout_height="wrap_content" 
+    		          android:cacheColorHint="@color/transparent"
+    		          />
+	</LinearLayout> 
+    
+    
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+        
+        <ImageView android:id="@+id/norton_logo_image_view"
+        	   android:layout_width="85dip"
+	           android:layout_height="35dip"
+	           android:gravity="center"
+	           android:src="@drawable/norton_logo"
+	           />
+       
+	           
+	</LinearLayout>
+</LinearLayout>

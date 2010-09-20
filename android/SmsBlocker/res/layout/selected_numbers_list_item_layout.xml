@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>    
+<com.symantec.mobilesecurity.ui.CheckedListItem xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/NortonListItem"
+    android:gravity="center_vertical"
+    >
+    
+    <LinearLayout
+       	android:layout_width="fill_parent"
+       	android:layout_height="fill_parent"
+       	android:orientation="horizontal"
+       	> 
+		<ImageView
+	       	   android:layout_width="32dip"
+	           android:layout_margin="6dip"
+	           android:layout_height="32dip"
+	           android:src="@drawable/sym_action_call"
+	           />
+	     
+	    <LinearLayout
+	       	android:layout_width="fill_parent"
+	       	android:layout_height="fill_parent"
+	       	android:orientation="vertical"
+	       	>   
+	       	
+	        <TextView android:id="@+id/selected_number"
+	            android:textStyle="bold"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:singleLine="true"
+	            android:ellipsize="marquee"
+	            />
+	
+	        <TextView android:id="@+id/selected_name"
+	            android:layout_width="wrap_content"
+	            android:paddingLeft="16dip"
+	            android:layout_height="wrap_content"
+	            android:singleLine="true"
+	            android:ellipsize="marquee"
+	            />
+	    </LinearLayout>   
+    </LinearLayout>        		
+</com.symantec.mobilesecurity.ui.CheckedListItem>
