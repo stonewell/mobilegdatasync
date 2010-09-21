@@ -15,7 +15,6 @@
         	   android:layout_width="32px"
 	           android:layout_margin="6px"
 	           android:layout_height="32px"
-	           android:src="@drawable/sym_action_call"
 	           android:layout_gravity="center_vertical"/>
         	
         <TextView android:id="@+id/image_one_line_item_1_text"

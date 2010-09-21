@@ -13,7 +13,6 @@
 	       	   android:layout_width="32dip"
 	           android:layout_margin="6dip"
 	           android:layout_height="32dip"
-	           android:src="@drawable/sym_action_call"
 	           />
 	     
 	    <LinearLayout

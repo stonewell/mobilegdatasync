@@ -115,8 +115,7 @@ public class AddFromContactView extends Activity implements
 
 				if (isInBlacklist(PhoneNumberHelpers.removeNonNumbericChar(cur
 						.getString(mNumberColIndex)))) {
-					map.put("checkImg", R.drawable.btn_check_off_disable);
-					mCheckState[i] = PhoneNumberHelpers.CHECK_DISABLE;
+					continue;
 				} else if (containsNumber(PhoneNumberHelpers
 						.removeNonNumbericChar(cur.getString(mNumberColIndex))) != -1) {
 					map.put("checkImg", R.drawable.btn_check_on);
@@ -177,11 +176,6 @@ public class AddFromContactView extends Activity implements
 			mDialog.setMessage(this.getResources().getText(R.string.PleaseWait));
 			mDialog.setIndeterminate(true);
 			mDialog.setCancelable(false);
-
-			/*
-			 * btn = (Button)findViewById(R.id.add_from_contact_cancel_btn);
-			 * btn.setOnClickListener(this);
-			 */
 
 		} catch (Exception e) {
 			if (cur != null) {

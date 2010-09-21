@@ -22,7 +22,6 @@
 		<ImageView android:id="@+id/image_two_line_item_2_img2"
         	   android:layout_width="32dip"
 	           android:layout_height="32dip"
-	           android:src="@drawable/sym_call_incoming"
 	           />
        
         <LinearLayout

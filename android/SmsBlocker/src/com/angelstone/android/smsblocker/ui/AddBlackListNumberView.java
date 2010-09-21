@@ -128,7 +128,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 		}
 		case R.id.add_bl_number_from_call_record_btn: {
 			Intent intent = new Intent();
-			intent.setClass(this, AddFromCallRecordView.class);
+			intent.setClass(this, AddFromCallLogView.class);
 			startActivityForResult(intent, 3);
 			break;
 		}
