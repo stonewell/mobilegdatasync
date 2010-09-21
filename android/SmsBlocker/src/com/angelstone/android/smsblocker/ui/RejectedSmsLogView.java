@@ -44,6 +44,7 @@ public class RejectedSmsLogView extends Activity implements
 
 			mLogCursor = PhoneNumberManager.getIntance(this).getCallRejectLogCursor(
 					EventLog.SMS_LOG_BLOCK_TYPE_BL);
+			startManagingCursor(mLogCursor);
 
 			lv = (ListView) this.findViewById(R.id.reject_log_list);
 
@@ -58,9 +59,6 @@ public class RejectedSmsLogView extends Activity implements
 	}
 
 	protected void onDestroy() {
-		if (mLogCursor != null) {
-			mLogCursor.close();
-		}
 		super.onDestroy();
 	}
 
@@ -90,14 +88,7 @@ public class RejectedSmsLogView extends Activity implements
 									PhoneNumberManager.getIntance(RejectedSmsLogView.this)
 											.deleteLog(mLogCursor, mPosition);
 
-									if (mLogCursor != null) {
-										mLogCursor.close();
-									}
-
-									mLogCursor = PhoneNumberManager.getIntance(
-											RejectedSmsLogView.this).getCallRejectLogCursor(
-											EventLog.SMS_LOG_BLOCK_TYPE_BL);
-									refreshList();
+									mLogCursor.requery();
 								}
 							})
 					.setNegativeButton(R.string.alert_dialog_cancel,

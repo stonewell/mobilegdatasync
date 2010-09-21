@@ -154,36 +154,16 @@ public class AddFromSmsRecordView extends Activity implements
 			mDialog.setCancelable(false);
 
 		} catch (Exception e) {
-			if (mCursor != null) {
-				mCursor.close();
-			}
 			Log.d("scfw", "AddFromSmsRecordView:" + e.getClass().toString());
 		}
 	}
 
 	@Override
 	protected void onDestroy() {
-
 		super.onDestroy();
-		mCursor.close();
-		Log.d("scfw", this.toString() + ":close cursor");
 	}
 
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-		/*
-		 * String number = (String)mList.get(position).get("number"); String
-		 * name = (String)mList.get(position).get("name");
-		 * 
-		 * //delete separator of the numbers number = number.replace("-", "");
-		 * 
-		 * number = Delete86String(number);
-		 * 
-		 * Intent intent = new Intent(); intent.putExtra("sms_record_result",
-		 * number); intent.putExtra("sms_record_result_name", name);
-		 * 
-		 * setResult(5, intent); finish();
-		 */
-
 		Map<String, Object> item = (Map<String, Object>) mList.get(position);
 		String number = PhoneNumberHelpers.removeNonNumbericChar((String) item
 				.get("number"));
