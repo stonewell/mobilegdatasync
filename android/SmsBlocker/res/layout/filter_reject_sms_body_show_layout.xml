@@ -7,13 +7,7 @@
     android:background="@drawable/background"
     >
     
-     <TextView  
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="@string/advance_call_log_phone_number"/>
-        
+       
 	<TextView android:id="@+id/filter_sms_reject_record_number_text"
 	              android:layout_width="fill_parent" 
                   android:layout_height="wrap_content"

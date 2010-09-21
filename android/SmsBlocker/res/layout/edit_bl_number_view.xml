@@ -123,12 +123,7 @@
 	       		
 	       		>
 					  
-				<CheckBox android:id="@+id/edit_bl_number_call_block_check_box"
-                     	  android:text="@string/add_number_block_call"
-				          android:layout_width="fill_parent"
-				          android:layout_height="wrap_content"
-				          android:textSize="15sp"
-				          />
+				
 				      
 				 <CheckBox android:id="@+id/edit_bl_number_sms_block_check_box"
                            android:text="@string/add_number_block_sms"

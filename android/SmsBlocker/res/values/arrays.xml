@@ -1,25 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string-array name="reminders">
-        <item>What is my city of birth?</item>
-        <item>What is the name of my favorite pet?</item>
-        <item>What is the name of my favorite movie?</item>
-        <item>Customize security reminder</item>
-    </string-array>
-    
-    <!-- Used in View/Spinner1.java -->
-    <string-array name="hungupTone">
-        <item>Busy</item>
-        <item>Number not exist</item>
-        <item>Power off</item>
-        <item>Out of service</item>
-    </string-array>
-    
-    <string-array name="select_dialog_items">
-        <item>Phone Fraud</item>
-        <item>Cold Call</item>
-        <item>Advertising</item>
-    </string-array>
      
 </resources>

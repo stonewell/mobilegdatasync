@@ -1,106 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World!</string>
-    <string name="app_name">Sms Blocker</string>
-    <!-- for call fire wall by jacky -->
+	<!--common used value -->
+	<string name="btn_ok">OK</string>
+	<string name="btn_cancel">Cancel</string>
+	<string name="btn_confirm">Confirm</string>
+	<string name="help">Help</string>
+	<string name="btn_agree">Agree</string>
+	<string name="btn_disagree">Disagree</string>
+	<string name="btn_delete">Delete</string>
+	<string name="btn_return">Return</string>
+	<string name="check_btn_check_all">Check all</string>
+	<string name="btn_done">Done</string>
+	<string name="btn_yes">Yes</string>
+	<string name="btn_no">No</string>
+	<string name="btn_add">Add</string>
+	<string name="or_string">Or</string>
+
+	<string name="check_btn_sms_allow_contacts">Do not block any number in contacts.</string>
+	<string name="app_name">Sms Blocker</string>
 	<string name="add_number_block_call">Block calls from selected number(s)</string>
 	<string name="add_number_block_sms">Block SMS from selected number(s)</string>
 	<string name="add_number_tag">Tag</string>
 
-    <string name="advance_call_log_phone_number">Phone Number</string>
-    <string name="advance_call_log_scene">Scripts</string>
-    <string name="advance_call_log_reply_sms">Reply SMS</string>
+	<string name="filter_reject_sms_content">Content</string>
+	<string name="filter_reject_sms_filter">Filter</string>
 
-    <string name="advance_scene_apply_contract">Apply to Contacts</string>
-    <string name="advance_scene_apply_unknown_call">Apply to Unknown Calls</string>
+	<string name="main_call_firewall">Sms Blocker</string>
+	<string name="main_copyright">Copyright(C) 2010 Angel &amp; Stone.</string>
+	<string name="main_allright">All rights reserved</string>
 
-    <string name="filter_reject_sms_content">Content</string>
-    <string name="filter_reject_sms_filter">Filter</string>
+	<string name="hungup_view_to_contact">To Contact</string>
+	<string name="hungup_view_to_black_list">To Block list</string>
+	<string name="hungup_view_to_white_list">To Allow list</string>
 
-    <string name="main_call_firewall">Norton Mobile Security</string>
-    <string name="main_copyright">Copyright(C) 1991-2010 Symantec Corporation.</string>
-    <string name="main_allright">All rights reserved</string>
+	<string name="system_setting_filter_setting">SMS filter setting</string>
 
-    <string name="hungup_view_to_contact">To Contact</string>
-    <string name="hungup_view_to_black_list">To Block list</string>
-    <string name="hungup_view_to_white_list">To Allow list</string>
-
-    <string name="system_setting_filter_setting">SMS filter setting</string>
-    <!--common used value -->
-    <string name="btn_ok">OK</string>
-    <string name="btn_cancel">Cancel</string>
-    <string name="btn_confirm">Confirm</string>
-    <string name="help">Help</string>
-    <string name="btn_agree">Agree</string>
-    <string name="btn_disagree">Disagree</string>
-    <string name="btn_delete">Delete</string>
-    <string name="btn_return">Return</string>
-    <string name="check_btn_check_all">Check all</string>
-    <string name="btn_done">Done</string>
-    <string name="btn_yes">Yes</string>
-    <string name="btn_no">No</string>
-    <string name="btn_add">Add</string>
-
-	<string name="EnableCallBlocking">Enable Call Blocking</string>
-	<string name="EnableIncomingCallBlocking">Enable Incoming Call Blocking</string>
 	<string name="EnableSMSBlocking">Enable SMS Blocking</string>
-	<string name="EnableAutoReply">Enable Auto-Reply</string>
 	<string name="EnableUnknownCallShowing">Enable Unknown Call Showing</string>
-    <string name="callfirewall">Call &amp; SMS Blocking</string>
-    <string name="UnknownCallOption">Call Blocking(Unknown Call Option)</string>
-    <string name="blackListsText">Choose a block list item</string>
-    <string name="blNameStr">Block list Name:</string>
-    <string name="add_number_string">Add phone number to Block list</string>
-    <string name="phoneNumberStr">Phone number</string>
-    <string name="add_from_contact_string">Import from contacts</string>
-    <string name="add_from_call_record_string">Import from call log</string>
-    <string name="add_from_sms_record_string">Import from SMS log</string>
-    <string name="add_phone_number_from">Add phone number ...</string>
-    <string name="phone_number_list_string">Block List:</string>
-    <string name="choose_scene_string">Scripts</string>
-    <string name="new_scene_name">Script Name</string>
-    <string name="sms_scene_chg_bl_btn_string">Select</string>
-    <string name="sms_scene_add_term_btn_string">Add</string>
-    <string name="sms_scene_term_list_string">Filter Keyword List</string>
-    <string name="add_new_filter_term_string">New Keyword:</string>
-    <string name="or_string">Or</string>
-    <string name="call_scene_edit_string">Script Name</string>
-    <string name="alert_dialog_two_buttons_title">Confirm to delete?</string>    
-    <string name="alert_dialog_ok">Confirm</string> 
-    <string name="alert_dialog_cancel">Cancel</string>
-    <string name="block_option_text">Block Option</string>
-    <string name="reply_editor_input_content_string">Input SMS content</string>
-    <string name="reply_editor_max_length_show_string"> (Note: limited to 70 characters)</string>
-    <string name="reply_editor_ok_string">Confirm</string>
-    <string name="pls_select">Please select</string>
-    <string name="new_adv_scene_name_string">Script Name</string>
-    <string name="new_adv_scene_reply_sms_setting_string">Auto-Reply setting</string>
-    <string name="new_adv_scene_add_new_reply_sms_string">Add new reply message</string>
-    <string name="new_adv_scene_reply_sms_list_string">Reply message</string>
-    <string name="adv_scene_edit_name_string">Script Name</string>
-    <string name="adv_scene_edit_reply_sms_string">Auto-Reply message</string>
-    <string name="adv_scene_edit_modify_reply_sms_btn_string">Edit</string>
-    <string name="adv_scene_edit_import_reply_sms_btn_string">Import template</string>
-    <string name="reply_sms_tmpl_add_new_reply_sms_string">Add new reply message</string>
-    <string name="reply_sms_tmpl_list_string">Reply message</string>
-    <string name="search_label">Search</string>
-    <string name="search_hint">link</string>
-    <string name="income_number_list_string">Incoming phone list</string>
-    <string name="alert_dialog_two_buttons_title_1">Note</string>
-    <string name="alert_dialog_two_buttons_message_1">Using empty message will disable the Auto-Reply. Are you sure?</string>
-    <string name="alert_dialog_two_buttons_title_2">Note</string>
-    <string name="alert_dialog_two_buttons_title_3">OK to clear all?</string>
-    <string name="alert_dialog_two_buttons_msg">The numbers will be added into your block list. Do you also want to remove them from your contacts list?</string>
+	<string name="callfirewall">SMS Blocking</string>
+	<string name="blackListsText">Choose a block list item</string>
+	<string name="blNameStr">Block list Name:</string>
+	<string name="add_number_string">Add phone number to Block list</string>
+	<string name="phoneNumberStr">Phone number</string>
+	<string name="add_from_contact_string">Import from contacts</string>
+	<string name="add_from_call_record_string">Import from call log</string>
+	<string name="add_from_sms_record_string">Import from SMS log</string>
+	<string name="add_phone_number_from">Add phone number ...</string>
+	<string name="phone_number_list_string">Block List:</string>
+	<string name="alert_dialog_two_buttons_title">Confirm to delete?</string>
+	<string name="alert_dialog_ok">Confirm</string>
+	<string name="alert_dialog_cancel">Cancel</string>
+	<string name="block_option_text">Block Option</string>
+	<string name="reply_editor_ok_string">Confirm</string>
+	<string name="pls_select">Please select</string>
+	<string name="income_number_list_string">Incoming phone list</string>
+	<string name="alert_dialog_two_buttons_title_1">Note</string>
+	<string name="alert_dialog_two_buttons_title_2">Note</string>
+	<string name="alert_dialog_two_buttons_title_3">OK to clear all?</string>
+	<string name="alert_dialog_two_buttons_msg">The numbers will be added into your block list. Do
+		you also want to remove them from your contacts list?</string>
 	<string name="NoRecord">No record.</string>
-	<string name="PleaseSelectTag">Please select tag</string>
 	<string name="EmptyNumberIsNotAllowed">Empty number is not allowed.</string>
 	<string name="PleaseChooseBlockCallsOrMessages">Please choose block call or SMS.</string>
 	<string name="TheNumberAlreadyExists">The number is already in your block list.</string>
 	<string name="PleaseWait">Please wait...</string>
-	<string name="ClearAllScenes">Clear All Scripts</string>
 	<string name="Setting">Setting</string>
 	<string name="Blacklist">Block List</string>
-	<string name="Auto_reply">Auto-Reply</string>
 	<string name="Log">Log</string>
 	<string name="About">About</string>
 	<string name="Exit">Exit</string>
@@ -110,41 +75,14 @@
 	<string name="Return">Return</string>
 	<string name="ClearAll">Clear All</string>
 	<string name="Unknown">Unknown</string>
-	<string name="BlacklistCallBlockLog">Blocked Calls(1/2)</string>
-	<string name="AutoReplyCallBlockLog">Auto-Reply call block log(2/3)</string>
 	<string name="BlacklistSMSBlockLog">Blocked SMS(2/2)</string>
-	<string name="SceneAlreadyExists">The Script already exists.</string>
-	<string name="PleaseChooseContactOrUnknown">Please specify whether to apply to contacts or unknown calls.</string>
-	<string name="EmptySMSIsNotAllowed">Empty SMS is not allowed!</string>
-	<string name="SMSAlreadyExists">SMS already exists!</string>
 	<string name="NumberAlreadyInBlacklist">The number is already in block list</string>
 	<string name="AddedToBlacklist">Successfully added to block list</string>
-	<string name="EmptyNameNotAllowed">Empty name is not allowed.</string>
-	<string name="DontReply">(Don\'t reply)</string>
-	<string name="CantEditSMS">Cannot edit this SMS.</string>
-	<string name="CantDeleteSMS">Cannot delete this SMS.</string>
 	<string name="BlacklistContactName">BLOCK LIST</string>
 	<string name="AddToBlacklist">Add to block list</string>
-	<string name="KeywordExists">The keyword already exists.</string>
-	<string name="EmptyKeywordNotAllowed">Empty keyword is not allowed.</string>
 	<string name="ClearAllRecords">Clear Records</string>
-	<string name="AddedToWhitelist">Successfully added to allowed list</string>
-	<string name="EmptySmsNotAllowed">Empty SMS is not allowed</string>
-	<string name="SmsAlreadyExists">The SMS already exists</string>
-	<string name="LogCallBlock">Call Blocking</string>
-	<string name="UseScript">Use script: </string>
-	<string name="ModifyScript">Modify script: </string>
 	<string name="ChangeTo">change to</string>
 	<string name="BlacklistCleared">Block list cleared</string>
-	<string name="CallBlockingOn">Call Blocking turned on</string>
-	<string name="CallBlockingOff">Call Blocking turned off</string>
-	<string name="UpdateCallLocDBFail">SQL error: failed to update Caller Location database</string>
-	<string name="ReadCallLocDBFail">Failed to read Caller Location database</string>
-	<string name="CallBack">Call back</string>
-	<string name="EditNumberAndCallBack">Edit number and call back</string>
-	<string name="SendTextMessage">Send text message</string>
-	<string name="replySmsString">Reply-SMS:</string>
-	<string name="noReplySmsString">(No Reply)</string>
 	<string name="add_bl_number_from_contact_string">Contacts</string>
 	<string name="add_bl_number_from_call_record_string">Call Log</string>
 	<string name="add_bl_number_from_sms_record_string">SMS Log</string>
@@ -153,9 +91,6 @@
 	<string name="input_number_dlg_title_string">Please Input Number</string>
 	<string name="input_number_title_string">Number</string>
 	<string name="input_name_title_string">Name</string>
-	<string name="add_bl_number_reply_option_string">Reply option(For block call only):</string>
-	<string name="radio_group_ignore_string">Ignore</string>
-	<string name="radio_group_reply_sms_string">Auto-Reply with a text message</string>
 	<string name="add_bl_number_block_from_string">Actions:</string>
 	<string name="PleaseSelectOneNumberAtLeast">Please select at least one number.</string>
 	<string name="how_many_number_selected_string">number(s) selected</string>
@@ -164,23 +99,18 @@
 	<string name="selectedNumbersTitle">Selected Numbers</string>
 	<string name="confirmToDelete">OK to delete?</string>
 	<string name="logDetailInfo">Detail Information </string>
-	<string name="replySmsCannotBeEmpty">Empty reply-SMS is not allowed</string>
-	<string name="hold_down_to_edit">Hold down a record to edit</string> 
-	<string name="press_menu_to_view_selected_numbers">Press \"menu\" to view selected numbers</string> 
-	<string name="block_calls_log">Blocked Calls</string>
+	<string name="hold_down_to_edit">Hold down a record to edit</string>
+	<string name="press_menu_to_view_selected_numbers">Press \"menu\" to view selected numbers</string>
 	<string name="block_sms_log">Blocked SMS</string>
-	<string name="empty_blocked_records">(Empty)\r\nYou don\'t have any blocked records.</string>
-	<string name="adv_root_mgr_user_guide_string">
-			You don\'t have any Auto-Reply Scripts configured.\r\n\r\n
-			1. To add new Scripts, press button on the top-right.\r\n\r\n
-			2. To clear all Scripts. press menu.
+	<string name="empty_blocked_records">(Empty)\r\nYou don\'t have any blocked records.
 	</string>
-	
+
 	<string name="bl_root_mgr_user_guide_string_1">
-			(Empty) \r\nYou don\'t have any numbers in your block list.\r\n\r\n 		
+		(Empty) \r\nYou don\'t have any numbers in your block list.\r\n\r\n 		
 	</string>
-	
+
 	<string name="bl_root_mgr_user_guide_string_2">
-			Click Add to start.
+		Click Add to start.
 	</string>
+	<string name="activity_log_title">Sms Blocker Log</string>
 </resources>

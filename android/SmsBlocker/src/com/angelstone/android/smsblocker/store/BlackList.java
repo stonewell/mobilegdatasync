@@ -1,6 +1,5 @@
 package com.angelstone.android.smsblocker.store;
 
-import com.angelstone.android.smsblocker.store.PhoneNumberDisposition;
 
 /** 
 * a class representing a phone-using scene   
