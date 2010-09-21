@@ -39,15 +39,10 @@ public class SmsBlocker {
 					return false;
 			}
 
-			PhoneNumberDisposition disp = PhoneNumberManager
-					.getIntance(context).queryAction(sender);
+			PhoneNumberDisposition disp = PhoneNumberManager.getIntance(context)
+					.queryAction(sender);
 			if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
 				WriteToLog(messageBody, sender, context);
-
-				//TODO:Refersh SmsRejectLogView
-//				if (SmsRejectLogView.getIntance() != null) {
-//					SmsRejectLogView.getIntance().refreshList_2();
-//				}
 
 				return true;
 			}

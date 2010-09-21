@@ -54,19 +54,19 @@ public class CompatEclair extends CompatDonut {
 
 		Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
 
-		Cursor cursor = mCtx.getContentResolver().query(
-				phoneUri,
-				new String[] { ContactsContract.CommonDataKinds.Phone._ID },
-				ContactsContract.CommonDataKinds.Phone.NUMBER + " = '"
-						+ phoneNum + "'", null, null);
+		Cursor cursor = mCtx.getContentResolver()
+				.query(
+						phoneUri,
+						new String[] { ContactsContract.CommonDataKinds.Phone._ID },
+						ContactsContract.CommonDataKinds.Phone.NUMBER + " = '" + phoneNum
+								+ "'", null, null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			String person = Integer.toString(cursor.getInt(cursor
 					.getColumnIndex(ContactsContract.Contacts._ID)));
-			int id = cursor
-					.getInt(cursor
-							.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
+//			int id = cursor.getInt(cursor
+//					.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
 
 			// m_ctx.getContentResolver().unregisterContentObserver(contactObserver);
 
@@ -75,10 +75,11 @@ public class CompatEclair extends CompatDonut {
 				continue;
 			}
 
-//			mCtx.getContentResolver().delete(ContactsContract.Contacts.DISPLAY_NAME + " != '"
-//					+ silenceRejectCall.BL_CONTACT_NAME + "'"
-//					Uri.withAppendedPath(phoneUri, Integer.toString(id)), null,
-//					null);
+			// mCtx.getContentResolver().delete(ContactsContract.Contacts.DISPLAY_NAME
+			// + " != '"
+			// + silenceRejectCall.BL_CONTACT_NAME + "'"
+			// Uri.withAppendedPath(phoneUri, Integer.toString(id)), null,
+			// null);
 
 			// contactObserver.setInitialContactInfo();
 			// m_ctx.getContentResolver().registerContentObserver(
@@ -105,8 +106,7 @@ public class CompatEclair extends CompatDonut {
 		for (int i = 0; i < colums.size(); i++)
 			proj[i] = colums.get(i);
 
-		cur = ctx.getContentResolver().query(
-				ContactsContract.Contacts.CONTENT_URI, // Contacts.People.CONTENT_URI,
+		cur = ctx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, // Contacts.People.CONTENT_URI,
 				proj, null, null, null);
 
 		return cur;
@@ -118,17 +118,15 @@ public class CompatEclair extends CompatDonut {
 		value.put(ContactsContract.Contacts.CUSTOM_RINGTONE, ringtone);
 
 		return ctx.getContentResolver().update(
-				ContentUris.withAppendedId(
-						ContactsContract.Contacts.CONTENT_URI, id), value,
-				null, null);
+				ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id),
+				value, null, null);
 	}
 
 	@Override
 	public int ContactsGetInt(Cursor cur, int id) {
 		switch (id) {
 		case DataColumns.Contacts._ID:
-			return cur
-					.getInt(cur.getColumnIndex(ContactsContract.Contacts._ID));
+			return cur.getInt(cur.getColumnIndex(ContactsContract.Contacts._ID));
 		case DataColumns.Contacts.NAME:
 			// error: return
 			// Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)));
@@ -162,18 +160,15 @@ public class CompatEclair extends CompatDonut {
 
 	@Override
 	public String ContactGetName(int personId) {
-		// TODO Auto-generated method stub
-
 		String name = null;
 		Cursor cur = mCtx.getContentResolver().query(
 				ContactsContract.Contacts.CONTENT_URI,
 				new String[] { ContactsContract.Contacts.DISPLAY_NAME },
-				ContactsContract.Contacts._ID + " = "
-						+ Integer.toString(personId), null, null);
+				ContactsContract.Contacts._ID + " = " + Integer.toString(personId),
+				null, null);
 
 		cur.moveToFirst();
-		if (!cur.isNull(cur
-				.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))) {
+		if (!cur.isNull(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))) {
 			name = cur.getString(cur
 					.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 		}
@@ -185,23 +180,22 @@ public class CompatEclair extends CompatDonut {
 	@Override
 	public void ContactDelete(int personId) {
 		if (personId == 0) {
-			Cursor cur = mCtx.getContentResolver().query(CONTACT_URI, null,
-					null, null, null);
+			Cursor cur = mCtx.getContentResolver().query(CONTACT_URI, null, null,
+					null, null);
 			cur.moveToFirst();
 			while (!cur.isAfterLast()) {
-				int id = cur.getInt(cur
-						.getColumnIndex(ContactsContract.Contacts._ID));
+				int id = cur.getInt(cur.getColumnIndex(ContactsContract.Contacts._ID));
 				mCtx.getContentResolver()
-						.delete(Uri.withAppendedPath(CONTACT_URI,
-								Integer.toString(id)), null, null);
+						.delete(Uri.withAppendedPath(CONTACT_URI, Integer.toString(id)),
+								null, null);
 				cur.moveToNext();
 			}
 			cur.close();
 
 		} else {
 			mCtx.getContentResolver().delete(
-					Uri.withAppendedPath(CONTACT_URI,
-							Integer.toString(personId)), null, null);
+					Uri.withAppendedPath(CONTACT_URI, Integer.toString(personId)), null,
+					null);
 		}
 	}
 
@@ -211,8 +205,7 @@ public class CompatEclair extends CompatDonut {
 
 	public InputStream getContactPhoto(String phoneId) {
 		String contactId = getContactId(phoneId);
-		Uri uri = ContentUris.withAppendedId(CONTACT_URI,
-				Long.valueOf(contactId));
+		Uri uri = ContentUris.withAppendedId(CONTACT_URI, Long.valueOf(contactId));
 		InputStream is = ContactsContract.Contacts.openContactPhotoInputStream(
 				mCtx.getContentResolver(), uri);
 		return is;

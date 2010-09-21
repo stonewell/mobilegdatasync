@@ -406,7 +406,6 @@ public class AddFromContactView extends Activity implements
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 			AddBlackListNumberView.mSelectedNumbers.clear();
 			AddBlackListNumberView.mSelectedNumbers.addAll(mTempNumberList);

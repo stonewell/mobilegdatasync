@@ -1,16 +1,3 @@
-/* 
-   Copyright (C) 2010 Symantec Corporate. All rights reserved.
-
-   This document contains proprietary information and trade secrets of
-   Symantec Corporate.
-
-   This information is provided only under a written agreement containing
-   restrictions on the use and disclosure of this information and
-   is also protected by law.
-
-   Any unauthorized review, use, disclosure, or distribution is prohibited.
-*/
-
 package com.angelstone.android.utils;
 
 import android.content.ContentValues;

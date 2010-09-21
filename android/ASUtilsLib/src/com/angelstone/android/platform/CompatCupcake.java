@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.provider.Contacts;
 
+@SuppressWarnings("deprecation")
 public class CompatCupcake extends SysCompat {
 	public CompatCupcake(Context ctx) {
 		super(ctx);
@@ -71,12 +72,10 @@ public class CompatCupcake extends SysCompat {
 	@Override
 	public void removePhone(String phoneNum, String ContactID) {
 
-		Cursor cursor = mCtx.getContentResolver()
-				.query(Contacts.Phones.CONTENT_URI,
-						new String[] { Contacts.Phones._ID,
-								Contacts.Phones.PERSON_ID },
-						Contacts.Phones.NUMBER + " = '" + phoneNum + "'", null,
-						null);
+		Cursor cursor = mCtx.getContentResolver().query(
+				Contacts.Phones.CONTENT_URI,
+				new String[] { Contacts.Phones._ID, Contacts.Phones.PERSON_ID },
+				Contacts.Phones.NUMBER + " = '" + phoneNum + "'", null, null);
 
 		if (cursor.getCount() <= 0) {
 			cursor.close();
@@ -90,19 +89,17 @@ public class CompatCupcake extends SysCompat {
 
 		while (!cursor.isAfterLast()) {
 			if (ContactID == null || ContactID.equals(person)) {
-				Uri ContactUri = Uri.withAppendedPath(
-						Contacts.People.CONTENT_URI, person);
+				Uri ContactUri = Uri.withAppendedPath(Contacts.People.CONTENT_URI,
+						person);
 				Uri phoneUri = Uri.withAppendedPath(ContactUri,
 						Contacts.People.Phones.CONTENT_DIRECTORY);
 
-				int id = cursor.getInt(cursor
-						.getColumnIndex(Contacts.Phones._ID));
+				int id = cursor.getInt(cursor.getColumnIndex(Contacts.Phones._ID));
 
 				// m_ctx.getContentResolver().unregisterContentObserver(contactObserver);
 
 				mCtx.getContentResolver().delete(
-						Uri.withAppendedPath(phoneUri, Integer.toString(id)),
-						null, null);
+						Uri.withAppendedPath(phoneUri, Integer.toString(id)), null, null);
 
 				// contactObserver.setInitialContactInfo();
 				// m_ctx.getContentResolver().registerContentObserver(
@@ -143,8 +140,8 @@ public class CompatCupcake extends SysCompat {
 		value.put(Contacts.People.CUSTOM_RINGTONE, ringtone);
 
 		return ctx.getContentResolver().update(
-				ContentUris.withAppendedId(Contacts.People.CONTENT_URI, id),
-				value, null, null);
+				ContentUris.withAppendedId(Contacts.People.CONTENT_URI, id), value,
+				null, null);
 	}
 
 	@Override
@@ -172,11 +169,9 @@ public class CompatCupcake extends SysCompat {
 			return Integer.toString(cur.getInt(cur
 					.getColumnIndex(Contacts.People._ID)));
 		case DataColumns.Contacts.NAME:
-			return cur.getString(cur
-					.getColumnIndex(Contacts.People.DISPLAY_NAME));
+			return cur.getString(cur.getColumnIndex(Contacts.People.DISPLAY_NAME));
 		case DataColumns.Contacts.CUSTOM_RINGTONE:
-			return cur.getString(cur
-					.getColumnIndex(Contacts.People.CUSTOM_RINGTONE));
+			return cur.getString(cur.getColumnIndex(Contacts.People.CUSTOM_RINGTONE));
 		default:
 			break;
 		}
@@ -185,18 +180,15 @@ public class CompatCupcake extends SysCompat {
 
 	@Override
 	public String ContactGetName(int personId) {
-		// TODO Auto-generated method stub
 
 		String name = null;
 		Cursor cur = mCtx.getContentResolver().query(CONTACT_URI,
 				new String[] { Contacts.People.DISPLAY_NAME },
-				Contacts.People._ID + " = " + Integer.toString(personId), null,
-				null);
+				Contacts.People._ID + " = " + Integer.toString(personId), null, null);
 
 		cur.moveToFirst();
 		if (!cur.isNull(cur.getColumnIndex(Contacts.People.DISPLAY_NAME))) {
-			name = cur.getString(cur
-					.getColumnIndex(Contacts.People.DISPLAY_NAME));
+			name = cur.getString(cur.getColumnIndex(Contacts.People.DISPLAY_NAME));
 		}
 		cur.close();
 
@@ -209,8 +201,7 @@ public class CompatCupcake extends SysCompat {
 			mCtx.getContentResolver().delete(CONTACT_URI, null, null);
 		} else {
 			mCtx.getContentResolver().delete(CONTACT_URI,
-					COLUMN_CONTACT_ID + " = " + Integer.toString(personId),
-					null);
+					COLUMN_CONTACT_ID + " = " + Integer.toString(personId), null);
 		}
 	}
 
@@ -241,8 +232,7 @@ public class CompatCupcake extends SysCompat {
 				selection, null, null);
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToFirst();
-			number = cursor.getString(cursor
-					.getColumnIndex(COLUMN_PHONE_NUMBER));
+			number = cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER));
 		}
 
 		cursor.close();
@@ -261,8 +251,8 @@ public class CompatCupcake extends SysCompat {
 				selection, null, null);
 		if (cursor != null && cursor.getCount() > 0) {
 			cursor.moveToFirst();
-			displayName = cursor.getString(cursor
-					.getColumnIndex(COLUMN_CONTACT_NAME));
+			displayName = cursor
+					.getString(cursor.getColumnIndex(COLUMN_CONTACT_NAME));
 		}
 
 		cursor.close();
@@ -273,15 +263,15 @@ public class CompatCupcake extends SysCompat {
 	 * public String[] getContactNumbers(String phoneId) { String[] projection =
 	 * new String[] {COLUMN_CONTACT_ID}; String selection = COLUMN_PHONE_ID +
 	 * " = '" + phoneId + "'"; Cursor cursor = mCtx.getContentResolver().query(
-	 * PHONE_URI, projection, selection, null, null); String contactId = null;
-	 * if (cursor != null && cursor.getCount() > 0) { cursor.moveToFirst();
-	 * contactId = cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID));
+	 * PHONE_URI, projection, selection, null, null); String contactId = null; if
+	 * (cursor != null && cursor.getCount() > 0) { cursor.moveToFirst(); contactId
+	 * = cursor.getString(cursor.getColumnIndex(COLUMN_CONTACT_ID));
 	 * cursor.close(); }
 	 * 
 	 * projection = new String[] {COLUMN_PHONE_NUMBER}; selection =
-	 * COLUMN_CONTACT_ID + " = '" + contactId + "'" + " and " + PHONE_TYPE + "="
-	 * + COLUMN_PHONE_TYPE; cursor = mCtx.getContentResolver().query(
-	 * CONTACT_URI, projection, selection, null, null);
+	 * COLUMN_CONTACT_ID + " = '" + contactId + "'" + " and " + PHONE_TYPE + "=" +
+	 * COLUMN_PHONE_TYPE; cursor = mCtx.getContentResolver().query( CONTACT_URI,
+	 * projection, selection, null, null);
 	 * 
 	 * String[] numbers = null; if (cursor != null && cursor.getCount() > 0) {
 	 * cursor.moveToFirst(); //int phoneCount = cursor.getInt(cursor //
@@ -303,8 +293,8 @@ public class CompatCupcake extends SysCompat {
 			ArrayList<MobilePhoneRecord> records = new ArrayList<MobilePhoneRecord>();
 			cursor.moveToFirst();
 			for (int i = 0; i < cursor.getCount(); i++) {
-				String id = cursor.getString(cursor
-						.getColumnIndex(COLUMN_PHONE_ID_v16));
+				String id = cursor
+						.getString(cursor.getColumnIndex(COLUMN_PHONE_ID_v16));
 				if (getContactId(id) == null) {
 					continue;
 				}
@@ -342,8 +332,7 @@ public class CompatCupcake extends SysCompat {
 
 	public InputStream getContactPhoto(String phoneId) {
 		String contactId = getContactId(phoneId);
-		Uri uri = ContentUris.withAppendedId(CONTACT_URI,
-				Long.valueOf(contactId));
+		Uri uri = ContentUris.withAppendedId(CONTACT_URI, Long.valueOf(contactId));
 		InputStream is = Contacts.People.openContactPhotoInputStream(
 				mCtx.getContentResolver(), uri);
 		return is;
