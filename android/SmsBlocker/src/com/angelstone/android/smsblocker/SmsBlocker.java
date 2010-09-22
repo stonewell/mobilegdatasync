@@ -9,6 +9,7 @@ import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.smsblocker.store.EventLog;
 import com.angelstone.android.smsblocker.store.PhoneNumberDisposition;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
+import com.angelstone.android.utils.PhoneNumberHelpers;
 
 public class SmsBlocker {
 	private static SysCompat sys_ = null;
@@ -30,19 +31,22 @@ public class SmsBlocker {
 			SmsMessage[] smses = getSMSMessagesFromIntent(intent);
 			String messageBody = getMessageBody(smses);
 			String sender = "";
+			
 			if (smses.length > 0) {
 				sender = smses[0].getOriginatingAddress();
 			}
+			
+			sender = PhoneNumberHelpers.delete86String(sender);
+			sender = PhoneNumberHelpers.removeNonNumbericChar(sender);
 
 			if (db.readSetting(PhoneNumberManager.OPTION_ALLOW_CONTACTS)) {
-				if (db.isContact(sender))
+				if (PhoneNumberHelpers.isContact(context, sender))
 					return false;
 			}
 
-			PhoneNumberDisposition disp = PhoneNumberManager.getIntance(context)
-					.queryAction(sender);
+			PhoneNumberDisposition disp = db.queryAction(sender);
 			if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
-				WriteToLog(messageBody, sender, context);
+				WriteToLog(db, messageBody, sender, context);
 
 				return true;
 			}
@@ -52,18 +56,18 @@ public class SmsBlocker {
 		return false;
 	}
 
-	private static void WriteToLog(String smsBody, String smsNumber,
+	private static void WriteToLog(PhoneNumberManager db, String smsBody, String smsNumber,
 			Context context) {
-		smsNumber = Delete86String(smsNumber);
+		smsNumber = PhoneNumberHelpers.delete86String(smsNumber);
 		EventLog evt = new EventLog(PhoneNumberUtils.formatNumber(smsNumber),
 				EventLog.LOG_TYPE_SMS);
 		evt.setSmsTxt(smsBody);
-		String tag = PhoneNumberManager.getIntance(context).getTagByNumber(
+		String tag = db.getTagByNumber(
 				smsNumber);
 		evt.setTagOrName(tag);
 		evt.setBlockType(EventLog.SMS_LOG_BLOCK_TYPE_BL);
 
-		PhoneNumberManager.getIntance(context).writeLog(evt);
+		db.writeLog(evt);
 	}
 
 	private static SmsMessage[] getSMSMessagesFromIntent(Intent intent) {
@@ -91,12 +95,4 @@ public class SmsBlocker {
 		return messageBody;
 	}
 
-	private static String Delete86String(String number) {
-		int pos = number.indexOf("+86");
-
-		if (pos != -1) {
-			number = number.substring(pos + 3, number.length());
-		}
-		return number;
-	}
 }

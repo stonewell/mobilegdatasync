@@ -35,6 +35,10 @@ public abstract class SysCompat {
 	public String PHONE_TYPE = null;
 	public String COLUMN_PHONE_TYPE = null;
 	public String COLUMN_PHONE_ID_v16 = null;
+	
+	public Uri PHONE_LOOKUP_FILTER_URI = null;
+	public String PHONE_LOOKUP_NUMBER = null;
+	public String PHONE_LOOKUP_NAME = null;
 
 	// public static String COLUMN_PHONE_PHOTO_ID = null;
 	// public static String COLUMN_PHONE_DATA = null;

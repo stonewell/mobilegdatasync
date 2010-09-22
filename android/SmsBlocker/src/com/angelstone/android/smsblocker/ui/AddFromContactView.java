@@ -115,8 +115,9 @@ public class AddFromContactView extends Activity implements
 
 				if (isInBlacklist(PhoneNumberHelpers.removeNonNumbericChar(cur
 						.getString(mNumberColIndex)))) {
+					cur.moveToNext();
 					continue;
-				} else if (containsNumber(PhoneNumberHelpers
+				} else if (AddBlackListNumberView.indexOfSelectedNumber(PhoneNumberHelpers
 						.removeNonNumbericChar(cur.getString(mNumberColIndex))) != -1) {
 					map.put("checkImg", R.drawable.btn_check_on);
 					mCheckState[cur.getPosition()] = PhoneNumberHelpers.CHECK_ON;
@@ -202,7 +203,7 @@ public class AddFromContactView extends Activity implements
 			mCheckState[position] = PhoneNumberHelpers.CHECK_OFF;
 
 			int pos;
-			if ((pos = containsNumber(number)) != -1) {
+			if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
 				AddBlackListNumberView.mSelectedNumbers.remove(pos);
 				AddBlackListNumberView.mSelectedNames.remove(pos);
 			}
@@ -249,7 +250,7 @@ public class AddFromContactView extends Activity implements
 						name = "";
 					}
 
-					if (containsNumber(number) == -1) {
+					if (AddBlackListNumberView.indexOfSelectedNumber(number) == -1) {
 						AddBlackListNumberView.mSelectedNumbers.add(number);
 						AddBlackListNumberView.mSelectedNames.add(name);
 					}
@@ -322,7 +323,7 @@ public class AddFromContactView extends Activity implements
 							mCheckState[i] = PhoneNumberHelpers.CHECK_OFF;
 
 							int pos;
-							if ((pos = containsNumber(number)) != -1) {
+							if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
 								AddBlackListNumberView.mSelectedNumbers
 										.remove(pos);
 								AddBlackListNumberView.mSelectedNames
@@ -391,17 +392,6 @@ public class AddFromContactView extends Activity implements
 		} catch (Exception ex) {
 		}
 
-	}
-
-	private int containsNumber(String number) {
-		for (int i = 0; i < AddBlackListNumberView.mSelectedNumbers.size(); i++) {
-			if (PhoneNumberManager.getIntance(this).cmpNumber(number,
-					AddBlackListNumberView.mSelectedNumbers.get(i))) {
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	@Override

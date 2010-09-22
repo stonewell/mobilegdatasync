@@ -60,9 +60,8 @@ public class AddFromSmsRecordView extends Activity implements
 			mTempNameList.addAll(AddBlackListNumberView.mSelectedNames);
 
 			String SORT_ORDER = "date DESC";
-			mCursor = getContentResolver().query(
-					Uri.parse("content://sms/inbox"), null, null, null,
-					SORT_ORDER);
+			mCursor = getContentResolver().query(Uri.parse("content://sms/inbox"),
+					null, null, null, SORT_ORDER);
 
 			startManagingCursor(mCursor);
 
@@ -75,15 +74,13 @@ public class AddFromSmsRecordView extends Activity implements
 			while (!mCursor.isAfterLast()) {
 				Map<String, Object> map = new HashMap<String, Object>();
 
-				String number = mCursor.getString(mCursor
-						.getColumnIndex("address"));
+				String number = mCursor.getString(mCursor.getColumnIndex("address"));
 
-				number = this.Delete86String(number);
+				number = PhoneNumberHelpers.delete86String(number);
 				number = PhoneNumberHelpers.removeNonNumbericChar(number);
 
 				map.put("number", PhoneNumberUtils.formatNumber(number));
-				String name = PhoneNumberManager.getIntance(this)
-						.getContactName(number);
+				String name = PhoneNumberHelpers.getContactName(this, number);
 
 				if (name != null && !name.equals("")) {
 					map.put("name", "<" + name + ">");
@@ -98,7 +95,7 @@ public class AddFromSmsRecordView extends Activity implements
 				if (isInBlacklist(number)) {
 					map.put("checkImg", R.drawable.btn_check_off_disable);
 					mCheckState[mCursor.getPosition()] = PhoneNumberHelpers.CHECK_DISABLE;
-				} else if (containsNumber(number) != -1) {
+				} else if (AddBlackListNumberView.indexOfSelectedNumber(number) != -1) {
 					map.put("checkImg", R.drawable.btn_check_on);
 					mCheckState[mCursor.getPosition()] = PhoneNumberHelpers.CHECK_ON;
 
@@ -128,18 +125,18 @@ public class AddFromSmsRecordView extends Activity implements
 			final ListView listView = (ListView) findViewById(R.id.sms_record_list);
 
 			SimpleAdapter adapter = new SimpleAdapter(this, mList,
-					R.layout.sms_record_list_row, new String[] { "number",
-							"name", "body", "checkImg" }, new int[] {
-							R.id.sms_record_number, R.id.sms_record_name,
-							R.id.sms_record_body, R.id.sms_log_check_img });
+					R.layout.sms_record_list_row, new String[] { "number", "name",
+							"body", "checkImg" }, new int[] { R.id.sms_record_number,
+							R.id.sms_record_name, R.id.sms_record_body,
+							R.id.sms_log_check_img });
 			listView.setAdapter(adapter);
 
 			listView.setOnItemClickListener(this);
 
 			if (listView.getCount() == 0) {
 				if (mToastShowWaitHandler.IsAllowShow()) {
-					Toast.makeText(AddFromSmsRecordView.this,
-							R.string.NoRecord, Toast.LENGTH_SHORT).show();
+					Toast.makeText(AddFromSmsRecordView.this, R.string.NoRecord,
+							Toast.LENGTH_SHORT).show();
 				}
 
 				chkBox.setEnabled(false);
@@ -178,7 +175,7 @@ public class AddFromSmsRecordView extends Activity implements
 			mCheckState[position] = PhoneNumberHelpers.CHECK_OFF;
 
 			int pos;
-			if ((pos = containsNumber(number)) != -1) {
+			if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
 				AddBlackListNumberView.mSelectedNumbers.remove(pos);
 				AddBlackListNumberView.mSelectedNames.remove(pos);
 			}
@@ -204,15 +201,6 @@ public class AddFromSmsRecordView extends Activity implements
 		}
 	}
 
-	private String Delete86String(String number) {
-		int pos = number.indexOf("+86");
-
-		if (pos != -1) {
-			number = number.substring(pos + 3, number.length());
-		}
-		return number;
-	}
-
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -236,7 +224,7 @@ public class AddFromSmsRecordView extends Activity implements
 						}
 					}
 
-					if (containsNumber(number) == -1) {
+					if (AddBlackListNumberView.indexOfSelectedNumber(number) == -1) {
 						AddBlackListNumberView.mSelectedNumbers.add(number);
 						AddBlackListNumberView.mSelectedNames.add(name);
 					}
@@ -268,8 +256,7 @@ public class AddFromSmsRecordView extends Activity implements
 								continue;
 							}
 
-							Map<String, Object> item = (Map<String, Object>) mList
-									.get(i);
+							Map<String, Object> item = (Map<String, Object>) mList.get(i);
 
 							item.put("checkImg", R.drawable.btn_check_on);
 							mCheckState[i] = PhoneNumberHelpers.CHECK_ON;
@@ -301,17 +288,15 @@ public class AddFromSmsRecordView extends Activity implements
 								continue;
 							}
 
-							Map<String, Object> item = (Map<String, Object>) mList
-									.get(i);
+							Map<String, Object> item = (Map<String, Object>) mList.get(i);
 							String number = PhoneNumberHelpers
-									.removeNonNumbericChar((String) item
-											.get("number"));
+									.removeNonNumbericChar((String) item.get("number"));
 
 							item.put("checkImg", R.drawable.btn_check_off);
 							mCheckState[i] = PhoneNumberHelpers.CHECK_OFF;
 
 							int pos;
-							if ((pos = containsNumber(number)) != -1) {
+							if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
 								AddBlackListNumberView.mSelectedNumbers.remove(pos);
 								AddBlackListNumberView.mSelectedNames.remove(pos);
 							}
@@ -353,8 +338,7 @@ public class AddFromSmsRecordView extends Activity implements
 			} else {
 				mDialog.dismiss();
 				ListView listView = (ListView) findViewById(R.id.sms_record_list);
-				((SimpleAdapter) listView.getAdapter())
-						.notifyDataSetInvalidated();
+				((SimpleAdapter) listView.getAdapter()).notifyDataSetInvalidated();
 			}
 		}
 
@@ -381,17 +365,6 @@ public class AddFromSmsRecordView extends Activity implements
 		} catch (Exception ex) {
 		}
 
-	}
-
-	private int containsNumber(String number) {
-		for (int i = 0; i < AddBlackListNumberView.mSelectedNumbers.size(); i++) {
-			if (PhoneNumberManager.getIntance(this).cmpNumber(number,
-					AddBlackListNumberView.mSelectedNumbers.get(i))) {
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	@Override

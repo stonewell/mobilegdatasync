@@ -54,7 +54,7 @@ public class RejectedSmsLogView extends Activity implements
 			refreshList();
 
 		} catch (Exception e) {
-			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
+			Log.d("scfw", "create view error", e);
 		}
 	}
 

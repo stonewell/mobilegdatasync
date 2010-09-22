@@ -11,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.PhoneLookup;
 
 public class CompatEclair extends CompatDonut {
 
@@ -28,6 +29,10 @@ public class CompatEclair extends CompatDonut {
 		COLUMN_PHONE_TYPE = String
 				.valueOf(ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
 		COLUMN_PHONE_ID_v16 = ContactsContract.CommonDataKinds.Phone._ID;
+		PHONE_LOOKUP_FILTER_URI = PhoneLookup.CONTENT_FILTER_URI;
+		PHONE_LOOKUP_NAME = PhoneLookup.DISPLAY_NAME;
+		PHONE_LOOKUP_NUMBER = PhoneLookup.NUMBER;
+
 		// COLUMN_PHONE_PHOTO_ID = ContactsContract.Contacts.PHOTO_ID;
 		// COLUMN_PHONE_DATA = ContactsContract.Data.DATA15;
 		// DATA_URI = ContactsContract.Data.CONTENT_URI;

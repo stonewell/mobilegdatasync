@@ -85,7 +85,7 @@ public class AddFromCallLogView extends Activity implements
 
 					if (PhoneNumberManager.getIntance(this).isInBlacklist(
 							number)) {
-					} else if (containsNumber(number) != -1) {
+					} else if (AddBlackListNumberView.indexOfSelectedNumber(number) >= 0) {
 						mCheckState.add(new CallLogItem(mCursor.getPosition(), PhoneNumberHelpers.CHECK_ON));
 
 						mCurrentCheckOnItemCount++;
@@ -163,7 +163,7 @@ public class AddFromCallLogView extends Activity implements
 
 			int pos;
 
-			if ((pos = containsNumber(number)) != -1) {
+			if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
 				AddBlackListNumberView.mSelectedNumbers.remove(pos);
 				AddBlackListNumberView.mSelectedNames.remove(pos);
 			}
@@ -207,7 +207,7 @@ public class AddFromCallLogView extends Activity implements
 						name = "";
 					}
 
-					if (containsNumber(number) == -1) {
+					if (AddBlackListNumberView.indexOfSelectedNumber(number) == -1) {
 						AddBlackListNumberView.mSelectedNumbers.add(number);
 						AddBlackListNumberView.mSelectedNames.add(name);
 					}
@@ -283,7 +283,7 @@ public class AddFromCallLogView extends Activity implements
 
 							int pos;
 
-							if ((pos = containsNumber(number)) != -1) {
+							if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
 								AddBlackListNumberView.mSelectedNumbers
 										.remove(pos);
 								AddBlackListNumberView.mSelectedNames
@@ -354,17 +354,6 @@ public class AddFromCallLogView extends Activity implements
 		} catch (Exception ex) {
 		}
 
-	}
-
-	private int containsNumber(String number) {
-		for (int i = 0; i < AddBlackListNumberView.mSelectedNumbers.size(); i++) {
-			if (PhoneNumberManager.getIntance(this).cmpNumber(number,
-					AddBlackListNumberView.mSelectedNumbers.get(i))) {
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	@Override

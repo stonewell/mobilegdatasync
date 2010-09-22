@@ -20,12 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.ToastShowWaitHandler;
 
-public class AddBlackListNumberView extends Activity implements OnClickListener,
-		OnCheckedChangeListener {
+public class AddBlackListNumberView extends Activity implements
+		OnClickListener, OnCheckedChangeListener {
 
 	private ToastShowWaitHandler toastShowWaitHandler = new ToastShowWaitHandler();
 
@@ -65,8 +64,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 			if (savedInstanceState != null) {
 				String[] numbers = savedInstanceState
 						.getStringArray("selected_numbers");
-				String[] names = savedInstanceState
-						.getStringArray("selected_names");
+				String[] names = savedInstanceState.getStringArray("selected_names");
 
 				for (int i = 0; i < numbers.length; i++) {
 					mSelectedNumbers.add(numbers[i]);
@@ -163,24 +161,19 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 						.setMessage(R.string.alert_dialog_two_buttons_msg)
 						.setPositiveButton(R.string.btn_yes,
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int which) {
+									public void onClick(DialogInterface dialog, int which) {
 										CheckBox bs = (CheckBox) findViewById(R.id.sms_block_check_box);
 
 										mIsRemoveFromContact = true;
 
 										String[] numbers = (String[]) mSelectedNumbers
-												.toArray(new String[mSelectedNumbers
-														.size()]);
+												.toArray(new String[mSelectedNumbers.size()]);
 										String[] names = (String[]) mSelectedNames
-												.toArray(new String[mSelectedNames
-														.size()]);
+												.toArray(new String[mSelectedNames.size()]);
 
 										Intent intent = new Intent();
-										intent.putExtra("added_numbers_result",
-												numbers);
-										intent.putExtra("added_names_result",
-												names);
+										intent.putExtra("added_numbers_result", numbers);
+										intent.putExtra("added_names_result", names);
 										// intent.putExtra("added_reply_sms_result",
 										// replySms);
 
@@ -190,8 +183,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 											intent.putExtra("sms_block", false);
 										}
 
-										intent.putExtra(
-												"is_remove_from_contact",
+										intent.putExtra("is_remove_from_contact",
 												mIsRemoveFromContact);
 
 										setResult(1, intent);
@@ -204,23 +196,18 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 								})
 						.setNegativeButton(R.string.btn_no,
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
+									public void onClick(DialogInterface dialog, int whichButton) {
 										CheckBox bs = (CheckBox) findViewById(R.id.sms_block_check_box);
 										mIsRemoveFromContact = false;
 
 										String[] numbers = (String[]) mSelectedNumbers
-												.toArray(new String[mSelectedNumbers
-														.size()]);
+												.toArray(new String[mSelectedNumbers.size()]);
 										String[] names = (String[]) mSelectedNames
-												.toArray(new String[mSelectedNames
-														.size()]);
+												.toArray(new String[mSelectedNames.size()]);
 
 										Intent intent = new Intent();
-										intent.putExtra("added_numbers_result",
-												numbers);
-										intent.putExtra("added_names_result",
-												names);
+										intent.putExtra("added_numbers_result", numbers);
+										intent.putExtra("added_names_result", names);
 
 										if (bs.isChecked()) {
 											intent.putExtra("sms_block", true);
@@ -228,8 +215,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 											intent.putExtra("sms_block", false);
 										}
 
-										intent.putExtra(
-												"is_remove_from_contact",
+										intent.putExtra("is_remove_from_contact",
 												mIsRemoveFromContact);
 
 										setResult(1, intent);
@@ -287,8 +273,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 			case 2: {
 				String[] deleteNumbers = data.getExtras().getStringArray(
 						"delete_numbers");
-				String[] deleteNames = data.getExtras().getStringArray(
-						"delete_names");
+				String[] deleteNames = data.getExtras().getStringArray("delete_names");
 
 				for (int i = 0; i < deleteNumbers.length; i++) {
 					mSelectedNumbers.remove(deleteNumbers[i]);
@@ -312,7 +297,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 						.getExtras().getString("input_return_number"));
 				String name = data.getExtras().getString("input_return_name");
 
-				if (!isContainsNumber(number)) {
+				if (!containsNumber(number)) {
 					mSelectedNumbers.add(number);
 					mSelectedNames.add(name);
 				}
@@ -337,22 +322,24 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 		}
 	}
 
-	private boolean isContainsNumber(String number) {
+	public static int indexOfSelectedNumber(String number) {
 		for (int i = 0; i < mSelectedNumbers.size(); i++) {
-			if (PhoneNumberManager.getIntance(this).cmpNumber(
-					mSelectedNumbers.get(i), number)) {
-				return true;
+			if (PhoneNumberHelpers.isSameNumber(mSelectedNumbers.get(i), number)) {
+				return i;
 			}
 		}
 
-		return false;
+		return -1;
+	}
+
+	public static boolean containsNumber(String number) {
+		return indexOfSelectedNumber(number) >= 0;
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 0, 0, R.string.showSelectedNumbers).setIcon(
-				this.getResources()
-						.getDrawable(android.R.drawable.ic_menu_more));
+				this.getResources().getDrawable(android.R.drawable.ic_menu_more));
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -383,8 +370,7 @@ public class AddBlackListNumberView extends Activity implements OnClickListener,
 
 	private boolean hasContactNumber() {
 		for (int i = 0; i < mSelectedNumbers.size(); i++) {
-			if (PhoneNumberManager.getIntance(this).isContact(
-					mSelectedNumbers.get(i))) {
+			if (PhoneNumberHelpers.isContact(this, mSelectedNumbers.get(i))) {
 				return true;
 			}
 		}

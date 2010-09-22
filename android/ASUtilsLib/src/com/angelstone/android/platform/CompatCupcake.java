@@ -27,6 +27,9 @@ public class CompatCupcake extends SysCompat {
 		COLUMN_PHONE_ID_v16 = Contacts.Phones._ID;
 		PHONE_TYPE = Contacts.Phones.TYPE;
 		COLUMN_PHONE_TYPE = String.valueOf(Contacts.Phones.TYPE_MOBILE);
+		PHONE_LOOKUP_FILTER_URI = Contacts.Phones.CONTENT_FILTER_URL;
+		PHONE_LOOKUP_NAME = Contacts.Phones.DISPLAY_NAME;
+		PHONE_LOOKUP_NUMBER = Contacts.Phones.NUMBER_KEY;
 		// COLUMN_PHONE_PHOTO_ID = Contacts.Photos._ID;
 		// COLUMN_PHONE_DATA = Contacts.Photos.DATA;
 		// DATA_URI = Contacts.Photos.CONTENT_URI;

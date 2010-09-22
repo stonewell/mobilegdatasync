@@ -18,7 +18,7 @@ import com.angelstone.android.utils.PhoneNumberHelpers;
 
 public class PhoneNumberManager {
 
-	private static final String DATABASE_NAME = "smrsblocker.db";
+	private static final String DATABASE_NAME = "smsblocker.db";
 	private static final String SETTING_TABLE = "setting";
 	private static final String LOG_TABLE = "event_logs";
 	private static final String BLACK_LIST_TABLE = "black_list";
@@ -30,7 +30,7 @@ public class PhoneNumberManager {
 	public static final String OPTION_ALLOW_CONTACTS = "sms_allow_contacts";
 
 	private SQLiteDatabase m_db = null;
-	private Context m_ctx = null;
+	public Context m_ctx = null;
 
 	private static PhoneNumberManager _intance = null;
 
@@ -76,40 +76,9 @@ public class PhoneNumberManager {
 		initDatabase();
 	}
 
-	public boolean cmpNumber(String num, String blnum) {
-		if (num == null || blnum == null) {
-			return false;
-		}
-
-		if (num.length() < 7 || blnum.length() < 7) {
-			if (num.equals(blnum)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		if (num.length() > blnum.length()) {
-			// must be appendix matching
-			// if (num.indexOf(blnum) != -1)
-			if (num.substring(num.length() - blnum.length()).compareTo(blnum) == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			// if (blnum.indexOf(num) != -1)
-			if (blnum.substring(blnum.length() - num.length()).compareTo(num) == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-	}
-
 	public PhoneNumberDisposition queryAction(String number) {
 		PhoneNumberDisposition disp = new PhoneNumberDisposition();
-		queryBlackList2(number, disp);
+		queryBlackList(number, disp);
 
 		return disp;
 	}
@@ -117,58 +86,26 @@ public class PhoneNumberManager {
 	public boolean isInBlacklist(String number) {
 		Cursor cur = null;
 
-		if (number.length() < 7) {
-			String whereString = "number = '" + number + "'";
-
+		try {
+			String whereString = PhoneNumberHelpers.buildNumberMatchQuery("?1",
+					"number", false);
 			cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number" },
-					whereString, null, null, null, null);
+					whereString, new String[] { number }, null, null, null);
 
+			Log.d(m_ctx.getString(R.string.app_name), "isInBlackList query where:"
+					+ whereString);
 			if (cur != null && cur.getCount() >= 1) {
-				cur.close();
-
 				return true;
 			}
-
+			return false;
+		} catch (Exception e) {
+			Log.e(m_ctx.getString(R.string.app_name), "isInBlackList query fail", e);
+			return false;
+		} finally {
 			if (cur != null) {
 				cur.close();
-			}
-		} else {
-			String whereString = "number LIKE '" + "%" + number + "'";
-
-			cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number" },
-					whereString, null, null, null, null);
-
-			if (cur != null && cur.getCount() >= 1) {
-				cur.close();
-
-				return true;
-			}
-
-			if (cur != null) {
-				cur.close();
-			}
-
-			for (int i = 0; i < number.length() - 7; i++) {
-				String tempNum = number.substring(i + 1);
-
-				whereString = "number = '" + tempNum + "'";
-
-				cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number" },
-						whereString, null, null, null, null);
-
-				if (cur != null && cur.getCount() >= 1) {
-					cur.close();
-
-					return true;
-				}
-
-				if (cur != null) {
-					cur.close();
-				}
 			}
 		}
-
-		return false;
 	}
 
 	public String[][] getBlacklistNumbers() {
@@ -208,45 +145,6 @@ public class PhoneNumberManager {
 			Log.e("PhoneNumberManager", e.getLocalizedMessage(), e);
 
 			return null;
-		}
-	}
-
-	public int getBlacklistNumbers(String name, String Numbers[]) {
-		Cursor cur = null;
-
-		try {
-			cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number" }, null, null,
-					null, null, null);
-
-			if (cur == null || cur.getCount() <= 0) {
-				if (cur != null) {
-					cur.close();
-				}
-				return -1;
-			}
-
-			cur.moveToFirst();
-			int i = 0;
-			int num_col_idx = cur.getColumnIndex("number");
-			while (!cur.isAfterLast()) {
-				if (i + 1 > Numbers.length) { // not enough space
-					break;
-				}
-				Numbers[i] = new String(cur.getString(num_col_idx));
-				i++;
-				cur.moveToNext();
-			}
-
-			cur.close();
-
-			return i;
-		} catch (Exception e) {
-			if (cur != null) {
-				cur.close();
-			}
-			Log.e("PhoneNumberManager", e.getLocalizedMessage(), e);
-
-			return -1;
 		}
 	}
 
@@ -581,13 +479,10 @@ public class PhoneNumberManager {
 		}
 	}
 
-	public EventLog[] getLogs(int Type, int Scope, int Block_Type) // Block_Type
-	// == 0 for
-	// blacklist,
-	// 1 for
-	// scene or
-	// keyword
-	{
+	// Block_Type
+	// 0 for blacklist,
+	// 1 for scene or keyword
+	public EventLog[] getLogs(int Type, int Scope, int Block_Type) {
 		boolean get_intercepted = (Scope & EventLog.LOG_SCOPE_INTERCEPTED) != 0;
 		boolean get_received = (Scope & EventLog.LOG_SCOPE_RECEIVED) != 0;
 
@@ -679,7 +574,7 @@ public class PhoneNumberManager {
 					String scene_name = cur.getString(idx_scene_or_keyword);
 					String reply_sms_txt = cur.getString(idx_reply_sms_txt);
 
-					number = Delete86String(number);
+					number = PhoneNumberHelpers.delete86String(number);
 
 					long time = Long.parseLong(cur.getString(idx_date));
 					logs[i] = new EventLog(number, Type, -1, time);
@@ -844,20 +739,6 @@ public class PhoneNumberManager {
 		return true;
 	}
 
-	public void deleteLog(EventLog log) {
-		String where_str = String.format("time='%d' and number='%s' and type='%d'",
-				log.getTime().getTime(), log.getNumber(), log.getType());
-		if (log.getType() == EventLog.LOG_TYPE_SMS) {
-			where_str += String.format(" and sms_text='%s'", log.getSmsTxt());
-		}
-		m_db.delete(LOG_TABLE, where_str, null);
-	}
-
-	public void deleteLogs(int Type) {
-		String where_str = getTypeWhereStr(Type);
-		m_db.delete(LOG_TABLE, where_str, null);
-	}
-
 	public void deleteLogs(int Type, int Block_Type) {
 		String where_str = getTypeWhereStr(Type);
 
@@ -883,112 +764,6 @@ public class PhoneNumberManager {
 		writeSetting(PhoneNumberManager.OPTION_ALLOW_CONTACTS, true);
 	}
 
-	public String[] blacklistItem(String phoneNum) {
-		String[][] blnums = getBlacklistNumbers();
-		if (blnums != null) {
-			for (int i = 0; i < blnums.length; i++) {
-				if (cmpNumber(phoneNum, blnums[i][0]))
-					return blnums[i];
-			}
-		}
-		return null;
-	}
-
-	public boolean isBlacklisted(String phoneNum) {
-		return blacklistItem(phoneNum) != null;
-	}
-
-	public boolean isContact(String phoneNum) {
-		Cursor cur = null;
-
-		try {
-			phoneNum = this.Delete86String(phoneNum);
-
-			cur = m_ctx.getContentResolver().query(
-					SmsBlocker.getSysCompat(m_ctx).PHONE_URI,
-					new String[] { SmsBlocker.getSysCompat(m_ctx).COLUMN_PHONE_NUMBER,
-							SmsBlocker.getSysCompat(m_ctx).COLUMN_PHONE_NAME }, null, null,
-					null);
-
-			if (cur != null && cur.getCount() > 0) {
-				// int contact_id = -1;
-
-				cur.moveToFirst();
-				while (!cur.isAfterLast()) {
-					String tempNumber = cur.getString(cur.getColumnIndex(SmsBlocker
-							.getSysCompat(m_ctx).COLUMN_PHONE_NUMBER));
-					tempNumber = PhoneNumberHelpers.removeNonNumbericChar(tempNumber);
-					tempNumber = this.Delete86String(tempNumber);
-
-					if (cmpNumber(tempNumber, phoneNum)) {
-						cur.close();
-						return true;
-					}
-					cur.moveToNext();
-				}
-			}
-			if (cur != null)
-				cur.close();
-
-			return false;
-		} catch (Exception e) {
-			if (cur != null) {
-				cur.close();
-			}
-
-			Log.e("PhoneNumberManager", e.getLocalizedMessage(), e);
-
-			return false;
-		}
-	}
-
-	public String getContactName(String phoneNum) {
-		Cursor cur = null;
-
-		try {
-			phoneNum = this.Delete86String(phoneNum);
-
-			cur = m_ctx.getContentResolver().query(
-					SmsBlocker.getSysCompat(m_ctx).PHONE_URI,
-					new String[] { SmsBlocker.getSysCompat(m_ctx).COLUMN_PHONE_NUMBER,
-							SmsBlocker.getSysCompat(m_ctx).COLUMN_PHONE_NAME }, null, null,
-					null);
-
-			if (cur != null && cur.getCount() > 0) {
-				// int contact_id = -1;
-
-				cur.moveToFirst();
-				while (!cur.isAfterLast()) {
-					String tempNumber = cur.getString(cur.getColumnIndex(SmsBlocker
-							.getSysCompat(m_ctx).COLUMN_PHONE_NUMBER));
-					tempNumber = PhoneNumberHelpers.removeNonNumbericChar(tempNumber);
-					tempNumber = this.Delete86String(tempNumber);
-
-					if (cmpNumber(tempNumber, phoneNum)) {
-						String ret = null;
-						ret = cur.getString(cur.getColumnIndex(SmsBlocker
-								.getSysCompat(m_ctx).COLUMN_PHONE_NAME));
-						cur.close();
-						return ret;
-					}
-					cur.moveToNext();
-				}
-			}
-			if (cur != null)
-				cur.close();
-
-			return null;
-		} catch (Exception e) {
-			if (cur != null) {
-				cur.close();
-			}
-
-			Log.e("PhoneNumberManager", e.getLocalizedMessage(), e);
-
-			return null;
-		}
-	}
-
 	public String getNameById(int Contact_id) {
 		Cursor cursor = m_ctx.getContentResolver().query(
 				SmsBlocker.getSysCompat(m_ctx).CONTACT_URI,
@@ -1009,72 +784,6 @@ public class PhoneNumberManager {
 		}
 
 		return null;
-	}
-
-	public String getNameByNumber(String number) {
-		Cursor cursor = null;
-
-		try {
-
-			cursor = m_ctx.getContentResolver().query(
-					SmsBlocker.getSysCompat(m_ctx).PHONE_URI,
-					new String[] { SmsBlocker.getSysCompat(m_ctx).COLUMN_PHONE_NUMBER,
-							SmsBlocker.getSysCompat(m_ctx).COLUMN_PHONE_NAME }, null, null,
-					null);
-
-			number = this.Delete86String(number);
-			number = PhoneNumberHelpers.removeNonNumbericChar(number);
-
-			if (cursor != null && cursor.getCount() != 0) {
-				cursor.moveToFirst();
-				while (!cursor.isAfterLast()) {
-					String ContactNum = cursor.getString(cursor.getColumnIndex(SmsBlocker
-							.getSysCompat(m_ctx).COLUMN_PHONE_NUMBER));
-					ContactNum = PhoneNumberHelpers.removeNonNumbericChar(ContactNum);
-					ContactNum = this.Delete86String(ContactNum);
-
-					if (this.cmpNumber(number, ContactNum)) {
-						String name = cursor.getString(cursor.getColumnIndex(SmsBlocker
-								.getSysCompat(m_ctx).COLUMN_PHONE_NAME));
-						cursor.close();
-
-						name = name.replace("-", "");
-						name = this.Delete86String(name);
-
-						if (!name.equals(ContactNum)) {
-							return name;
-						} else {
-							return null;
-						}
-					}
-
-					cursor.moveToNext();
-				}
-
-			}
-
-			if (cursor != null) {
-				cursor.close();
-			}
-			return null;
-		} catch (Exception e) {
-			if (cursor != null) {
-				cursor.close();
-			}
-
-			Log.e("PhoneNumberManager", e.getLocalizedMessage(), e);
-
-			return null;
-		}
-	}
-
-	private String Delete86String(String number) {
-		int pos = number.indexOf("+86");
-
-		if (pos != -1) {
-			number = number.substring(pos + 3, number.length());
-		}
-		return number;
 	}
 
 	public boolean isBlBlockCall(String number) {
@@ -1155,74 +864,42 @@ public class PhoneNumberManager {
 		Cursor cur = null;
 
 		try {
+			phoneNumber = PhoneNumberHelpers.delete86String(phoneNumber);
+			phoneNumber = PhoneNumberHelpers.removeNonNumbericChar(phoneNumber);
+
+			String whereString = PhoneNumberHelpers.buildNumberMatchQuery("?1",
+					"number", false);
 
 			cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number", "tag" },
-					null, null, null, null, null);
+					whereString, new String[] { phoneNumber }, null, null, null);
 
 			if (cur == null || cur.getCount() == 0) {
-				if (cur != null) {
-					cur.close();
-				}
-
 				return null;
 			}
 
 			cur.moveToFirst();
 
-			phoneNumber = this.Delete86String(phoneNumber);
-
-			while (!cur.isAfterLast()) {
-				String number = cur.getString(cur.getColumnIndex("number"));
-
-				if (cmpNumber(phoneNumber, number)) {
-					String tag = cur.getString(cur.getColumnIndex("tag"));
-					cur.close();
-					return tag;
-				}
-				cur.moveToNext();
-			}
-			cur.close();
-
-			return null;
+			return cur.getString(cur.getColumnIndex("tag"));
 		} catch (Exception e) {
-			if (cur != null) {
-				cur.close();
-			}
-
 			Log.e("PhoneNumberManager", e.getLocalizedMessage(), e);
 
 			return null;
+		} finally {
+			if (cur != null)
+				cur.close();
 		}
 	}
 
-	public boolean matchNumber(String number,
-			String saved_number) {
-
-		if (number.length() < 7 && saved_number.equals(number)) {
-			return true;
-		} else if (number.length() >= 7) {
-			if (saved_number.endsWith(number)) {
-				return true;
-			}
-			
-			if (saved_number.length() >= 7 && number.endsWith(saved_number)) {
-				return true;
-			}
-		}
-		
-		if (number.startsWith(saved_number)) {
-			return true;
-		}
-		
-		return false;
-	}
-
-	public void queryBlackList2(String number, PhoneNumberDisposition disp) {
+	public void queryBlackList(String number, PhoneNumberDisposition disp) {
 		Cursor cur = null;
 
 		try {
+			String whereString = PhoneNumberHelpers.buildNumberMatchQuery("?1",
+					"number", true);
+
 			cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number", "block_call",
-					"block_sms", "tag" }, null, null, null, null, "block_sms asc, number desc");
+					"block_sms", "tag" }, whereString, new String[] { number }, null,
+					null, "block_sms asc, number desc");
 
 			if (cur == null || cur.getCount() <= 0) {
 
@@ -1234,32 +911,24 @@ public class PhoneNumberManager {
 
 			cur.moveToFirst();
 
-			while (!cur.isAfterLast()) {
-				String saved_number = cur.getString(cur.getColumnIndex("number"));
+			int block_call = cur.getInt(cur.getColumnIndex("block_call"));
+			int block_sms = cur.getInt(cur.getColumnIndex("block_sms"));
 
-				if (matchNumber(number, saved_number)) {
-					int block_call = cur.getInt(cur.getColumnIndex("block_call"));
-					int block_sms = cur.getInt(cur.getColumnIndex("block_sms"));
-					
-					if (block_call == 1) {
-						disp.m_CallAction = PhoneNumberDisposition.CALL_REJECT;
-					} else {
-						disp.m_CallAction = PhoneNumberDisposition.CALL_ACCEPT;
-					}
+			if (block_call == 1) {
+				disp.m_CallAction = PhoneNumberDisposition.CALL_REJECT;
+			} else {
+				disp.m_CallAction = PhoneNumberDisposition.CALL_ACCEPT;
+			}
 
-					if (block_sms == 1) {
-						disp.m_SmsAction = PhoneNumberDisposition.SMS_REJECT;
-					} else {
-						disp.m_SmsAction = PhoneNumberDisposition.SMS_ACCEPT;
-					}
+			if (block_sms == 1) {
+				disp.m_SmsAction = PhoneNumberDisposition.SMS_REJECT;
+			} else {
+				disp.m_SmsAction = PhoneNumberDisposition.SMS_ACCEPT;
+			}
 
-					disp.m_ReplySms = null;
-					return;
-				}// if
-
-				cur.moveToNext();
-			}// while
+			disp.m_ReplySms = null;
 		} catch (Exception e) {
+			Log.e(m_ctx.getString(R.string.app_name), "queryBlackList fail", e);
 			ActivityLog.logError(m_ctx, m_ctx.getString(R.string.app_name),
 					e.getLocalizedMessage());
 			disp.m_CallAction = PhoneNumberDisposition.CALL_ACCEPT;
@@ -1268,7 +937,6 @@ public class PhoneNumberManager {
 			if (cur != null) {
 				cur.close();
 			}
-		}//try
+		}// try
 	}
-
 }
