@@ -27,6 +27,7 @@ import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.smsblocker.store.EventLog;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 import com.angelstone.android.utils.PhoneNumberHelpers;
+import com.angelstone.android.utils.SmsHelper;
 
 public class RejectedSmsLogView extends Activity implements
 		OnItemLongClickListener, OnItemClickListener, OnClickListener {
@@ -48,7 +49,7 @@ public class RejectedSmsLogView extends Activity implements
 
 			mPhoneNumberManager = PhoneNumberManager.getIntance(this);
 			mLogCursor = mPhoneNumberManager
-					.getCallRejectLogCursor(EventLog.SMS_LOG_BLOCK_TYPE_BL);
+					.getEventLogCursor(EventLog.SMS_LOG_BLOCK_TYPE_BL);
 			startManagingCursor(mLogCursor);
 
 			lv = (ListView) this.findViewById(R.id.reject_log_list);
@@ -118,7 +119,8 @@ public class RejectedSmsLogView extends Activity implements
 	}
 
 	private void setNotASpam() {
-		final String number = mLogCursor.getString(mLogCursor.getColumnIndex("number"));
+		final String number = mLogCursor.getString(mLogCursor
+				.getColumnIndex("number"));
 		String text = MessageFormat.format(
 				getString(R.string.add_number_to_allow_list), number);
 		AlertDialog ad = new AlertDialog.Builder(this)
@@ -128,16 +130,17 @@ public class RejectedSmsLogView extends Activity implements
 				.setPositiveButton(R.string.alert_dialog_ok,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int whichButton) {
-								String realnumber=
-									PhoneNumberHelpers.removeNonNumbericChar(number);
+								String realnumber = PhoneNumberHelpers
+										.removeNonNumbericChar(number);
 								if (mPhoneNumberManager.isInBlacklist(realnumber)) {
-									mPhoneNumberManager.blacklistUpdateNumber(realnumber, false, false, "");
+									mPhoneNumberManager.blacklistUpdateNumber(realnumber, false,
+											false, "");
 								} else {
-									mPhoneNumberManager.blacklistAddNumber(realnumber, false, false, "");
+									mPhoneNumberManager.blacklistAddNumber(realnumber, false,
+											false, "");
 								}
 
-								//TODO:Copy sms to sms inbox
-								mPhoneNumberManager.deleteLog(mLogCursor, mPosition);
+								clearNotSpamLogs(number);
 
 								mLogCursor.requery();
 							}
@@ -149,6 +152,26 @@ public class RejectedSmsLogView extends Activity implements
 							}
 						}).create();
 		ad.show();
+	}
+
+	private void clearNotSpamLogs(String number) {
+		Cursor cur = mPhoneNumberManager.getEventLogCursor(
+				EventLog.SMS_LOG_BLOCK_TYPE_BL, "number='" + number + "'");
+		try {
+			int bodyIndex = cur.getColumnIndex("sms_text");
+			int timeIndex = cur.getColumnIndex("time");
+			while (cur.moveToNext()) {
+				String body = cur.getString(bodyIndex);
+				long date = Long.parseLong(cur.getString(timeIndex));
+
+				SmsHelper.sendToSmsInbox(this, number, body, date);
+			}
+
+			mPhoneNumberManager.deleteLogs(EventLog.LOG_TYPE_SMS,
+					EventLog.SMS_LOG_BLOCK_TYPE_BL, "number='" + number + "'");
+		} finally {
+			cur.close();
+		}
 	}
 
 	@Override

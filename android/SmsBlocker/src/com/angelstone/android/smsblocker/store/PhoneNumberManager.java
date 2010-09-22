@@ -107,7 +107,7 @@ public class PhoneNumberManager {
 
 		try {
 			cur = m_db.query(BLACK_LIST_TABLE, new String[] { "number", "block_call",
-					"block_sms", "tag" }, null, null, null, null, null);
+					"block_sms", "tag" }, null, null, null, null, "block_sms asc, number asc");
 			if (cur == null || cur.getCount() <= 0) {
 				if (cur != null) {
 					cur.close();
@@ -706,8 +706,16 @@ public class PhoneNumberManager {
 
 	}
 
-	public Cursor getCallRejectLogCursor(int Block_Type) {
+	public Cursor getEventLogCursor(int Block_Type) {
+		return getEventLogCursor(Block_Type, null);
+	}
+
+	public Cursor getEventLogCursor(int Block_Type, String where) {
 		String where_str = "block_type='" + Block_Type + "'";
+		
+		if (where != null && where.trim().length() > 0) {
+			where_str += " and (" + where + ")";
+		}
 
 		Cursor cur = m_db.query(LOG_TABLE, null, where_str, null, null, null,
 				"time DESC");
@@ -734,9 +742,17 @@ public class PhoneNumberManager {
 	}
 
 	public void deleteLogs(int Type, int Block_Type) {
+		deleteLogs(Type, Block_Type, null);
+	}
+
+	public void deleteLogs(int Type, int Block_Type, String where) {
 		String where_str = getTypeWhereStr(Type);
 
 		where_str += " and block_type = '" + Block_Type + "'";
+		
+		if (where != null && where.trim().length() > 0) {
+			where_str += " and (" + where + ")";
+		}
 
 		m_db.delete(LOG_TABLE, where_str, null);
 	}
