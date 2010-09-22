@@ -52,10 +52,11 @@ public class AddFromSmsRecordView extends Activity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.add_from_sms_record_view_layout);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.add_from_sms_record_view_layout);
 
+		PhoneNumberManager pnm = PhoneNumberManager.getIntance(this);
+		try {
 			mTempNumberList.addAll(AddBlackListNumberView.mSelectedNumbers);
 			mTempNameList.addAll(AddBlackListNumberView.mSelectedNames);
 
@@ -92,7 +93,7 @@ public class AddFromSmsRecordView extends Activity implements
 
 				map.put("body", body);
 
-				if (isInBlacklist(number)) {
+				if (pnm.isInBlacklist(number)) {
 					map.put("checkImg", R.drawable.btn_check_off_disable);
 					mCheckState[mCursor.getPosition()] = PhoneNumberHelpers.CHECK_DISABLE;
 				} else if (AddBlackListNumberView.indexOfSelectedNumber(number) != -1) {
@@ -152,6 +153,8 @@ public class AddFromSmsRecordView extends Activity implements
 
 		} catch (Exception e) {
 			Log.d("scfw", "AddFromSmsRecordView:" + e.getClass().toString());
+		} finally {
+			pnm.close();
 		}
 	}
 
@@ -322,10 +325,6 @@ public class AddFromSmsRecordView extends Activity implements
 			break;
 		}
 
-	}
-
-	private boolean isInBlacklist(String number) {
-		return PhoneNumberManager.getIntance(this).isInBlacklist(number);
 	}
 
 	private Handler handler = new Handler() {

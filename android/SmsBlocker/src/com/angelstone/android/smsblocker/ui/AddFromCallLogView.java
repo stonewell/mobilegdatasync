@@ -36,7 +36,7 @@ public class AddFromCallLogView extends Activity implements
 	private Cursor mCursor = null;
 
 	private static ToastShowWaitHandler mToastShowWaitHandler = new ToastShowWaitHandler();
-	private ArrayList<CallLogItem> mCheckState = new ArrayList<CallLogItem>() ;
+	private ArrayList<CallLogItem> mCheckState = new ArrayList<CallLogItem>();
 
 	private ProgressDialog mDialog;
 
@@ -48,20 +48,21 @@ public class AddFromCallLogView extends Activity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.add_from_call_record_view_layout);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.add_from_call_record_view_layout);
 
+		PhoneNumberManager pnm = PhoneNumberManager.getIntance(this);
+
+		try {
 			mTempNumberList.addAll(AddBlackListNumberView.mSelectedNumbers);
 			mTempNameList.addAll(AddBlackListNumberView.mSelectedNames);
 
-			mCursor = getContentResolver().query(CallLog.Calls.CONTENT_URI,
-					null, null, null, CallLog.Calls.DEFAULT_SORT_ORDER);
+			mCursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
+					null, null, CallLog.Calls.DEFAULT_SORT_ORDER);
 			startManagingCursor(mCursor);
 
 			mCursor.moveToFirst();
-			ListView listView = (ListView) this
-					.findViewById(R.id.call_record_list);
+			ListView listView = (ListView) this.findViewById(R.id.call_record_list);
 
 			CheckBox chkBox = (CheckBox) findViewById(R.id.call_record_check_box);
 			chkBox.setOnClickListener(this);
@@ -74,24 +75,24 @@ public class AddFromCallLogView extends Activity implements
 				listView.setAdapter(null);
 				chkBox.setEnabled(false);
 			} else {
-				mCursor.moveToFirst(); 
+				mCursor.moveToFirst();
 				int mNumberColIndex = mCursor
 						.getColumnIndexOrThrow(CallLog.Calls.NUMBER);
 
 				while (!mCursor.isAfterLast()) {
-					String number = PhoneNumberHelpers
-							.removeNonNumbericChar(mCursor
-									.getString(mNumberColIndex));
+					String number = PhoneNumberHelpers.removeNonNumbericChar(mCursor
+							.getString(mNumberColIndex));
 
-					if (PhoneNumberManager.getIntance(this).isInBlacklist(
-							number)) {
+					if (pnm.isInBlacklist(number)) {
 					} else if (AddBlackListNumberView.indexOfSelectedNumber(number) >= 0) {
-						mCheckState.add(new CallLogItem(mCursor.getPosition(), PhoneNumberHelpers.CHECK_ON));
+						mCheckState.add(new CallLogItem(mCursor.getPosition(),
+								PhoneNumberHelpers.CHECK_ON));
 
 						mCurrentCheckOnItemCount++;
 						mAllCheckAllowedItemCount++;
 					} else {
-						mCheckState.add(new CallLogItem(mCursor.getPosition(), PhoneNumberHelpers.CHECK_OFF));
+						mCheckState.add(new CallLogItem(mCursor.getPosition(),
+								PhoneNumberHelpers.CHECK_OFF));
 
 						mAllCheckAllowedItemCount++;
 
@@ -126,6 +127,8 @@ public class AddFromCallLogView extends Activity implements
 				mCursor.close();
 			}
 			Log.d("scfw", "AddFromCallRecordView:" + e.getClass().toString());
+		} finally {
+			pnm.close();
 		}
 	}
 
@@ -143,13 +146,12 @@ public class AddFromCallLogView extends Activity implements
 		ImageView iv = (ImageView) view
 				.findViewById(R.id.call_record_list_item_check_img);
 
-		TextView tv = (TextView) view
-				.findViewById(R.id.call_record_phonenumber);
-		String number = PhoneNumberHelpers.removeNonNumbericChar(String
-				.valueOf(tv.getText()));
+		TextView tv = (TextView) view.findViewById(R.id.call_record_phonenumber);
+		String number = PhoneNumberHelpers.removeNonNumbericChar(String.valueOf(tv
+				.getText()));
 
 		CallLogItem item = mCheckState.get(position);
-		
+
 		if (item.CheckState == PhoneNumberHelpers.CHECK_OFF) {
 			iv.setImageResource(R.drawable.btn_check_on);
 			item.CheckState = PhoneNumberHelpers.CHECK_ON;
@@ -236,8 +238,7 @@ public class AddFromCallLogView extends Activity implements
 						for (int i = 0; i < mCheckState.size(); i++) {
 							ListView listView = (ListView) findViewById(R.id.call_record_list);
 
-							View view = listView.getAdapter().getView(i, null,
-									null);
+							View view = listView.getAdapter().getView(i, null, null);
 							ImageView iv = (ImageView) view
 									.findViewById(R.id.call_record_list_item_check_img);
 							iv.setImageResource(R.drawable.btn_check_on);
@@ -268,8 +269,7 @@ public class AddFromCallLogView extends Activity implements
 						for (int i = 0; i < mCheckState.size(); i++) {
 							ListView listView = (ListView) findViewById(R.id.call_record_list);
 
-							View view = listView.getAdapter().getView(i, null,
-									null);
+							View view = listView.getAdapter().getView(i, null, null);
 							ImageView iv = (ImageView) view
 									.findViewById(R.id.call_record_list_item_check_img);
 							iv.setImageResource(R.drawable.btn_check_off);
@@ -277,17 +277,14 @@ public class AddFromCallLogView extends Activity implements
 
 							TextView tv = (TextView) view
 									.findViewById(R.id.call_record_phonenumber);
-							String number = PhoneNumberHelpers
-									.removeNonNumbericChar(String.valueOf(tv
-											.getText()));
+							String number = PhoneNumberHelpers.removeNonNumbericChar(String
+									.valueOf(tv.getText()));
 
 							int pos;
 
 							if ((pos = AddBlackListNumberView.indexOfSelectedNumber(number)) != -1) {
-								AddBlackListNumberView.mSelectedNumbers
-										.remove(pos);
-								AddBlackListNumberView.mSelectedNames
-										.remove(pos);
+								AddBlackListNumberView.mSelectedNumbers.remove(pos);
+								AddBlackListNumberView.mSelectedNames.remove(pos);
 							}
 
 						}
@@ -326,8 +323,7 @@ public class AddFromCallLogView extends Activity implements
 			} else {
 				mDialog.dismiss();
 				ListView listView = (ListView) findViewById(R.id.call_record_list);
-				((ResourceCursorAdapter) listView.getAdapter())
-						.notifyDataSetChanged();
+				((ResourceCursorAdapter) listView.getAdapter()).notifyDataSetChanged();
 			}
 		}
 

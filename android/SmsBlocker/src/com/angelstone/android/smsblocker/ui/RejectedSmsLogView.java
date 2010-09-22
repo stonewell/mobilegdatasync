@@ -31,6 +31,7 @@ public class RejectedSmsLogView extends Activity implements
 	private ListView lv = null;
 
 	private Cursor mLogCursor;
+	private PhoneNumberManager mPhoneNumberManager;
 
 	public static final int CLEAR_CALL_LOG = 1;
 
@@ -42,8 +43,9 @@ public class RejectedSmsLogView extends Activity implements
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.reject_log_view_layout);
 
-			mLogCursor = PhoneNumberManager.getIntance(this).getCallRejectLogCursor(
-					EventLog.SMS_LOG_BLOCK_TYPE_BL);
+			mPhoneNumberManager = PhoneNumberManager.getIntance(this);
+			mLogCursor = mPhoneNumberManager
+					.getCallRejectLogCursor(EventLog.SMS_LOG_BLOCK_TYPE_BL);
 			startManagingCursor(mLogCursor);
 
 			lv = (ListView) this.findViewById(R.id.reject_log_list);
@@ -59,6 +61,7 @@ public class RejectedSmsLogView extends Activity implements
 	}
 
 	protected void onDestroy() {
+		mPhoneNumberManager.close();
 		super.onDestroy();
 	}
 
@@ -85,8 +88,7 @@ public class RejectedSmsLogView extends Activity implements
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int whichButton) {
-									PhoneNumberManager.getIntance(RejectedSmsLogView.this)
-											.deleteLog(mLogCursor, mPosition);
+									mPhoneNumberManager.deleteLog(mLogCursor, mPosition);
 
 									mLogCursor.requery();
 								}

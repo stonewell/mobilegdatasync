@@ -13,29 +13,32 @@ import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 
 public class RejectedSmsBodyView extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_LEFT_ICON);
+		setContentView(R.layout.reject_sms_body_show_layout);
+		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
+				android.R.drawable.ic_menu_more);
+
 		try {
-
-			super.onCreate(savedInstanceState);
-			requestWindowFeature(Window.FEATURE_LEFT_ICON);
-
 			Bundle bundle = this.getIntent().getExtras();
 			int pos = bundle.getInt("click_pos");
 
 			EventLog[] logs = null;
 
-			logs = PhoneNumberManager.getIntance(this).getLogs(
-					EventLog.LOG_TYPE_SMS, EventLog.LOG_SCOPE_INTERCEPTED, 0);
-			this.setContentView(R.layout.reject_sms_body_show_layout);
-
-			getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
-					android.R.drawable.ic_menu_more);
+			PhoneNumberManager db = PhoneNumberManager.getIntance(this);
+			try {
+				logs = db.getLogs(EventLog.LOG_TYPE_SMS,
+						EventLog.LOG_SCOPE_INTERCEPTED, 0);
+			} finally {
+				db.close();
+			}
 
 			String number = logs[pos].getNumber();
 			String body = logs[pos].getSmsTxt();
 
 			String timeStr = DateUtils.formatDateTime(this, logs[pos].getTime()
-					.getTime(), DateUtils.FORMAT_SHOW_DATE
-					| DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_ALL);
+					.getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME
+					| DateUtils.FORMAT_ABBREV_ALL);
 
 			String tag_or_name = logs[pos].getTagOrName();
 

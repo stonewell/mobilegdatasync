@@ -11,8 +11,8 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.util.Log;
 
+import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.SmsBlocker;
 import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 
@@ -30,7 +30,8 @@ public class PhoneNumberManager {
 	public static final String OPTION_ALLOW_CONTACTS = "sms_allow_contacts";
 
 	private SQLiteDatabase m_db = null;
-	public Context m_ctx = null;
+	private SysCompat m_sc = null;
+	private Context m_ctx = null;
 
 	private static PhoneNumberManager _intance = null;
 
@@ -40,39 +41,32 @@ public class PhoneNumberManager {
 		call_log, sms_log, both_log
 	};
 
-	public void close() {
+	public synchronized void close() {
 		if (refcount == 0) {
 			if (m_db != null) {
 				m_db.close();
+				m_db = null;
 			}
 
 			_intance = null;
 		} else {
-			synchronized (_intance) {
-				refcount--;
-			}
+			refcount--;
 		}
 	}
 
-	public static PhoneNumberManager getIntance(Context ctx) {
+	public static synchronized PhoneNumberManager getIntance(Context ctx) {
 		if (_intance == null) {
-			String lockStr = "lock";
-			synchronized (lockStr) {
-				if (_intance == null) {
-					_intance = new PhoneNumberManager(ctx);
-				}
-			}
+			_intance = new PhoneNumberManager(ctx);
 		}
 
-		synchronized (_intance) {
-			refcount++;
-		}
+		refcount++;
 
 		return _intance;
 	}
 
 	private PhoneNumberManager(Context ctx) {
 		m_ctx = ctx;
+		m_sc = SysCompat.register(ctx);
 		initDatabase();
 	}
 
@@ -765,16 +759,14 @@ public class PhoneNumberManager {
 	}
 
 	public String getNameById(int Contact_id) {
-		Cursor cursor = m_ctx.getContentResolver().query(
-				SmsBlocker.getSysCompat(m_ctx).CONTACT_URI,
-				new String[] { SmsBlocker.getSysCompat(m_ctx).COLUMN_CONTACT_NAME },
-				SmsBlocker.getSysCompat(m_ctx).COLUMN_CONTACT_ID + " = '" + Contact_id
-						+ "'", null, null);
+		Cursor cursor = m_ctx.getContentResolver().query(m_sc.CONTACT_URI,
+				new String[] { m_sc.COLUMN_CONTACT_NAME },
+				m_sc.COLUMN_CONTACT_ID + " = '" + Contact_id + "'", null, null);
 
 		if (cursor != null && cursor.getCount() != 0) {
 			cursor.moveToFirst();
-			String name = cursor.getString(cursor.getColumnIndex(SmsBlocker
-					.getSysCompat(m_ctx).COLUMN_CONTACT_NAME));
+			String name = cursor.getString(cursor
+					.getColumnIndex(m_sc.COLUMN_CONTACT_NAME));
 			cursor.close();
 			return name;
 		}

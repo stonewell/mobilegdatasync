@@ -20,6 +20,8 @@ public class ClearWaitingDialog extends Activity {
 	private int mLogType;
 	private int mBlockType;
 
+	private PhoneNumberManager mPhoneNumberManager = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,6 +29,8 @@ public class ClearWaitingDialog extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.waiting_progress_bar);
+
+		mPhoneNumberManager = PhoneNumberManager.getIntance(this);
 
 		Bundle bundle = this.getIntent().getExtras();
 
@@ -46,9 +50,7 @@ public class ClearWaitingDialog extends Activity {
 			public void run() {
 				if (mClearType == BlackListManageRootView.CLEAR_BLACK_LIST_NUMBER) {
 					for (int i = 0; i < mClearDatas.length; i++) {
-						PhoneNumberManager.getIntance(
-								ClearWaitingDialog.this)
-								.blacklistDeleteNumber(mClearDatas[i]);
+						mPhoneNumberManager.blacklistDeleteNumber(mClearDatas[i]);
 
 					}
 
@@ -59,9 +61,7 @@ public class ClearWaitingDialog extends Activity {
 					msg.setData(msgdata);
 					handler.sendMessage(msg);
 				} else if (mClearType == RejectedSmsLogView.CLEAR_CALL_LOG) {
-					PhoneNumberManager.getIntance(
-							ClearWaitingDialog.this).deleteLogs(
-							mLogType, mBlockType);
+					mPhoneNumberManager.deleteLogs(mLogType, mBlockType);
 
 					Message msg = new Message();
 					Bundle msgdata = new Bundle();
@@ -108,6 +108,13 @@ public class ClearWaitingDialog extends Activity {
 			return super.onKeyDown(keyCode, event);
 		}
 
+	}
+
+	@Override
+	protected void onDestroy() {
+		mPhoneNumberManager.close();
+
+		super.onDestroy();
 	}
 
 	@Override

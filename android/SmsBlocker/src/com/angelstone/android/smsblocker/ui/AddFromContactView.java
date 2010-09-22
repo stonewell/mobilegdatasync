@@ -40,7 +40,6 @@ public class AddFromContactView extends Activity implements
 		OnItemClickListener, OnClickListener {
 	private int mNumberColIndex = 0;
 	private int mDisplayNameColIndex = 0;
-	// private int mNameColIndex = 0;
 
 	private List<Map<String, Object>> mList;
 
@@ -55,6 +54,8 @@ public class AddFromContactView extends Activity implements
 
 	private ArrayList<String> mTempNumberList = new ArrayList<String>();
 	private ArrayList<String> mTempNameList = new ArrayList<String>();
+	
+	private PhoneNumberManager mPhoneNumberManager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,8 @@ public class AddFromContactView extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_from_contact_view_layout);
 
+		mPhoneNumberManager = PhoneNumberManager.getIntance(this);
+		
 		mTempNumberList.addAll(AddBlackListNumberView.mSelectedNumbers);
 		mTempNameList.addAll(AddBlackListNumberView.mSelectedNames);
 
@@ -113,7 +116,7 @@ public class AddFromContactView extends Activity implements
 					map.put("display_name", "");
 				}
 
-				if (isInBlacklist(PhoneNumberHelpers.removeNonNumbericChar(cur
+				if (mPhoneNumberManager.isInBlacklist(PhoneNumberHelpers.removeNonNumbericChar(cur
 						.getString(mNumberColIndex)))) {
 					cur.moveToNext();
 					continue;
@@ -188,6 +191,12 @@ public class AddFromContactView extends Activity implements
 		}
 	}
 
+	@Override
+	protected void onDestroy() {
+		mPhoneNumberManager.close();
+		super.onDestroy();
+	}
+
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		Map<String, Object> item = (Map<String, Object>) mList.get(position);
 		String number = PhoneNumberHelpers.removeNonNumbericChar((String) item
@@ -228,10 +237,6 @@ public class AddFromContactView extends Activity implements
 			chkBox.setChecked(false);
 		}
 
-	}
-
-	private boolean isInBlacklist(String number) {
-		return PhoneNumberManager.getIntance(this).isInBlacklist(number);
 	}
 
 	@Override

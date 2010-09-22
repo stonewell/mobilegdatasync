@@ -63,14 +63,19 @@ public class InputBlNumberEditorView extends Activity implements
 				break;
 			}
 
-			if (PhoneNumberManager.getIntance(this).isInBlacklist(
-					PhoneNumberHelpers.removeNonNumbericChar(number))) {
-				if (toastShowWaitHandler.IsAllowShow()) {
-					Toast.makeText(this, R.string.TheNumberAlreadyExists,
-							Toast.LENGTH_SHORT).show();
+			PhoneNumberManager db = PhoneNumberManager.getIntance(this);
 
+			try {
+				if (db.isInBlacklist(PhoneNumberHelpers.removeNonNumbericChar(number))) {
+					if (toastShowWaitHandler.IsAllowShow()) {
+						Toast.makeText(this, R.string.TheNumberAlreadyExists,
+								Toast.LENGTH_SHORT).show();
+
+					}
+					break;
 				}
-				break;
+			} finally {
+				db.close();
 			}
 
 			/*
@@ -78,10 +83,9 @@ public class InputBlNumberEditorView extends Activity implements
 			 * PhoneNumberManager.getIntance(this).getBlacklistNumbers();
 			 * 
 			 * if (blnums != null) { for(int i = 0; i < blnums.length; i++) { if
-			 * (PhoneNumberManager.getIntance(this).cmpNumber(number,
-			 * blnums[i][0])) { if (toastShowWaitHandler.IsAllowShow()) {
-			 * Toast.makeText(this, R.string.TheNumberAlreadyExists,
-			 * Toast.LENGTH_SHORT).show(); return; }
+			 * (PhoneNumberManager.getIntance(this).cmpNumber(number, blnums[i][0])) {
+			 * if (toastShowWaitHandler.IsAllowShow()) { Toast.makeText(this,
+			 * R.string.TheNumberAlreadyExists, Toast.LENGTH_SHORT).show(); return; }
 			 * 
 			 * } } }
 			 */

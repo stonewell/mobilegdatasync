@@ -156,16 +156,12 @@ public class BlackListManageRootView extends Activity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		
-		db.close();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		db = PhoneNumberManager.getIntance(this);
-		
 		if (numlist.size() == 0) {
 			String[][] blNumbers = db.getBlacklistNumbers();
 			if (blNumbers != null) {
