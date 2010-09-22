@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -68,33 +67,7 @@ public class SmsBlockerMainActivity extends TabActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, 0, 0, R.string.About).setIcon(
-				this.getResources().getDrawable(R.drawable.ic_menu_about));
-		menu.add(0, 1, 0, R.string.Exit).setIcon(
-				this.getResources().getDrawable(R.drawable.ic_menu_exit));
-
 		return false;
-	}
-
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case 0: {
-			Intent intent = new Intent();
-			intent.setClass(this, SmsBlockerAboutView.class);
-			this.startActivity(intent);
-			return true;
-		}
-		case 1: {
-			finish();
-		}
-		default:
-			return true;
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
 	}
 
 	@Override

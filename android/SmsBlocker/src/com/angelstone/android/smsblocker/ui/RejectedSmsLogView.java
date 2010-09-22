@@ -1,5 +1,7 @@
 package com.angelstone.android.smsblocker.ui;
 
+import java.text.MessageFormat;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.smsblocker.store.EventLog;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
+import com.angelstone.android.utils.PhoneNumberHelpers;
 
 public class RejectedSmsLogView extends Activity implements
 		OnItemLongClickListener, OnItemClickListener, OnClickListener {
@@ -35,8 +38,8 @@ public class RejectedSmsLogView extends Activity implements
 
 	public static final int CLEAR_CALL_LOG = 1;
 
-	private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
-	private final int FC = ViewGroup.LayoutParams.FILL_PARENT;
+	private final static int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
+	private final static int FC = ViewGroup.LayoutParams.FILL_PARENT;
 
 	public void onCreate(Bundle savedInstanceState) {
 		try {
@@ -74,14 +77,19 @@ public class RejectedSmsLogView extends Activity implements
 
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		menu.add(0, 5, 5, R.string.Delete);
+		menu.add(0, 0, 0, R.string.allow_sms_from_number);
+		menu.add(0, 1, 1, R.string.Delete);
 		menu.setHeaderTitle(R.string.Menu);
 		super.onCreateContextMenu(menu, v, menuInfo);
 	}
 
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case 5: {
+		case 0: {
+			setNotASpam();
+			break;
+		}
+		case 1: {
 			AlertDialog ad = new AlertDialog.Builder(this)
 					.setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.alert_dialog_two_buttons_title)
@@ -103,11 +111,44 @@ public class RejectedSmsLogView extends Activity implements
 
 			break;
 		}
-		case 6:
 		default:
 			break;
 		}
 		return super.onContextItemSelected(item);
+	}
+
+	private void setNotASpam() {
+		final String number = mLogCursor.getString(mLogCursor.getColumnIndex("number"));
+		String text = MessageFormat.format(
+				getString(R.string.add_number_to_allow_list), number);
+		AlertDialog ad = new AlertDialog.Builder(this)
+				.setIcon(R.drawable.alert_dialog_icon)
+				.setTitle(R.string.allow_sms_from_number)
+				.setMessage(text)
+				.setPositiveButton(R.string.alert_dialog_ok,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								String realnumber=
+									PhoneNumberHelpers.removeNonNumbericChar(number);
+								if (mPhoneNumberManager.isInBlacklist(realnumber)) {
+									mPhoneNumberManager.blacklistUpdateNumber(realnumber, false, false, "");
+								} else {
+									mPhoneNumberManager.blacklistAddNumber(realnumber, false, false, "");
+								}
+
+								//TODO:Copy sms to sms inbox
+								mPhoneNumberManager.deleteLog(mLogCursor, mPosition);
+
+								mLogCursor.requery();
+							}
+						})
+				.setNegativeButton(R.string.alert_dialog_cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								/* User clicked Cancel so do some stuff */
+							}
+						}).create();
+		ad.show();
 	}
 
 	@Override
@@ -115,7 +156,7 @@ public class RejectedSmsLogView extends Activity implements
 
 		menu.clear();
 		menu.add(0, 0, 0, R.string.ClearAllRecords).setIcon(
-				this.getResources().getDrawable(R.drawable.ic_menu_delete));
+				this.getResources().getDrawable(android.R.drawable.ic_menu_delete));
 
 		if (mLogCursor != null) {
 			if (mLogCursor.getCount() == 0) {

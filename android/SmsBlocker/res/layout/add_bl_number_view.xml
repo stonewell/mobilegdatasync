@@ -55,23 +55,6 @@
 					android:layout_weight="1.0" android:gravity="center"
 					android:textSize="15sp" />
 			</LinearLayout>
-
-
-			<TextView android:id="@+id/add_bl_number_block_from_view"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:textSize="14sp" android:textStyle="bold"
-				android:layout_gravity="center_vertical" android:text="@string/add_bl_number_block_from_string" />
-
-
-			<LinearLayout android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:orientation="vertical"
-				android:paddingLeft="10dip" android:paddingRight="10dip">
-
-				<CheckBox android:id="@+id/sms_block_check_box"
-					android:text="@string/add_number_block_sms" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" android:textSize="15sp" />
-			</LinearLayout>
-
 		</LinearLayout>
 
 	</ScrollView>

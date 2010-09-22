@@ -18,39 +18,24 @@
 
 	<string name="check_btn_sms_allow_contacts">Do not block any number in contacts.</string>
 	<string name="app_name">Sms Blocker</string>
-	<string name="add_number_block_call">Block calls from selected number(s)</string>
 	<string name="add_number_block_sms">Block SMS from selected number(s)</string>
-	<string name="add_number_tag">Tag</string>
 
 	<string name="filter_reject_sms_content">Content</string>
 	<string name="filter_reject_sms_filter">Filter</string>
 
-	<string name="main_call_firewall">Sms Blocker</string>
 	<string name="main_copyright">Copyright(C) 2010 Angel &amp; Stone.</string>
 	<string name="main_allright">All rights reserved</string>
 
-	<string name="hungup_view_to_contact">To Contact</string>
-	<string name="hungup_view_to_black_list">To Block list</string>
-	<string name="hungup_view_to_white_list">To Allow list</string>
-
-	<string name="system_setting_filter_setting">SMS filter setting</string>
-
-	<string name="EnableSMSBlocking">Enable SMS Blocking</string>
-	<string name="EnableUnknownCallShowing">Enable Unknown Call Showing</string>
-	<string name="callfirewall">SMS Blocking</string>
-	<string name="blackListsText">Choose a block list item</string>
-	<string name="blNameStr">Block list Name:</string>
 	<string name="add_number_string">Add phone number to Block list</string>
 	<string name="phoneNumberStr">Phone number</string>
 	<string name="add_from_contact_string">Import from contacts</string>
 	<string name="add_from_call_record_string">Import from call log</string>
 	<string name="add_from_sms_record_string">Import from SMS log</string>
 	<string name="add_phone_number_from">Add phone number ...</string>
-	<string name="phone_number_list_string">Block List:</string>
+	<string name="phone_number_list_string">Sms Rules:</string>
 	<string name="alert_dialog_two_buttons_title">Confirm to delete?</string>
 	<string name="alert_dialog_ok">Confirm</string>
 	<string name="alert_dialog_cancel">Cancel</string>
-	<string name="block_option_text">Block Option</string>
 	<string name="reply_editor_ok_string">Confirm</string>
 	<string name="pls_select">Please select</string>
 	<string name="income_number_list_string">Incoming phone list</string>
@@ -61,11 +46,10 @@
 		you also want to remove them from your contacts list?</string>
 	<string name="NoRecord">No record.</string>
 	<string name="EmptyNumberIsNotAllowed">Empty number is not allowed.</string>
-	<string name="PleaseChooseBlockCallsOrMessages">Please choose block call or SMS.</string>
 	<string name="TheNumberAlreadyExists">The number is already in your block list.</string>
 	<string name="PleaseWait">Please wait...</string>
 	<string name="Setting">Setting</string>
-	<string name="Blacklist">Block List</string>
+	<string name="Blacklist">Sms Process Rules</string>
 	<string name="Log">Log</string>
 	<string name="About">About</string>
 	<string name="Exit">Exit</string>
@@ -91,7 +75,6 @@
 	<string name="input_number_dlg_title_string">Please Input Number</string>
 	<string name="input_number_title_string">Number</string>
 	<string name="input_name_title_string">Name</string>
-	<string name="add_bl_number_block_from_string">Actions:</string>
 	<string name="PleaseSelectOneNumberAtLeast">Please select at least one number.</string>
 	<string name="how_many_number_selected_string">number(s) selected</string>
 	<string name="nameNumberStr">Name</string>
@@ -106,11 +89,18 @@
 	</string>
 
 	<string name="bl_root_mgr_user_guide_string_1">
-		(Empty) \r\nYou don\'t have any numbers in your block list.\r\n\r\n 		
+		(Empty) \r\nYou don\'t have any numbers in your
+		block list.\r\n\r\n 		
 	</string>
 
 	<string name="bl_root_mgr_user_guide_string_2">
 		Click Add to start.
 	</string>
 	<string name="activity_log_title">Sms Blocker Log</string>
+	<string name="app_descrip">A Sms blocker application, using full number or prefix number matching</string>
+	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com.\n
+		Many thanks to Xiong Peng and YiFan.
+	"</string>
+	<string name="allow_sms_from_number">Not a Spam</string>
+	<string name="add_number_to_allow_list">Add {0} to allowed list?</string>
 </resources>

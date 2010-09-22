@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.angelstone.android.smsblocker" android:versionCode="1"
-	android:versionName="1.0">
+	package="com.angelstone.android.smsblocker" android:versionCode="2" android:versionName="1.0.1">
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -17,7 +16,7 @@
 		</receiver>
 
 		<activity android:name=".ui.SmsBlockerMainActivity"
-			android:label="@string/callfirewall">
+			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -25,28 +24,26 @@
 		</activity>
 
 		<activity android:name=".ui.BlackListManageRootView"
-			android:label="@string/callfirewall" android:configChanges="keyboardHidden|orientation" />
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
 
 		<activity android:name=".ui.AddFromContactView"
-			android:label="@string/callfirewall" android:configChanges="keyboardHidden|orientation" />
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
 		<activity android:name=".ui.AddFromCallLogView"
-			android:label="@string/callfirewall" android:configChanges="keyboardHidden|orientation" />
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
 		<activity android:name=".ui.AddFromSmsRecordView"
-			android:label="@string/callfirewall" android:configChanges="keyboardHidden|orientation" />
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
 		<activity android:name=".ui.RejectedSmsLogView"
-			android:label="@string/callfirewall" />
-		<activity android:name=".ui.SmsBlockerAboutView"
 			android:label="@string/app_name" />
 		<activity android:name=".ui.RejectedSmsBodyView"
 			android:label="@string/logDetailInfo" android:theme="@android:style/Theme.Dialog" />
 
 		<activity android:name=".ui.AddBlackListNumberView"
-			android:label="@string/callfirewall" android:windowSoftInputMode="stateHidden|adjustResize" />
+			android:label="@string/app_name" android:windowSoftInputMode="stateHidden|adjustResize" />
 
 		<activity android:name=".ui.InputBlNumberEditorView"
 			android:label="@string/input_number_dlg_title_string" android:theme="@android:style/Theme.Dialog" />
 		<activity android:name=".ui.EditBlackListNumberView"
-			android:label="@string/callfirewall" android:windowSoftInputMode="stateHidden|adjustResize" />
+			android:label="@string/app_name" android:windowSoftInputMode="stateHidden|adjustResize" />
 		<activity android:name=".ui.SelectedNumberListView"
 			android:theme="@android:style/Theme.Dialog" />
 		<activity android:name=".ui.ClearWaitingDialog"

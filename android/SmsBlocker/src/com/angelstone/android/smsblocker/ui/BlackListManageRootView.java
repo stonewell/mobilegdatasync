@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
+import com.angelstone.android.ui.ActivityLogActivity;
 import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 
@@ -44,7 +45,7 @@ public class BlackListManageRootView extends Activity implements
 
 	private List<Map<String, Object>> numlist;
 	private int mListLongClickPos = 0;
-	
+
 	private ListView mListview;
 	private Button mAddbuttion;
 
@@ -58,7 +59,7 @@ public class BlackListManageRootView extends Activity implements
 			setContentView(R.layout.bl_mgr_root_view);
 
 			db = PhoneNumberManager.getIntance(this);
-			
+
 			CheckBox chkBox = (CheckBox) findViewById(R.id.sms_allow_contacts_check_box);
 			chkBox.setOnClickListener(this);
 			chkBox.setChecked(db
@@ -98,15 +99,10 @@ public class BlackListManageRootView extends Activity implements
 			map.put("number", num);
 			map.put("name", name);
 
-			if (blockCall)
-				map.put("cbimg", R.drawable.rejectcall);
-			else
-				map.put("cbimg", R.drawable.empty);
-
 			if (blockSms)
 				map.put("sbimg", R.drawable.sms_reject);
 			else
-				map.put("sbimg", R.drawable.empty);
+				map.put("sbimg", R.drawable.sms);
 
 			numlist.add(map);
 		} catch (Exception e) {
@@ -115,11 +111,11 @@ public class BlackListManageRootView extends Activity implements
 	}
 
 	private void refreshViewList() {
-		SimpleAdapter adapter = new SimpleAdapter(this,
-				numlist, R.layout.black_list_item_layout,
-				new String[] { "number", "name", "cbimg", "sbimg" }, new int[] {
-						R.id.black_list_item_text, R.id.black_list_item_text1,
-						R.id.black_list_item_cb_img, R.id.black_list_item_sb_img });
+		SimpleAdapter adapter = new SimpleAdapter(this, numlist,
+				R.layout.black_list_item_layout, new String[] { "number", "name",
+						"sbimg" }, new int[] { R.id.black_list_item_text,
+						R.id.black_list_item_text1,
+						R.id.black_list_item_sb_img });
 
 		if (numlist.size() == 0) {
 			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC, FC);
@@ -259,7 +255,7 @@ public class BlackListManageRootView extends Activity implements
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int whichButton) {
-									RemoveNumber(mListLongClickPos);
+									removeNumber(mListLongClickPos);
 									numlist.remove(mListLongClickPos);
 
 									refreshViewList_4();
@@ -292,108 +288,106 @@ public class BlackListManageRootView extends Activity implements
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-			switch (resultCode) {
-			case 1: // add result
-			{
-				String[] addedNumbers = data.getExtras().getStringArray(
-						"added_numbers_result");
-				String[] addedNames = data.getExtras().getStringArray(
-						"added_names_result");
-				// String addedReplySms =
-				// data.getExtras().getString("added_reply_sms_result");
-				boolean blockCall = data.getExtras().getBoolean("call_block");
-				boolean blockSms = data.getExtras().getBoolean("sms_block");
-				boolean isRemoveFromContact = data.getExtras().getBoolean(
-						"is_remove_from_contact");
+		switch (resultCode) {
+		case 1: // add result
+		{
+			String[] addedNumbers = data.getExtras().getStringArray(
+					"added_numbers_result");
+			String[] addedNames = data.getExtras().getStringArray(
+					"added_names_result");
+			// String addedReplySms =
+			// data.getExtras().getString("added_reply_sms_result");
+			boolean blockCall = data.getExtras().getBoolean("call_block");
+			boolean blockSms = data.getExtras().getBoolean("sms_block");
+			boolean isRemoveFromContact = data.getExtras().getBoolean(
+					"is_remove_from_contact");
 
-				// //phone_id is useless, always set it to 0 is OK
-				for (int i = 0; i < addedNumbers.length; i++) {
-					if (db.blacklistAddNumber(addedNumbers[i], blockCall, blockSms,
-							addedNames[i]) == PhoneNumberManager.INSERT_ERROR_AREADY_EXIST) {
-						continue;
-					}
-
-					addNumToView(addedNumbers[i], blockCall, blockSms, addedNames[i]);
-
-					if (isRemoveFromContact
-							&& PhoneNumberHelpers.isContact(this, addedNumbers[i])) {
-						db.removeFromContact(addedNumbers[i]);
-					}
+			// //phone_id is useless, always set it to 0 is OK
+			for (int i = 0; i < addedNumbers.length; i++) {
+				if (db.blacklistAddNumber(addedNumbers[i], blockCall, blockSms,
+						addedNames[i]) == PhoneNumberManager.INSERT_ERROR_AREADY_EXIST) {
+					continue;
 				}
 
-				refreshViewList();
-				break;
-			}
-			case 2: // edit result
-			{
-				String editNum = data.getExtras().getString("edited_number_return");
-				boolean blockCall = data.getExtras().getBoolean("call_block");
-				boolean blockSms = data.getExtras().getBoolean("sms_block");
-				String name = data.getExtras().getString("edited_name_return");
-				// String replySms =
-				// data.getExtras().getString("edited_reply_sms_return");
+				addNumToView(addedNumbers[i], blockCall, blockSms, addedNames[i]);
 
-				UpdateList(data.getExtras().getInt("position"), blockCall, blockSms,
-						name);
-
-				editNum = PhoneNumberHelpers.removeNonNumbericChar(editNum);
-				db.blacklistUpdateNumber(editNum, blockCall, blockSms, name);
-
-				break;
-			}
-			case 3: {
-				String number = data.getExtras().getString("search_number");
-				boolean blockCall = data.getExtras().getBoolean("search_callblock");
-				boolean blockSms = data.getExtras().getBoolean("search_smsblock");
-				String tag = data.getExtras().getString("search_tag");
-				// String replySms = data.getExtras().getString("search_reply_sms");
-				int pos = Integer
-						.valueOf(data.getExtras().getString("search_position"));
-
-				if (number != null) {
-					Intent intent = new Intent();
-					intent.setClass(BlackListManageRootView.this,
-							EditBlackListNumberView.class);
-
-					Bundle bundle = new Bundle();
-					bundle.putInt("POSITION", pos);
-					bundle.putString("EDIT_NUMBER", number);
-					bundle.putString("EDIT_NAME", tag);
-					bundle.putBoolean("block_call", blockCall);
-					bundle.putBoolean("block_sms", blockSms);
-					// bundle.putString("reply_sms", replySms);
-
-					intent.putExtras(bundle);
-					startActivityForResult(intent, 2);
-				} else {
-					Log.d("scfw", "blName is null");
+				if (isRemoveFromContact
+						&& PhoneNumberHelpers.isContact(this, addedNumbers[i])) {
+					db.removeFromContact(addedNumbers[i]);
 				}
-				break;
-			}
-			case 4: {
-				String number = data.getExtras().getString("search_number");
-
-				RemoveNumberFromSearch(PhoneNumberHelpers.removeNonNumbericChar(number));
-				// silenceRejectCall.removePhone(number);
-
-				refreshViewList();
-				break;
-			}
-			case 5: {
-				numlist.clear();
-
-				ActivityLog.logInfo(this, getString(R.string.app_name),
-						getString(R.string.BlacklistCleared));
-
-				refreshViewList_4();
 			}
 
-			default:
-				break;
+			refreshViewList();
+			break;
+		}
+		case 2: // edit result
+		{
+			String editNum = data.getExtras().getString("edited_number_return");
+			boolean blockCall = data.getExtras().getBoolean("call_block");
+			boolean blockSms = data.getExtras().getBoolean("sms_block");
+			String name = data.getExtras().getString("edited_name_return");
+			// String replySms =
+			// data.getExtras().getString("edited_reply_sms_return");
+
+			UpdateList(data.getExtras().getInt("position"), blockCall, blockSms, name);
+
+			editNum = PhoneNumberHelpers.removeNonNumbericChar(editNum);
+			db.blacklistUpdateNumber(editNum, blockCall, blockSms, name);
+
+			break;
+		}
+		case 3: {
+			String number = data.getExtras().getString("search_number");
+			boolean blockCall = data.getExtras().getBoolean("search_callblock");
+			boolean blockSms = data.getExtras().getBoolean("search_smsblock");
+			String tag = data.getExtras().getString("search_tag");
+			// String replySms = data.getExtras().getString("search_reply_sms");
+			int pos = Integer.valueOf(data.getExtras().getString("search_position"));
+
+			if (number != null) {
+				Intent intent = new Intent();
+				intent.setClass(BlackListManageRootView.this,
+						EditBlackListNumberView.class);
+
+				Bundle bundle = new Bundle();
+				bundle.putInt("POSITION", pos);
+				bundle.putString("EDIT_NUMBER", number);
+				bundle.putString("EDIT_NAME", tag);
+				bundle.putBoolean("block_call", blockCall);
+				bundle.putBoolean("block_sms", blockSms);
+				// bundle.putString("reply_sms", replySms);
+
+				intent.putExtras(bundle);
+				startActivityForResult(intent, 2);
+			} else {
+				Log.d("scfw", "blName is null");
 			}
+			break;
+		}
+		case 4: {
+			String number = data.getExtras().getString("search_number");
+
+			removeNumberFromSearch(PhoneNumberHelpers.removeNonNumbericChar(number));
+			// silenceRejectCall.removePhone(number);
+
+			refreshViewList();
+			break;
+		}
+		case 5: {
+			numlist.clear();
+
+			ActivityLog.logInfo(this, getString(R.string.app_name),
+					getString(R.string.BlacklistCleared));
+
+			refreshViewList_4();
+		}
+
+		default:
+			break;
+		}
 	}
 
-	public void RemoveNumber(int selPosition) {
+	public void removeNumber(int selPosition) {
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, String> map = (Map<String, String>) mListview
@@ -408,7 +402,7 @@ public class BlackListManageRootView extends Activity implements
 		return;
 	}
 
-	private void RemoveNumberFromSearch(String number) {
+	private void removeNumberFromSearch(String number) {
 		String[][] blNumbers = db.getBlacklistNumbers();
 		int pos = 0;
 
@@ -430,6 +424,8 @@ public class BlackListManageRootView extends Activity implements
 
 		menu.add(0, 0, 0, R.string.ClearAll).setIcon(
 				android.R.drawable.ic_menu_delete);
+		menu.add(0, 1, 1, R.string.Log).setIcon(R.drawable.ic_menu_activity_log);
+		menu.add(0, 2, 2, R.string.About).setIcon(android.R.drawable.ic_menu_help);
 
 		if (numlist == null || numlist.size() == 0) {
 			menu.getItem(0).setEnabled(false);
@@ -482,6 +478,16 @@ public class BlackListManageRootView extends Activity implements
 
 			break;
 		}
+		case 1: {
+			Intent intent = new Intent();
+			intent.setClass(this, ActivityLogActivity.class);
+			startActivity(intent);
+			break;
+		}
+		case 2: {
+			showAbout();
+			break;
+		}
 		default:
 			break;
 		}
@@ -492,19 +498,12 @@ public class BlackListManageRootView extends Activity implements
 			String tag) {
 		((Map<String, Object>) numlist.get(position)).put("name", tag);
 
-		if (blockCall)
-			((Map<String, Object>) numlist.get(position)).put("cbimg",
-					R.drawable.rejectcall);
-		else
-			((Map<String, Object>) numlist.get(position)).put("cbimg",
-					R.drawable.empty);
-
 		if (blockSms)
 			((Map<String, Object>) numlist.get(position)).put("sbimg",
 					R.drawable.sms_reject);
 		else
 			((Map<String, Object>) numlist.get(position)).put("sbimg",
-					R.drawable.empty);
+					R.drawable.sms);
 
 		SimpleAdapter adapter = ((SimpleAdapter) mListview.getAdapter());
 		adapter.notifyDataSetInvalidated();
@@ -572,5 +571,23 @@ public class BlackListManageRootView extends Activity implements
 		}
 
 		mListview.invalidateViews();
+	}
+
+	protected void showAbout() {
+		// Inflate the about message contents
+		View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
+
+		// When linking text, force to always use default color. This works
+		// around a pressed color state bug.
+		TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
+		int defaultColor = textView.getTextColors().getDefaultColor();
+		textView.setTextColor(defaultColor);
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(R.drawable.icon);
+		builder.setTitle(R.string.app_name);
+		builder.setView(messageView);
+		builder.create();
+		builder.show();
 	}
 }

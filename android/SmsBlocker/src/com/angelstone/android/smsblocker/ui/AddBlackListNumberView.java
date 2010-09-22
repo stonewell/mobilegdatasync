@@ -13,20 +13,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.utils.PhoneNumberHelpers;
-import com.angelstone.android.utils.ToastShowWaitHandler;
 
 public class AddBlackListNumberView extends Activity implements
 		OnClickListener, OnCheckedChangeListener {
-
-	private ToastShowWaitHandler toastShowWaitHandler = new ToastShowWaitHandler();
 
 	public static ArrayList<String> mSelectedNumbers;
 	public static ArrayList<String> mSelectedNames;
@@ -49,14 +44,8 @@ public class AddBlackListNumberView extends Activity implements
 			button3.setOnClickListener(this);
 			button4.setOnClickListener(this);
 
-			CheckBox bs = (CheckBox) findViewById(R.id.sms_block_check_box);
-			bs.setChecked(true);
-
 			Button btn = (Button) findViewById(R.id.add_number_view_done_btn);
 			btn.setOnClickListener(this);
-
-			// btn = (Button)findViewById(R.id.add_number_view_cancel_btn);
-			// btn.setOnClickListener(this);
 
 			mSelectedNumbers = new ArrayList<String>();
 			mSelectedNames = new ArrayList<String>();
@@ -79,16 +68,6 @@ public class AddBlackListNumberView extends Activity implements
 							R.string.how_many_number_selected_string);
 			tv.setText(initText);
 
-			/*
-			 * RadioGroup radioGroup = (RadioGroup)
-			 * findViewById(R.id.add_bl_number_reply_option_radioGroup);
-			 * radioGroup.setOnCheckedChangeListener(this);
-			 * 
-			 * 
-			 * EditText smsEt =
-			 * (EditText)findViewById(R.id.add_bl_number_reply_sms_editor);
-			 * smsEt.setEnabled(false); smsEt.setInputType(InputType.TYPE_NULL);
-			 */
 		} catch (Exception e) {
 			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
 		}
@@ -144,16 +123,6 @@ public class AddBlackListNumberView extends Activity implements
 			break;
 		}
 		case R.id.add_number_view_done_btn: {
-			CheckBox bs = (CheckBox) findViewById(R.id.sms_block_check_box);
-
-			if (mSelectedNumbers.size() == 0) {
-				if (toastShowWaitHandler.IsAllowShow()) {
-					Toast.makeText(this, R.string.PleaseSelectOneNumberAtLeast,
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
-			}
-
 			if (hasContactNumber()) {
 				new AlertDialog.Builder(this)
 						.setIcon(R.drawable.alert_dialog_icon)
@@ -162,8 +131,6 @@ public class AddBlackListNumberView extends Activity implements
 						.setPositiveButton(R.string.btn_yes,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int which) {
-										CheckBox bs = (CheckBox) findViewById(R.id.sms_block_check_box);
-
 										mIsRemoveFromContact = true;
 
 										String[] numbers = (String[]) mSelectedNumbers
@@ -174,14 +141,8 @@ public class AddBlackListNumberView extends Activity implements
 										Intent intent = new Intent();
 										intent.putExtra("added_numbers_result", numbers);
 										intent.putExtra("added_names_result", names);
-										// intent.putExtra("added_reply_sms_result",
-										// replySms);
 
-										if (bs.isChecked()) {
-											intent.putExtra("sms_block", true);
-										} else {
-											intent.putExtra("sms_block", false);
-										}
+										intent.putExtra("sms_block", true);
 
 										intent.putExtra("is_remove_from_contact",
 												mIsRemoveFromContact);
@@ -197,7 +158,6 @@ public class AddBlackListNumberView extends Activity implements
 						.setNegativeButton(R.string.btn_no,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int whichButton) {
-										CheckBox bs = (CheckBox) findViewById(R.id.sms_block_check_box);
 										mIsRemoveFromContact = false;
 
 										String[] numbers = (String[]) mSelectedNumbers
@@ -209,19 +169,11 @@ public class AddBlackListNumberView extends Activity implements
 										intent.putExtra("added_numbers_result", numbers);
 										intent.putExtra("added_names_result", names);
 
-										if (bs.isChecked()) {
-											intent.putExtra("sms_block", true);
-										} else {
-											intent.putExtra("sms_block", false);
-										}
-
+										intent.putExtra("sms_block", true);
 										intent.putExtra("is_remove_from_contact",
 												mIsRemoveFromContact);
 
 										setResult(1, intent);
-
-										// ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(smsEt.getWindowToken(),
-										// InputMethodManager.HIDE_NOT_ALWAYS);
 
 										finish();
 									}
@@ -236,14 +188,9 @@ public class AddBlackListNumberView extends Activity implements
 				Intent intent = new Intent();
 				intent.putExtra("added_numbers_result", numbers);
 				intent.putExtra("added_names_result", names);
-				// intent.putExtra("added_reply_sms_result", replySms);
 				intent.putExtra("is_remove_from_contact", false);
 
-				if (bs.isChecked()) {
-					intent.putExtra("sms_block", true);
-				} else {
-					intent.putExtra("sms_block", false);
-				}
+				intent.putExtra("sms_block", true);
 
 				intent.putExtra("is_remove_from_contact", false);
 
