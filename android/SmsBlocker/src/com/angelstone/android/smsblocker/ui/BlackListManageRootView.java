@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
@@ -114,8 +115,7 @@ public class BlackListManageRootView extends Activity implements
 		SimpleAdapter adapter = new SimpleAdapter(this, numlist,
 				R.layout.black_list_item_layout, new String[] { "number", "name",
 						"sbimg" }, new int[] { R.id.black_list_item_text,
-						R.id.black_list_item_text1,
-						R.id.black_list_item_sb_img });
+						R.id.black_list_item_text1, R.id.black_list_item_sb_img });
 
 		if (numlist.size() == 0) {
 			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC, FC);
@@ -502,8 +502,8 @@ public class BlackListManageRootView extends Activity implements
 			((Map<String, Object>) numlist.get(position)).put("sbimg",
 					R.drawable.sms_reject);
 		else
-			((Map<String, Object>) numlist.get(position)).put("sbimg",
-					R.drawable.sms);
+			((Map<String, Object>) numlist.get(position))
+					.put("sbimg", R.drawable.sms);
 
 		SimpleAdapter adapter = ((SimpleAdapter) mListview.getAdapter());
 		adapter.notifyDataSetInvalidated();
@@ -585,7 +585,16 @@ public class BlackListManageRootView extends Activity implements
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setIcon(R.drawable.icon);
-		builder.setTitle(R.string.app_name);
+
+		String version = "";
+		try {
+			PackageInfo info = getPackageManager()
+					.getPackageInfo(getPackageName(), 0);
+			version = info.versionName;
+		} catch (Exception e) {
+
+		}
+		builder.setTitle(getString(R.string.app_name) + " " + version);
 		builder.setView(messageView);
 		builder.create();
 		builder.show();
