@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
+import com.angelstone.android.smsblocker.store.PhoneNumberManager.BlockListAction;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.ToastShowWaitHandler;
 
@@ -63,32 +64,15 @@ public class InputBlNumberEditorView extends Activity implements
 				break;
 			}
 
-			PhoneNumberManager db = PhoneNumberManager.getIntance(this);
+			if (PhoneNumberManager.blacklistContainsNumber(this,
+					PhoneNumberHelpers.removeNonNumbericChar(number)) != BlockListAction.NO_NUMBER) {
+				if (toastShowWaitHandler.IsAllowShow()) {
+					Toast.makeText(this, R.string.TheNumberAlreadyExists,
+							Toast.LENGTH_SHORT).show();
 
-			try {
-				if (db.isInBlacklist(PhoneNumberHelpers.removeNonNumbericChar(number))) {
-					if (toastShowWaitHandler.IsAllowShow()) {
-						Toast.makeText(this, R.string.TheNumberAlreadyExists,
-								Toast.LENGTH_SHORT).show();
-
-					}
-					break;
 				}
-			} finally {
-				db.close();
+				break;
 			}
-
-			/*
-			 * String[][] blnums =
-			 * PhoneNumberManager.getIntance(this).getBlacklistNumbers();
-			 * 
-			 * if (blnums != null) { for(int i = 0; i < blnums.length; i++) { if
-			 * (PhoneNumberManager.getIntance(this).cmpNumber(number, blnums[i][0])) {
-			 * if (toastShowWaitHandler.IsAllowShow()) { Toast.makeText(this,
-			 * R.string.TheNumberAlreadyExists, Toast.LENGTH_SHORT).show(); return; }
-			 * 
-			 * } } }
-			 */
 
 			Intent intent = new Intent();
 			intent.putExtra("input_return_number", number);

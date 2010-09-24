@@ -103,4 +103,6 @@
 	"</string>
 	<string name="allow_sms_from_number">Not a Spam</string>
 	<string name="add_number_to_allow_list">Add {0} to allowed list?</string>
+	<string name="block_sms_from_number">Block sms from the number</string>
+	<string name="number_in_list_continue_update">The number is already in your block list.</string>
 </resources>

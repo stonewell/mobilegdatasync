@@ -1,9 +1,9 @@
 package com.angelstone.android.smsblocker.ui;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.Window;
 import android.widget.TextView;
 
@@ -19,47 +19,28 @@ public class RejectedSmsBodyView extends Activity {
 		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				android.R.drawable.ic_menu_more);
 
-		try {
-			Bundle bundle = this.getIntent().getExtras();
-			int pos = bundle.getInt("click_pos");
+		Bundle bundle = this.getIntent().getExtras();
+		int id = bundle.getInt("click_id");
 
-			EventLog[] logs = null;
+		Cursor cur = PhoneNumberManager.getEventLog(this, id);
 
-			PhoneNumberManager db = PhoneNumberManager.getIntance(this);
-			try {
-				logs = db.getLogs(EventLog.LOG_TYPE_SMS,
-						EventLog.LOG_SCOPE_INTERCEPTED, 0);
-			} finally {
-				db.close();
-			}
+		String number = cur.getString(cur.getColumnIndex(EventLog.NUMBER));
+		String body = cur.getString(cur.getColumnIndex(EventLog.SMS_TEXT));
+		long time = cur.getLong(cur.getColumnIndex(EventLog.TIME));
 
-			String number = logs[pos].getNumber();
-			String body = logs[pos].getSmsTxt();
+		String timeStr = DateUtils.formatDateTime(this,
+				time, DateUtils.FORMAT_SHOW_DATE
+						| DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_ALL);
 
-			String timeStr = DateUtils.formatDateTime(this, logs[pos].getTime()
-					.getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME
-					| DateUtils.FORMAT_ABBREV_ALL);
+		TextView tv1 = (TextView) findViewById(R.id.sms_reject_record_number_text);
 
-			String tag_or_name = logs[pos].getTagOrName();
+		tv1.setText(number);
 
-			// String dateStr = date.toLocaleString();
+		TextView tv2 = (TextView) findViewById(R.id.sms_reject_record_body_text);
 
-			TextView tv1 = (TextView) findViewById(R.id.sms_reject_record_number_text);
+		tv2.setText(body.replace("\r", ""));
 
-			if (tag_or_name != null && !tag_or_name.equals("")) {
-				tv1.setText(number + "<" + tag_or_name + ">");
-			} else {
-				tv1.setText(number);
-			}
-
-			TextView tv2 = (TextView) findViewById(R.id.sms_reject_record_body_text);
-
-			tv2.setText(body.replace("\r", ""));
-
-			TextView tv3 = (TextView) findViewById(R.id.sms_reject_record_date_text);
-			tv3.setText(timeStr);
-		} catch (Exception e) {
-			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
-		}
+		TextView tv3 = (TextView) findViewById(R.id.sms_reject_record_date_text);
+		tv3.setText(timeStr);
 	}
 }

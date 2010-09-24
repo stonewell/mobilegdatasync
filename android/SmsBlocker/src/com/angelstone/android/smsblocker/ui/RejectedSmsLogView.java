@@ -6,9 +6,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -26,47 +27,64 @@ import android.widget.TextView;
 import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.smsblocker.store.EventLog;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
+import com.angelstone.android.smsblocker.store.PhoneNumberManager.BlockListAction;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.SmsHelper;
 
 public class RejectedSmsLogView extends Activity implements
 		OnItemLongClickListener, OnItemClickListener, OnClickListener {
-	private int mPosition = 0;
 	private ListView lv = null;
 
-	private Cursor mLogCursor;
-	private PhoneNumberManager mPhoneNumberManager;
+	private int mPosition = 0;
+	private Cursor mCursor;
 
 	public static final int CLEAR_CALL_LOG = 1;
 
 	private final static int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 	private final static int FC = ViewGroup.LayoutParams.FILL_PARENT;
 
-	public void onCreate(Bundle savedInstanceState) {
-		try {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.reject_log_view_layout);
+	private Handler mHandler = new Handler();
+	private EventLogObserver mObserver = null;
 
-			mPhoneNumberManager = PhoneNumberManager.getIntance(this);
-			mLogCursor = mPhoneNumberManager
-					.getEventLogCursor(EventLog.SMS_LOG_BLOCK_TYPE_BL);
-			startManagingCursor(mLogCursor);
+	private class EventLogObserver extends ContentObserver {
 
-			lv = (ListView) this.findViewById(R.id.reject_log_list);
-
-			registerForContextMenu(lv);
-			lv.setOnItemLongClickListener(this);
-			lv.setOnItemClickListener(this);
-			refreshList();
-
-		} catch (Exception e) {
-			Log.d("scfw", "create view error", e);
+		public EventLogObserver(Handler handler) {
+			super(handler);
 		}
+
+		@Override
+		public void onChange(boolean selfChange) {
+			super.onChange(selfChange);
+
+			if (mCursor != null)
+				mCursor.requery();
+			refreshList();
+		}
+
+	}
+
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.reject_log_view_layout);
+
+		mCursor = PhoneNumberManager.getEventLogs(this);
+		startManagingCursor(mCursor);
+
+		lv = (ListView) this.findViewById(R.id.reject_log_list);
+
+		registerForContextMenu(lv);
+		lv.setOnItemLongClickListener(this);
+		lv.setOnItemClickListener(this);
+		refreshList();
+
+		mObserver = new EventLogObserver(mHandler);
+		getContentResolver().registerContentObserver(
+				EventLog.CONTENT_EVENT_LOG_URI, true, mObserver);
 	}
 
 	protected void onDestroy() {
-		mPhoneNumberManager.close();
 		super.onDestroy();
+		getContentResolver().unregisterContentObserver(mObserver);
 	}
 
 	@Override
@@ -97,9 +115,9 @@ public class RejectedSmsLogView extends Activity implements
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int whichButton) {
-									mPhoneNumberManager.deleteLog(mLogCursor, mPosition);
-
-									mLogCursor.requery();
+									mCursor.moveToPosition(mPosition);
+									PhoneNumberManager.deleteLog(RejectedSmsLogView.this,
+											mCursor.getInt(mCursor.getColumnIndex(EventLog._ID)));
 								}
 							})
 					.setNegativeButton(R.string.alert_dialog_cancel,
@@ -119,8 +137,9 @@ public class RejectedSmsLogView extends Activity implements
 	}
 
 	private void setNotASpam() {
-		final String number = mLogCursor.getString(mLogCursor
-				.getColumnIndex("number"));
+		mCursor.moveToPosition(mPosition);
+		final String number = mCursor.getString(mCursor
+				.getColumnIndex(EventLog.NUMBER));
 		String text = MessageFormat.format(
 				getString(R.string.add_number_to_allow_list), number);
 		AlertDialog ad = new AlertDialog.Builder(this)
@@ -132,17 +151,18 @@ public class RejectedSmsLogView extends Activity implements
 							public void onClick(DialogInterface dialog, int whichButton) {
 								String realnumber = PhoneNumberHelpers
 										.removeNonNumbericChar(number);
-								if (mPhoneNumberManager.isInBlacklist(realnumber)) {
-									mPhoneNumberManager.blacklistUpdateNumber(realnumber, false,
-											false, "");
+								if (PhoneNumberManager.blacklistContainsNumber(
+										RejectedSmsLogView.this, realnumber) == BlockListAction.NO_NUMBER) {
+									PhoneNumberManager.blacklistAddNumber(
+											RejectedSmsLogView.this, realnumber, false);
 								} else {
-									mPhoneNumberManager.blacklistAddNumber(realnumber, false,
-											false, "");
+									PhoneNumberManager.blacklistUpdateNumber(
+											RejectedSmsLogView.this, realnumber, false);
 								}
 
 								clearNotSpamLogs(number);
 
-								mLogCursor.requery();
+								mCursor.requery();
 							}
 						})
 				.setNegativeButton(R.string.alert_dialog_cancel,
@@ -155,11 +175,11 @@ public class RejectedSmsLogView extends Activity implements
 	}
 
 	private void clearNotSpamLogs(String number) {
-		Cursor cur = mPhoneNumberManager.getEventLogCursor(
-				EventLog.SMS_LOG_BLOCK_TYPE_BL, "number='" + number + "'");
+		Cursor cur = PhoneNumberManager.getEventLogs(this, "number=?",
+				new String[] { number });
 		try {
-			int bodyIndex = cur.getColumnIndex("sms_text");
-			int timeIndex = cur.getColumnIndex("time");
+			int bodyIndex = cur.getColumnIndex(EventLog.SMS_TEXT);
+			int timeIndex = cur.getColumnIndex(EventLog.TIME);
 			while (cur.moveToNext()) {
 				String body = cur.getString(bodyIndex);
 				long date = Long.parseLong(cur.getString(timeIndex));
@@ -167,8 +187,7 @@ public class RejectedSmsLogView extends Activity implements
 				SmsHelper.sendToSmsInbox(this, number, body, date);
 			}
 
-			mPhoneNumberManager.deleteLogs(EventLog.LOG_TYPE_SMS,
-					EventLog.SMS_LOG_BLOCK_TYPE_BL, "number='" + number + "'");
+			PhoneNumberManager.deleteLogs(this, "number=?", new String[] { number });
 		} finally {
 			cur.close();
 		}
@@ -181,8 +200,8 @@ public class RejectedSmsLogView extends Activity implements
 		menu.add(0, 0, 0, R.string.ClearAllRecords).setIcon(
 				this.getResources().getDrawable(android.R.drawable.ic_menu_delete));
 
-		if (mLogCursor != null) {
-			if (mLogCursor.getCount() == 0) {
+		if (mCursor != null) {
+			if (mCursor.getCount() == 0) {
 				menu.getItem(0).setEnabled(false);
 			}
 		} else {
@@ -211,8 +230,6 @@ public class RejectedSmsLogView extends Activity implements
 									Intent intent = new Intent();
 									intent.setClass(RejectedSmsLogView.this,
 											ClearWaitingDialog.class);
-									intent.putExtra("log_type", EventLog.LOG_TYPE_SMS);
-									intent.putExtra("block_type", EventLog.SMS_LOG_BLOCK_TYPE_BL);
 									intent.putExtra("clear_type", CLEAR_CALL_LOG);
 									startActivityForResult(intent, 2);
 
@@ -237,9 +254,9 @@ public class RejectedSmsLogView extends Activity implements
 
 	public void refreshList() {
 		lv.setAdapter((new RejectedSmsLogAdapter(this,
-				R.layout.call_reject_record_item, mLogCursor)));
-		if (mLogCursor != null) {
-			if (mLogCursor.getCount() != 0) {
+				R.layout.call_reject_record_item, mCursor)));
+		if (mCursor != null) {
+			if (mCursor.getCount() != 0) {
 				LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, 0);
 				TextView tv = (TextView) findViewById(R.id.empty_record_text);
 				tv.setLayoutParams(param);
@@ -258,29 +275,15 @@ public class RejectedSmsLogView extends Activity implements
 		}
 	}
 
-	public void refreshList_2() {
-		try {
-			mLogCursor.requery();
-
-		} catch (Exception e) {
-			Log.d("scfw", e.getMessage() + ":" + e.getClass().toString());
-		}
-	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		try {
-			switch (resultCode) {
-			case 3: {
-				mLogCursor.requery();
-			}
-			default:
-				break;
-			}
-		} catch (Exception e) {
-			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
+		switch (resultCode) {
+		case 3: {
+			break;
 		}
-
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -293,8 +296,9 @@ public class RejectedSmsLogView extends Activity implements
 		Intent intent = new Intent();
 		intent.setClass(this, RejectedSmsBodyView.class);
 
+		mCursor.moveToPosition(position);
 		Bundle bundle = new Bundle();
-		bundle.putInt("click_pos", position);
+		bundle.putInt("click_id", mCursor.getInt(mCursor.getColumnIndex(EventLog._ID)));
 		intent.putExtras(bundle);
 
 		startActivity(intent);
@@ -304,8 +308,6 @@ public class RejectedSmsLogView extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		refreshList_2();
 	}
 
 }

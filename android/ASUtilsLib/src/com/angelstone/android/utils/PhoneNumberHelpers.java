@@ -52,7 +52,7 @@ public class PhoneNumberHelpers {
 
 		return context.getContentResolver().query(
 				Uri.withAppendedPath(sc.PHONE_LOOKUP_FILTER_URI, phoneNum),
-				new String[] { sc.PHONE_LOOKUP_NUMBER, sc.PHONE_LOOKUP_NAME }, null,
+				new String[] { sc.PHONE_LOOKUP_NUMBER, sc.PHONE_LOOKUP_NAME}, null,
 				null, null);
 	}
 
@@ -161,5 +161,8 @@ public class PhoneNumberHelpers {
 				return false;
 			}
 		}
+	}
+
+	public static void removeFromContact(Context context, String phone) {
 	}
 }

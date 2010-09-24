@@ -15,6 +15,7 @@ public class SmsReceivedReceiver extends BroadcastReceiver {
 		try {
 			if (action.equals("android.provider.Telephony.SMS_RECEIVED")) {
 				if (SmsBlocker.isSmsBlocked(intent, context)) {
+					this.setOrderedHint(true);
 					this.abortBroadcast();
 				}
 			}

@@ -30,8 +30,8 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.SmsBlocker;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.ToastShowWaitHandler;
@@ -68,12 +68,14 @@ public class AddFromContactView extends Activity implements
 		mTempNumberList.addAll(AddBlackListNumberView.mSelectedNumbers);
 		mTempNameList.addAll(AddBlackListNumberView.mSelectedNames);
 
+		SysCompat sc = SysCompat.register(this);
+		
 		Cursor cur = getContentResolver().query(
-				SmsBlocker.getSysCompat(this).PHONE_URI,
+				sc.PHONE_URI,
 				null,
 				null,
 				null,
-				"UPPER(" + SmsBlocker.getSysCompat(this).COLUMN_PHONE_NAME
+				"UPPER(" + sc.COLUMN_PHONE_NAME
 						+ ") ASC");
 
 		try {
@@ -93,9 +95,8 @@ public class AddFromContactView extends Activity implements
 			}
 
 			mNumberColIndex = cur
-					.getColumnIndex(SmsBlocker.getSysCompat(this).COLUMN_PHONE_NUMBER);
-			mDisplayNameColIndex = cur.getColumnIndex(SmsBlocker
-					.getSysCompat(this).COLUMN_PHONE_NAME);
+					.getColumnIndex(sc.COLUMN_PHONE_NUMBER);
+			mDisplayNameColIndex = cur.getColumnIndex(sc.COLUMN_PHONE_NAME);
 			// mNameColIndex =
 			// cur.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME);
 			mList = new ArrayList<Map<String, Object>>();

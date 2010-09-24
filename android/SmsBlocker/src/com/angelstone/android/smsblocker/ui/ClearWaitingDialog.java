@@ -16,11 +16,6 @@ import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 public class ClearWaitingDialog extends Activity {
 	public static ProgressBar mProgressBar = null;
 	public int mClearType;
-	private String[] mClearDatas;
-	private int mLogType;
-	private int mBlockType;
-
-	private PhoneNumberManager mPhoneNumberManager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,18 +25,9 @@ public class ClearWaitingDialog extends Activity {
 
 		setContentView(R.layout.waiting_progress_bar);
 
-		mPhoneNumberManager = PhoneNumberManager.getIntance(this);
-
 		Bundle bundle = this.getIntent().getExtras();
 
 		mClearType = bundle.getInt("clear_type");
-
-		if (mClearType == BlackListManageRootView.CLEAR_BLACK_LIST_NUMBER) {
-			mClearDatas = bundle.getStringArray("array");
-		} else if (mClearType == RejectedSmsLogView.CLEAR_CALL_LOG) {
-			mLogType = bundle.getInt("log_type");
-			mBlockType = bundle.getInt("block_type");
-		}
 
 		mProgressBar = (ProgressBar) findViewById(R.id.waiting_progress_bar_view);
 		// mProgressBar.setMax(BlMgrRootView.numlist.size());
@@ -49,10 +35,7 @@ public class ClearWaitingDialog extends Activity {
 		Thread thread = new Thread() {
 			public void run() {
 				if (mClearType == BlackListManageRootView.CLEAR_BLACK_LIST_NUMBER) {
-					for (int i = 0; i < mClearDatas.length; i++) {
-						mPhoneNumberManager.blacklistDeleteNumber(mClearDatas[i]);
-
-					}
+					PhoneNumberManager.blacklistDeleteNumber(ClearWaitingDialog.this);
 
 					Message msg = new Message();
 					Bundle msgdata = new Bundle();
@@ -61,7 +44,7 @@ public class ClearWaitingDialog extends Activity {
 					msg.setData(msgdata);
 					handler.sendMessage(msg);
 				} else if (mClearType == RejectedSmsLogView.CLEAR_CALL_LOG) {
-					mPhoneNumberManager.deleteLogs(mLogType, mBlockType);
+					PhoneNumberManager.deleteLogs(ClearWaitingDialog.this);
 
 					Message msg = new Message();
 					Bundle msgdata = new Bundle();
@@ -112,8 +95,6 @@ public class ClearWaitingDialog extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		mPhoneNumberManager.close();
-
 		super.onDestroy();
 	}
 

@@ -1,7 +1,10 @@
 package com.angelstone.android.platform;
 
-import android.app.Service;
+import java.util.Map;
+
 import android.content.Context;
+import android.content.Intent;
+import android.telephony.SmsMessage;
 
 public class CompatDonut extends CompatCupcake {
 
@@ -9,14 +12,22 @@ public class CompatDonut extends CompatCupcake {
 		super(ctx);
 	}
 
-	@Override
-	public void sendMsg(String phoneNum, String sms_str) {
-		// final android.telephony.SmsManager sm =
-		// android.telephony.SmsManager.getDefault();
-		// sm.sendTextMessage(phoneNum, null, sms_str, null, null);
-	}
+	public boolean parseSmsMessages(Intent intent, Map<String, String> messages) {
+		Object[] pdus = (Object[]) intent.getSerializableExtra("pdus");
 
-	public void setServiceForeground(Service service) {
-		service.setForeground(true);
+		if (pdus.length <= 0)
+			return false;
+
+		for (Object pdu : pdus) {
+			SmsMessage msg = SmsMessage.createFromPdu((byte[])pdu);
+			String sender = msg.getOriginatingAddress();
+
+			if (messages.containsKey(sender)) {
+				messages.put(sender, messages.get(sender) + msg.getMessageBody());
+			} else {
+				messages.put(sender, msg.getMessageBody());
+			}
+		}
+		return true;
 	}
 }
