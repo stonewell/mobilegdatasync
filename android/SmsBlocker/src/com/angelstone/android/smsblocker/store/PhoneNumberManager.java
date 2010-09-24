@@ -33,7 +33,7 @@ public class PhoneNumberManager {
 
 	public static Cursor getBlacklistNumbers(Context context) {
 		return context.getContentResolver().query(BlackList.CONTENT_BLACK_LIST_URI,
-				new String[] { BlackList.NUMBER, BlackList.BLOCK_SMS }, null, null,
+				new String[] { BlackList._ID, BlackList.NUMBER, BlackList.BLOCK_SMS }, null, null,
 				null);
 	}
 

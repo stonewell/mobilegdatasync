@@ -36,101 +36,46 @@ public class AddFromSmsRecordView extends Activity implements
 		OnItemClickListener, OnClickListener {
 	private Cursor mCursor = null;
 
-	private List<Map<String, Object>> mList;
-
 	private static ToastShowWaitHandler mToastShowWaitHandler = new ToastShowWaitHandler();
-
-	private int[] mCheckState;
 
 	private ProgressDialog mDialog;
 
-	private int mAllCheckAllowedItemCount = 0;
-	private int mCurrentCheckOnItemCount = 0;
-
 	private ArrayList<String> mTempNumberList = new ArrayList<String>();
 	private ArrayList<String> mTempNameList = new ArrayList<String>();
+	private int mCheckState[] = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_from_sms_record_view_layout);
 
-		PhoneNumberManager pnm = PhoneNumberManager.getIntance(this);
-		try {
 			mTempNumberList.addAll(AddBlackListNumberView.mSelectedNumbers);
 			mTempNameList.addAll(AddBlackListNumberView.mSelectedNames);
 
 			String SORT_ORDER = "date DESC";
+			
+			ArrayList<String> where_args = new ArrayList<String>();
+			StringBuffer where = new StringBuffer();
+			
+			buildWhere(where, where_args);
+			
 			mCursor = getContentResolver().query(Uri.parse("content://sms/inbox"),
-					null, null, null, SORT_ORDER);
+					null, where.toString(), where_args.toArray(new String[0]), SORT_ORDER);
 
 			startManagingCursor(mCursor);
 
-			mList = new ArrayList<Map<String, Object>>(mCursor.getCount());
-
-			mCursor.moveToFirst();
-
 			mCheckState = new int[mCursor.getCount()];
-
-			while (!mCursor.isAfterLast()) {
-				Map<String, Object> map = new HashMap<String, Object>();
-
-				String number = mCursor.getString(mCursor.getColumnIndex("address"));
-
-				number = PhoneNumberHelpers.delete86String(number);
-				number = PhoneNumberHelpers.removeNonNumbericChar(number);
-
-				map.put("number", PhoneNumberUtils.formatNumber(number));
-				String name = PhoneNumberHelpers.getContactName(this, number);
-
-				if (name != null && !name.equals("")) {
-					map.put("name", "<" + name + ">");
-				} else {
-					map.put("name", null);
-				}
-
-				String body = mCursor.getString(mCursor.getColumnIndex("body"));
-
-				map.put("body", body);
-
-				if (pnm.isInBlacklist(number)) {
-					map.put("checkImg", R.drawable.btn_check_off_disable);
-					mCheckState[mCursor.getPosition()] = PhoneNumberHelpers.CHECK_DISABLE;
-				} else if (AddBlackListNumberView.indexOfSelectedNumber(number) != -1) {
-					map.put("checkImg", R.drawable.btn_check_on);
-					mCheckState[mCursor.getPosition()] = PhoneNumberHelpers.CHECK_ON;
-
-					mCurrentCheckOnItemCount++;
-					mAllCheckAllowedItemCount++;
-				} else {
-					map.put("checkImg", R.drawable.btn_check_off);
-					mCheckState[mCursor.getPosition()] = PhoneNumberHelpers.CHECK_OFF;
-
-					mAllCheckAllowedItemCount++;
-				}
-
-				mList.add(map);
-
-				mCursor.moveToNext();
+			
+			for(int i=0;i < mCheckState.length;i++) {
+				mCheckState[i] = PhoneNumberHelpers.CHECK_OFF;
 			}
-
+			
 			CheckBox chkBox = (CheckBox) findViewById(R.id.sms_log_check_box);
 			chkBox.setOnClickListener(this);
 
-			if (mAllCheckAllowedItemCount == 0) {
-				chkBox.setEnabled(false);
-			} else if (mCurrentCheckOnItemCount == mAllCheckAllowedItemCount) {
-				chkBox.setChecked(true);
-			}
-
 			final ListView listView = (ListView) findViewById(R.id.sms_record_list);
 
-			SimpleAdapter adapter = new SimpleAdapter(this, mList,
-					R.layout.sms_record_list_row, new String[] { "number", "name",
-							"body", "checkImg" }, new int[] { R.id.sms_record_number,
-							R.id.sms_record_name, R.id.sms_record_body,
-							R.id.sms_log_check_img });
-			listView.setAdapter(adapter);
+			listView.setAdapter(new SmsRecordViewAdapter(this, mCursor, mCheckState));
 
 			listView.setOnItemClickListener(this);
 
@@ -150,12 +95,6 @@ public class AddFromSmsRecordView extends Activity implements
 			mDialog.setMessage(this.getResources().getText(R.string.PleaseWait));
 			mDialog.setIndeterminate(true);
 			mDialog.setCancelable(false);
-
-		} catch (Exception e) {
-			Log.d("scfw", "AddFromSmsRecordView:" + e.getClass().toString());
-		} finally {
-			pnm.close();
-		}
 	}
 
 	@Override
