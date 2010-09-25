@@ -157,7 +157,7 @@ public class PhoneNumberManager {
 		try {
 			String where_str = "option=?";
 			cur = context.getContentResolver()
-					.query(Setting.CONTENT_SETTINGS_URI, new String[] { "_id" },
+					.query(Setting.CONTENT_SETTINGS_URI, new String[] { Setting.VALUE },
 							where_str, new String[] { option_name }, null);
 
 			if (cur == null) {
