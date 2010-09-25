@@ -18,6 +18,11 @@ public class SmsReceivedReceiver extends BroadcastReceiver {
 					this.setOrderedHint(true);
 					this.abortBroadcast();
 				}
+			} else if (action.equals("android.provider.Telephony.WAP_PUSH_RECEIVED")) {
+				if (SmsBlocker.isMmsBlocked(intent, context)) {
+					this.setOrderedHint(true);
+					this.abortBroadcast();
+				}
 			}
 		} catch (Exception e) {
 			Log.e("SmsBlocker", e.getLocalizedMessage(), e);
