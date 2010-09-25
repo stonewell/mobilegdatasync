@@ -2,6 +2,7 @@ package com.angelstone.android.utils;
 
 import java.text.MessageFormat;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,13 +11,6 @@ import android.util.Log;
 import com.angelstone.android.platform.SysCompat;
 
 public class PhoneNumberHelpers {
-	public static int mCurrentRingtoneMode = 0;
-	public static boolean mIsRingToneModeChgByFwService = false;
-
-	public static int CHECK_DISABLE = -1;
-	public static int CHECK_ON = 1;
-	public static int CHECK_OFF = 0;
-
 	public static String removeNonNumbericChar(String source) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(source);
@@ -52,8 +46,8 @@ public class PhoneNumberHelpers {
 
 		return context.getContentResolver().query(
 				Uri.withAppendedPath(sc.PHONE_LOOKUP_FILTER_URI, phoneNum),
-				new String[] { sc.PHONE_LOOKUP_NUMBER, sc.PHONE_LOOKUP_NAME}, null,
-				null, null);
+				new String[] { sc.PHONE_LOOKUP_NUMBER, sc.PHONE_LOOKUP_NAME },
+				null, null, null);
 	}
 
 	public static boolean isContact(Context context, String phoneNum) {
@@ -164,5 +158,23 @@ public class PhoneNumberHelpers {
 	}
 
 	public static void removeFromContact(Context context, String phone) {
+	}
+
+	public static String getContactNameById(Context context, int contactId) {
+		SysCompat sc = SysCompat.register(context);
+
+		Uri uri = ContentUris.withAppendedId(sc.CONTACT_URI, contactId);
+
+		Cursor c = null;
+		try {
+			c = context.getContentResolver().query(uri,
+					new String[] { sc.COLUMN_CONTACT_NAME }, null, null, null);
+
+			c.moveToFirst();
+			return c.getString(0);
+		} finally {
+			if (c != null)
+				c.close();
+		}
 	}
 }
