@@ -23,7 +23,7 @@ public class AddFromSmsRecordView extends AddFromListBaseView {
 	@Override
 	protected Cursor getListCursor() {
 		return getContentResolver().query(
-				Uri.parse("content://mms-sms/conversations"), null, null, null,
+				Uri.parse("content://mms-sms/conversations"), null, "address is not null", null,
 				"date desc");
 	}
 

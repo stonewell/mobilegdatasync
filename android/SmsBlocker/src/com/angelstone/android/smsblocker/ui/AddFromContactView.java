@@ -26,7 +26,7 @@ public class AddFromContactView extends AddFromListBaseView {
 	protected Cursor getListCursor() {
 		SysCompat sc = SysCompat.register(this);
 
-		Cursor cur = getContentResolver().query(sc.PHONE_URI, null, null, null,
+		Cursor cur = getContentResolver().query(sc.PHONE_URI, null, sc.COLUMN_PHONE_NUMBER + " is not null", null,
 				"UPPER(" + sc.COLUMN_PHONE_NAME + ") ASC");
 
 		return cur;

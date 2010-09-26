@@ -23,7 +23,7 @@ public class AddFromCallLogView extends AddFromListBaseView {
 	@Override
 	protected Cursor getListCursor() {
 		return getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
-				null, null, CallLog.Calls.DEFAULT_SORT_ORDER);
+				CallLog.Calls.NUMBER + " is not null", null, CallLog.Calls.DEFAULT_SORT_ORDER);
 	}
 
 	@Override
