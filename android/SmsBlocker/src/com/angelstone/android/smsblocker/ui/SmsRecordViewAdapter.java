@@ -5,7 +5,6 @@ import java.util.Map;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
@@ -48,12 +47,6 @@ public class SmsRecordViewAdapter extends ResourceCursorAdapter implements
 		TextView vBody = (TextView) view.findViewById(R.id.sms_record_body);
 
 		String number = cursor.getString(mColAddress);
-		
-		if (number == null) {
-			for(int i=0;i < cursor.getColumnCount(); i++) {
-				Log.e("@@@@@@@@@@@@", cursor.getColumnName(i) + "," + cursor.getString(i));
-			}
-		}
 
 		number = PhoneNumberHelpers.delete86String(number);
 		number = PhoneNumberHelpers.removeNonNumbericChar(number);
