@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package com.angelstone.android.utils.mms;
+package com.google.android.mms.pdu;
+
+import com.google.android.mms.InvalidHeaderValueException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -322,11 +324,7 @@ public class PduHeaders {
      */
     private HashMap<Integer, Object> mHeaderMap = null;
 
-    public HashMap<Integer, Object> getHeaderMap() {
-			return mHeaderMap;
-		}
-
-		/**
+    /**
      * Constructor of PduHeaders.
      */
     public PduHeaders() {
@@ -355,10 +353,10 @@ public class PduHeaders {
      *
      * @param value the value
      * @param field the field
-     * @throws Exception if the value is invalid.
+     * @throws InvalidHeaderValueException if the value is invalid.
      */
     protected void setOctet(int value, int field)
-            throws Exception{
+            throws InvalidHeaderValueException{
         /**
          * Check whether this field can be set for specific
          * header and check validity of the field.
@@ -377,59 +375,59 @@ public class PduHeaders {
             case SENDER_VISIBILITY:
                 if ((VALUE_YES != value) && (VALUE_NO != value)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case READ_STATUS:
                 if ((READ_STATUS_READ != value) &&
                         (READ_STATUS__DELETED_WITHOUT_BEING_READ != value)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case CANCEL_STATUS:
                 if ((CANCEL_STATUS_REQUEST_SUCCESSFULLY_RECEIVED != value) &&
                         (CANCEL_STATUS_REQUEST_CORRUPTED != value)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case PRIORITY:
                 if ((value < PRIORITY_LOW) || (value > PRIORITY_HIGH)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case STATUS:
                 if ((value < STATUS_EXPIRED) || (value > STATUS_UNREACHABLE)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case REPLY_CHARGING:
                 if ((value < REPLY_CHARGING_REQUESTED)
                         || (value > REPLY_CHARGING_ACCEPTED_TEXT_ONLY)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case MM_STATE:
                 if ((value < MM_STATE_DRAFT) || (value > MM_STATE_FORWARDED)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case RECOMMENDED_RETRIEVAL_MODE:
                 if (RECOMMENDED_RETRIEVAL_MODE_MANUAL != value) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case CONTENT_CLASS:
                 if ((value < CONTENT_CLASS_TEXT)
                         || (value > CONTENT_CLASS_CONTENT_RICH)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             case RETRIEVE_STATUS:
@@ -484,7 +482,7 @@ public class PduHeaders {
             case MESSAGE_TYPE:
                 if ((value < MESSAGE_TYPE_SEND_REQ) || (value > MESSAGE_TYPE_CANCEL_CONF)) {
                     // Invalid value.
-                    throw new Exception("Invalid Octet value!");
+                    throw new InvalidHeaderValueException("Invalid Octet value!");
                 }
                 break;
             default:
@@ -550,7 +548,7 @@ public class PduHeaders {
      * @return the EncodedStringValue value of the pdu header
      *          with specified header field
      */
-    public EncodedStringValue getEncodedStringValue(int field) {
+    protected EncodedStringValue getEncodedStringValue(int field) {
         return (EncodedStringValue) mHeaderMap.get(field);
     }
 

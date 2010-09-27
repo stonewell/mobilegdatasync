@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.angelstone.android.utils.mms;
+package com.google.android.mms.pdu;
 
 public class PduContentTypes {
     /**

@@ -15,9 +15,8 @@ import com.angelstone.android.smsblocker.store.PhoneNumberDisposition;
 import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
-import com.angelstone.android.utils.mms.EncodedStringValue;
-import com.angelstone.android.utils.mms.PduHeaders;
-import com.angelstone.android.utils.mms.PduParser;
+import com.google.android.mms.pdu.GenericPdu;
+import com.google.android.mms.pdu.PduParser;
 
 public class SmsBlocker {
 	public static boolean isSmsBlocked(Intent intent, Context context) {
@@ -51,8 +50,8 @@ public class SmsBlocker {
 					return false;
 			}
 
-			PhoneNumberDisposition disp = PhoneNumberManager.queryAction(context,
-					sender);
+			PhoneNumberDisposition disp = PhoneNumberManager.queryAction(
+					context, sender);
 			if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
 				WriteToLog(messageBody, sender, context);
 
@@ -75,38 +74,34 @@ public class SmsBlocker {
 		try {
 			byte[] pushData = intent.getByteArrayExtra("data");
 			PduParser parser = new PduParser(pushData);
-			if (parser.parse()) {
-				PduHeaders headers = parser.getHeaders();
 
-				if (headers.getHeaderMap().containsKey(PduHeaders.FROM)) {
-					EncodedStringValue v = headers.getEncodedStringValue(PduHeaders.FROM);
+			GenericPdu pdu = parser.parse();
+			if (pdu != null && pdu.getFrom() != null) {
+				String sender = pdu.getFrom().toString();
+				sender = PhoneNumberHelpers.delete86String(sender);
+				sender = PhoneNumberHelpers.removeNonNumbericChar(sender);
 
-					if (v != null) {
-						String sender = v.toString();
-						sender = PhoneNumberHelpers.delete86String(sender);
-						sender = PhoneNumberHelpers.removeNonNumbericChar(sender);
+				ActivityLog
+						.logInfo(context, "MMS Received", "Sender:" + sender);
 
-						ActivityLog.logInfo(context, "MMS Received", "Sender:" + sender);
+				if (PhoneNumberManager.readSetting(context,
+						DatabaseValues.OPTION_ALLOW_CONTACTS)) {
+					if (PhoneNumberHelpers.isContact(context, sender))
+						return false;
+				}
 
-						if (PhoneNumberManager.readSetting(context,
-								DatabaseValues.OPTION_ALLOW_CONTACTS)) {
-							if (PhoneNumberHelpers.isContact(context, sender))
-								return false;
-						}
+				PhoneNumberDisposition disp = PhoneNumberManager.queryAction(
+						context, sender);
+				if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
+					WriteToLog("MMS", sender, context);
 
-						PhoneNumberDisposition disp = PhoneNumberManager.queryAction(
-								context, sender);
-						if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
-							WriteToLog("MMS", sender, context);
-
-							return true;
-						}
-					}
+					return true;
 				}
 			}
 		} catch (Throwable t) {
 			Log.e(context.getString(R.string.app_name), "isMmsBlocked fail", t);
-			ActivityLog.logError(context, "MMS Blocking", t.getLocalizedMessage());
+			ActivityLog.logError(context, "MMS Blocking",
+					t.getLocalizedMessage());
 		}
 		return false;
 	}

@@ -70,7 +70,7 @@ public abstract class AddFromListBaseView extends Activity implements
 		ContentListViewAdapter adapter = (ContentListViewAdapter) listView
 				.getAdapter();
 		String number = PhoneNumberHelpers.removeNonNumbericChar(adapter
-				.getNumber(position));
+				.getNumber(this, position));
 
 		if (mCheckState.containsKey(number)) {
 			if (mCheckState.get(number) == UIConstants.CHECK_OFF) {

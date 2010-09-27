@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.widget.ListAdapter;
 
 public class AddFromSmsRecordView extends AddFromListBaseView {
+	private static final Uri MMS_SMS_URI = Uri
+			.parse("content://mms-sms/conversations").buildUpon()
+			.appendQueryParameter("simple", "true").build();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,14 +26,11 @@ public class AddFromSmsRecordView extends AddFromListBaseView {
 
 	@Override
 	protected Cursor getListCursor() {
-		return getContentResolver().query(
-				Uri.parse("content://mms-sms/conversations"), null, "address is not null", null,
-				"date desc");
+		return getContentResolver().query(MMS_SMS_URI, null, null, null, null);
 	}
 
 	@Override
 	protected int getResultCode() {
-		// TODO Auto-generated method stub
 		return 5;
 	}
 }

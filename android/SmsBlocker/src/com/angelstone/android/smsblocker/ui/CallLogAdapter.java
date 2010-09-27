@@ -83,7 +83,7 @@ public class CallLogAdapter extends ResourceCursorAdapter implements
 	}
 
 	@Override
-	public String getNumber(int position) {
+	public String getNumber(Context context, int position) {
 		Cursor c = (Cursor) getItem(position);
 		String number = c.getString(mNumberColIndex);
 

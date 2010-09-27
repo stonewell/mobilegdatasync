@@ -56,7 +56,7 @@ public class ContactsViewAdapter extends ResourceCursorAdapter implements
 
 	}
 
-	public String getNumber(int position) {
+	public String getNumber(Context context, int position) {
 		Cursor c = (Cursor) getItem(position);
 		String number = c.getString(mColNumber);
 
