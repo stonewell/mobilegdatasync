@@ -17,8 +17,8 @@
 	<string name="or_string">Or</string>
 
 	<string name="check_btn_sms_allow_contacts">Do not block any number in contacts.</string>
-	<string name="app_name">Sms Blocker</string>
-	<string name="add_number_block_sms">Block SMS from selected number(s)</string>
+	<string name="app_name">Sms&amp;MMS Blocker</string>
+	<string name="add_number_block_sms">Block SMS&amp;MMS from selected number(s)</string>
 
 	<string name="filter_reject_sms_content">Content</string>
 	<string name="filter_reject_sms_filter">Filter</string>
@@ -30,9 +30,9 @@
 	<string name="phoneNumberStr">Phone number</string>
 	<string name="add_from_contact_string">Import from contacts</string>
 	<string name="add_from_call_record_string">Import from call log</string>
-	<string name="add_from_sms_record_string">Import from SMS log</string>
+	<string name="add_from_sms_record_string">Import from SMS&amp;MMS log</string>
 	<string name="add_phone_number_from">Add phone number ...</string>
-	<string name="phone_number_list_string">Sms Rules:</string>
+	<string name="phone_number_list_string">Sms&amp;MMS Rules:</string>
 	<string name="alert_dialog_two_buttons_title">Confirm to delete?</string>
 	<string name="alert_dialog_ok">Confirm</string>
 	<string name="alert_dialog_cancel">Cancel</string>
@@ -49,7 +49,7 @@
 	<string name="TheNumberAlreadyExists">The number is already in your block list.</string>
 	<string name="PleaseWait">Please wait...</string>
 	<string name="Setting">Setting</string>
-	<string name="Blacklist">Sms Process Rules</string>
+	<string name="Blacklist">Sms&amp;MMS Process Rules</string>
 	<string name="Log">Log</string>
 	<string name="About">About</string>
 	<string name="Exit">Exit</string>
@@ -59,7 +59,7 @@
 	<string name="Return">Return</string>
 	<string name="ClearAll">Clear All</string>
 	<string name="Unknown">Unknown</string>
-	<string name="BlacklistSMSBlockLog">Blocked SMS(2/2)</string>
+	<string name="BlacklistSMSBlockLog">Blocked SMS&amp;MMS(2/2)</string>
 	<string name="NumberAlreadyInBlacklist">The number is already in block list</string>
 	<string name="AddedToBlacklist">Successfully added to block list</string>
 	<string name="BlacklistContactName">BLOCK LIST</string>
@@ -69,7 +69,7 @@
 	<string name="BlacklistCleared">Block list cleared</string>
 	<string name="add_bl_number_from_contact_string">Contacts</string>
 	<string name="add_bl_number_from_call_record_string">Call Log</string>
-	<string name="add_bl_number_from_sms_record_string">SMS Log</string>
+	<string name="add_bl_number_from_sms_record_string">SMS&amp;MMS Log</string>
 	<string name="add_bl_number_from_input_string">Input Number</string>
 	<string name="add_from_string">Add numbers from:</string>
 	<string name="input_number_dlg_title_string">Please Input Number</string>
@@ -84,7 +84,7 @@
 	<string name="logDetailInfo">Detail Information </string>
 	<string name="hold_down_to_edit">Hold down a record to edit</string>
 	<string name="press_menu_to_view_selected_numbers">Press \"menu\" to view selected numbers</string>
-	<string name="block_sms_log">Blocked SMS</string>
+	<string name="block_sms_log">Blocked SMS&amp;MMS</string>
 	<string name="empty_blocked_records">(Empty)\r\nYou don\'t have any blocked records.
 	</string>
 
@@ -96,13 +96,13 @@
 	<string name="bl_root_mgr_user_guide_string_2">
 		Click Add to start.
 	</string>
-	<string name="activity_log_title">Sms Blocker Log</string>
-	<string name="app_descrip">A Sms blocker application, using full number or prefix number matching</string>
+	<string name="activity_log_title">Sms&amp;MMS Blocker Log</string>
+	<string name="app_descrip">A Sms&amp;MMS blocker application, using full number or prefix number matching</string>
 	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com.\n
 		Many thanks to Xiong Peng and YiFan.
 	"</string>
 	<string name="allow_sms_from_number">Not a Spam</string>
 	<string name="add_number_to_allow_list">Add {0} to allowed list?</string>
-	<string name="block_sms_from_number">Block sms from the number</string>
+	<string name="block_sms_from_number">Block sms&amp;MMS from the number</string>
 	<string name="number_in_list_continue_update">The number is already in your block list.</string>
 </resources>
