@@ -24,23 +24,29 @@ public class RejectedSmsBodyView extends Activity {
 
 		Cursor cur = PhoneNumberManager.getEventLog(this, id);
 
-		String number = cur.getString(cur.getColumnIndex(EventLog.NUMBER));
-		String body = cur.getString(cur.getColumnIndex(EventLog.SMS_TEXT));
-		long time = cur.getLong(cur.getColumnIndex(EventLog.TIME));
+		try {
+			cur.moveToNext();
 
-		String timeStr = DateUtils.formatDateTime(this,
-				time, DateUtils.FORMAT_SHOW_DATE
-						| DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_ALL);
+			String number = cur.getString(cur.getColumnIndex(EventLog.NUMBER));
+			String body = cur.getString(cur.getColumnIndex(EventLog.SMS_TEXT));
+			long time = cur.getLong(cur.getColumnIndex(EventLog.TIME));
 
-		TextView tv1 = (TextView) findViewById(R.id.sms_reject_record_number_text);
+			String timeStr = DateUtils.formatDateTime(this, time,
+					DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME
+							| DateUtils.FORMAT_ABBREV_ALL);
 
-		tv1.setText(number);
+			TextView tv1 = (TextView) findViewById(R.id.sms_reject_record_number_text);
 
-		TextView tv2 = (TextView) findViewById(R.id.sms_reject_record_body_text);
+			tv1.setText(number);
 
-		tv2.setText(body.replace("\r", ""));
+			TextView tv2 = (TextView) findViewById(R.id.sms_reject_record_body_text);
 
-		TextView tv3 = (TextView) findViewById(R.id.sms_reject_record_date_text);
-		tv3.setText(timeStr);
+			tv2.setText(body.replace("\r", ""));
+
+			TextView tv3 = (TextView) findViewById(R.id.sms_reject_record_date_text);
+			tv3.setText(timeStr);
+		} finally {
+			cur.close();
+		}
 	}
 }
