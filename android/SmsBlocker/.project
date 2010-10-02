@@ -33,7 +33,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>ASUtilsLib</name>
+			<name>ASUtilsLib_src</name>
 			<type>2</type>
 			<locationURI>_android_ASUtilsLib/src</locationURI>
 		</link>
