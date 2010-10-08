@@ -22,7 +22,7 @@ import org.apache.http.params.HttpParams;
 import android.content.Context;
 
 public class HttpUtils {
-	public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
+	public static final int REGISTRATION_TIMEOUT = 60 * 1000; // ms
 
 	public static String postData(Context context, String url, String paramName,
 			String uploadData) throws IOException {
