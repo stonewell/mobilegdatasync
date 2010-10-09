@@ -37,5 +37,10 @@
 			<type>2</type>
 			<locationURI>_android_ASUtilsLib/src</locationURI>
 		</link>
+		<link>
+			<name>ASUtilsLib_src</name>
+			<type>2</type>
+			<locationURI>_android_ASUtilsLib/src</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>
