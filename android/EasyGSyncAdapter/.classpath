@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="lib" path="lib/gdata-client-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gdata-client-meta-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gdata-contacts-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gdata-contacts-meta-3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gdata-core-1.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

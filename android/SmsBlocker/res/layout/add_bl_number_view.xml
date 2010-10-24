@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:background="@drawable/background"
+	android:gravity="center_horizontal">
+
+	<ScrollView android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_weight="1.0">
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:baselineAligned="false"
+			android:orientation="vertical" android:paddingLeft="5dip"
+			android:paddingRight="5dip">
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:paddingTop="10dip" android:paddingBottom="5dip">
+
+				<TextView android:id="@+id/blName" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:textSize="14sp"
+					android:textStyle="bold" android:layout_gravity="center_vertical"
+					android:text="@string/add_from_string" />
+
+				<TextView android:id="@+id/how_many_number_selected_view"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:textSize="14sp" android:textStyle="bold" android:textColor="@color/nortoncolor"
+					android:paddingLeft="2dip" />
+			</LinearLayout>
+
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="vertical"
+				android:padding="10dip" android:gravity="top">
+
+				<Button android:id="@+id/add_bl_number_from_contact_btn"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:clickable="true" android:text="@string/add_bl_number_from_contact_string"
+					android:layout_weight="1.0" android:gravity="center"
+					android:textSize="15sp" />
+
+				<Button android:id="@+id/add_bl_number_from_call_record_btn"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:clickable="true" android:text="@string/add_bl_number_from_call_record_string"
+					android:layout_weight="1.0" android:gravity="center"
+					android:textSize="15sp" />
+
+				<Button android:id="@+id/add_bl_number_from_sms_record_btn"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:clickable="true" android:text="@string/add_bl_number_from_sms_record_string"
+					android:layout_weight="1.0" android:gravity="center"
+					android:textSize="15sp" />
+
+				<Button android:id="@+id/add_bl_number_from_input_btn"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:clickable="true" android:text="@string/add_bl_number_from_input_string"
+					android:layout_weight="1.0" android:gravity="center"
+					android:textSize="15sp" />
+			</LinearLayout>
+		</LinearLayout>
+
+	</ScrollView>
+
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal">
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textSize="12sp"
+			android:textColor="@color/nortoncolor" android:text="@string/press_menu_to_view_selected_numbers"
+			android:layout_gravity="center_vertical|left" android:paddingLeft="5dip"
+			android:paddingRight="5dip" android:layout_weight="1" />
+
+		<Button android:id="@+id/add_number_view_done_btn"
+			android:text="@string/btn_done" android:layout_width="wrap_content"
+			android:layout_height="40dip" android:layout_gravity="center_vertical"
+			android:minWidth="90dip" />
+
+	</LinearLayout>
+
+</LinearLayout>

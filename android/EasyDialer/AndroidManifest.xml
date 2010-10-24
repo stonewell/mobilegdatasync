@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.angelstone.android.easydialer" android:versionCode="0"
+	android:versionName="1.0">
+
+	<uses-permission android:name="android.permission.READ_CONTACTS" />
+	<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.VIBRATE" />
+	<uses-permission android:name="android.permission.CALL_PHONE" />
+
+	<application android:label="@string/app_name" android:icon="@drawable/ic_launcher_contacts">
+
+		<activity android:name=".EasyDialer" android:launchMode="singleTop">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+
+		<receiver android:name=".EasyDialerAppWidgetProvider">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider"
+				android:resource="@xml/easydialer_appwidget_info" />
+		</receiver>
+		<receiver android:name=".EasyDialerAppWidgetEventsReceiver">
+			<intent-filter>
+				<action android:name="angelstone.android.intent.action.SPEED_DIAL" />
+				<action android:name="angelstone.android.intent.action.DIAL_PAD" />
+				<action android:name="angelstone.android.intent.action.DIAL" />
+				<action android:name="angelstone.android.intent.action.DELETE" />
+				<action android:name="angelstone.android.intent.action.VOICE_MAIL" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</receiver>
+		<activity android:name=".EasyDialerAppWidgetConfigure">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+			</intent-filter>
+		</activity>
+		<service android:name=".EasyDialerService" />
+	</application>
+</manifest>
