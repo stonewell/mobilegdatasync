@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DONT Disturb Profile Switcher</string>
+    <string name="title_profiles">Profiles</string>
+    <string name="title_schedules">Schedules</string>
+</resources>
