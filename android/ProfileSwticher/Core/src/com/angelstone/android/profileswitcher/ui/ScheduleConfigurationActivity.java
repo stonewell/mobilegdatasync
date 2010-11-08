@@ -5,12 +5,13 @@ import com.angelstone.android.profileswitcher.R;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class ProfileConfigurationActivity extends Activity {
+public class ScheduleConfigurationActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.profiles);
+		setContentView(R.layout.schedules);
 	}
+
 }
