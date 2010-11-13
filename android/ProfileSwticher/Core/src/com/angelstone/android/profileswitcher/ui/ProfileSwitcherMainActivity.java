@@ -17,12 +17,12 @@ public class ProfileSwitcherMainActivity extends TabActivity {
         tabHost.addTab(tabHost.newTabSpec("tabProfileConfiguration")
                 .setIndicator(getString(R.string.title_profiles),
                 		getResources().getDrawable(R.drawable.profiles))
-                .setContent(new Intent(this, ProfileConfigurationActivity.class)));
+                .setContent(new Intent(this, ProfilesListActivity.class)));
 
         tabHost.addTab(tabHost.newTabSpec("tabScheduleConfiguration")
                 .setIndicator(getString(R.string.title_schedules),
                 		getResources().getDrawable(R.drawable.schedule))
-                .setContent(new Intent(this, ScheduleConfigurationActivity.class)));
+                .setContent(new Intent(this, SchedulesListActivity.class)));
     }
 
 }

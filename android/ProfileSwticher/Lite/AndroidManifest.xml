@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.angelstone.android.profileswitcher"
-      android:versionCode="1"
-      android:versionName="1.0"> 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+	package="com.angelstone.android.profileswitcher" android:versionName="@string/version_name" android:versionCode="1">
+	<application android:icon="@drawable/icon" android:label="@string/app_name">
 
-		<activity android:name=".ui.ProfileConfigurationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.PROFILE_SWITCHER" />
-            </intent-filter>
+		<activity android:name=".ui.ProfilesListActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.PROFILE_SWITCHER" />
+			</intent-filter>
 		</activity>
 		<activity android:name=".ui.ProfileSwitcherMainActivity">
 			<intent-filter>
@@ -17,14 +15,20 @@
 				<category android:name="android.intent.category.LAUNCHER"></category>
 			</intent-filter>
 		</activity>
-		<activity android:name=".ui.ScheduleConfigurationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.PROFILE_SWITCHER" />
-            </intent-filter>
+		<activity android:name=".ui.SchedulesListActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.PROFILE_SWITCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".ui.ProfileEditActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.PROFILE_SWITCHER" />
+			</intent-filter>
 		</activity>
 
-    </application>
+	</application>
 
 
 </manifest> 
