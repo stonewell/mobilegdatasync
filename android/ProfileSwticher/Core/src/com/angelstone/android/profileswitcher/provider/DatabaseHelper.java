@@ -10,12 +10,8 @@ import com.angelstone.android.profileswitcher.store.Schedule;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 
-	private Context mContext = null;
-
 	DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
-		mContext = context;
 	}
 
 	@Override
@@ -28,8 +24,17 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + Profile.TABLE_NAME + " ("
 				+ Profile.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				+ Profile.COLUMN_NAME + " VARCHAR, " + Profile.COLUMN_FLAGS
-				+ " INTEGER);");
+				+ Profile.COLUMN_MEDIA_VOLUME + " INTEGER,"
+				+ Profile.COLUMN_PHONE_VOLUME + " INTEGER,"
+				+ Profile.COLUMN_NOTIFY_VOLUME + " INTEGER,"
+				+ Profile.COLUMN_ALARM_VOLUME + " INTEGER,"
+				+ Profile.COLUMN_PHONE_RING_TONE + "VARCHAR,"
+				+ Profile.COLUMN_NOTIFY_RING_TONE + "VARCHAR,"
+				+ Profile.COLUMN_ALARM_RING_TONE + "VARCHAR,"
+				+ Profile.COLUMN_EMAIL_RING_TONE + "VARCHAR,"
+				+ Profile.COLUMN_ACTIVE + "INTEGER,"
+				+ Profile.COLUMN_NAME + " VARCHAR, " 
+				+ Profile.COLUMN_FLAGS + " INTEGER);");
 	}
 
 	@Override

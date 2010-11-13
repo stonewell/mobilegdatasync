@@ -2,15 +2,15 @@ package com.angelstone.android.profileswitcher.ui;
 
 import com.angelstone.android.profileswitcher.R;
 
-import android.app.Activity;
 import android.os.Bundle;
 
-public class ProfileConfigurationActivity extends Activity {
+public class ProfileEditActivity extends EditBaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		setContentView(R.layout.profiles);
+
+		setContentView(R.layout.profile_edit);
 	}
+
 }

@@ -1,21 +1,34 @@
 package com.angelstone.android.profileswitcher.store;
 
-public class Profile {
+import android.net.Uri;
+
+public class Profile implements DatabaseValues {
 	public static final String TABLE_NAME = "profiles";
-	
+
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_FLAGS = "flags";
-	
+	public static final String COLUMN_ACTIVE = "active";
+
 	public static final String COLUMN_MEDIA_VOLUME = "media_volume";
 	public static final String COLUMN_PHONE_VOLUME = "phone_volume";
 	public static final String COLUMN_NOTIFY_VOLUME = "notify_volume";
 	public static final String COLUMN_ALARM_VOLUME = "alarm_volume";
-	
+
 	public static final String COLUMN_PHONE_RING_TONE = "phone_ring_tone";
 	public static final String COLUMN_NOTIFY_RING_TONE = "notify_ring_tone";
 	public static final String COLUMN_ALARM_RING_TONE = "alarm_ring_tone";
 	public static final String COLUMN_EMAIL_RING_TONE = "email_ring_tone";
+
+	public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.angelstone.android.profileswitch.profile";
+	public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.angelstone.android.profileswitch.profile";
+
+	public static final String DEFAULT_SORT_ORDER = COLUMN_ACTIVE + " desc," + COLUMN_NAME + " asc";
+
+	public static final String URI_STRING = "profile";
+
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
+			+ "/" + URI_STRING);
 
 	public static final int FLAG_MEDIA_VOLUME = 0x00000001;
 	public static final int FLAG_PHONE_VOLUME = 0x00000001 << 1;
