@@ -9,17 +9,22 @@ public class EditBaseActivity extends GenericActivity {
 			new int[] { R.string.save, android.R.drawable.ic_menu_save },
 			new int[] { R.string.delete, android.R.drawable.ic_menu_delete }, };
 
+	private int mOptionMenuStartPos = 0;
+	
 	public EditBaseActivity() {
 		super(OPTION_MENUS.length);
 	}
 
 	public EditBaseActivity(int optionMenuStartPos) {
 		super(optionMenuStartPos + OPTION_MENUS.length);
+		
+		mOptionMenuStartPos = optionMenuStartPos;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu.clear();
+		if (mOptionMenuStartPos == 0)
+			menu.clear();
 
 		createMenus(menu, 0, OPTION_MENUS);
 

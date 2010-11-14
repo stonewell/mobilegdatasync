@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical">
-	<ScrollView android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
-		<LinearLayout android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:orientation="vertical">
-			<ListView android:id="@+id/profile_list"
-				android:layout_width="fill_parent" android:layout_height="wrap_content"
-				android:cacheColorHint="@color/transparent" />
-		</LinearLayout>
-	</ScrollView>
-</LinearLayout>
+	<ListView android:id="@+id/profile_list" android:layout_width="fill_parent"
+		android:layout_above="@+id/img_icon"
+		android:layout_height="fill_parent"
+		android:layout_alignParentTop="true"
+		android:cacheColorHint="@color/transparent" />
+	<ImageView android:layout_width="fill_parent" android:id="@+id/img_icon"
+		android:layout_gravity="center_horizontal|bottom"
+		android:layout_alignParentBottom="true" android:layout_height="wrap_content"
+		android:src="@drawable/icon" />
+</RelativeLayout>
