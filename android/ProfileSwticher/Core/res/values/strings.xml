@@ -15,4 +15,16 @@
 	<string name="version_name">1.0</string>
 	<string name="save">Save</string>
 	<string name="delete">Delete</string>
+	<string name="wifi">WIFI</string>
+	<string name="gps">GPS</string>
+	<string name="bluetooth">BlueTooth</string>
+	<string name="devices">Devices</string>
+	<string name="ringtone_and_volume">Ring Tone and Volume</string>
+	<string name="phone">Phone</string>
+	<string name="notification">Notification</string>
+	<string name="email">Email</string>
+	<string name="alarm">Alarm</string>
+	<string name="volume">Volume</string>
+	<string name="ringtone">Ring Tone</string>
+	<string name="vibrate">Vibrate</string>
 </resources>

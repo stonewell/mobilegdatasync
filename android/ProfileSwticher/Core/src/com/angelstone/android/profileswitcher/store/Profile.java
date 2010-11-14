@@ -10,6 +10,8 @@ public class Profile implements DatabaseValues {
 	public static final String COLUMN_FLAGS = "flags";
 	public static final String COLUMN_ACTIVE = "active";
 
+	public static final String COLUMN_DEVICES = "devices";
+	
 	public static final String COLUMN_MEDIA_VOLUME = "media_volume";
 	public static final String COLUMN_PHONE_VOLUME = "phone_volume";
 	public static final String COLUMN_NOTIFY_VOLUME = "notify_volume";
@@ -47,4 +49,8 @@ public class Profile implements DatabaseValues {
 	public static final int FLAG_PHONE_RING_TONE = 0x00000001 << 11;
 	public static final int FLAG_NOTIFY_RING_TONE = 0x00000001 << 12;
 	public static final int FLAG_ALARM_RING_TONE = 0x00000001 << 13;
+	
+	public static final int DEVICE_WIFI_ENABLE = 0x00000001;
+	public static final int DEVICE_GPS_ENABLE = 0x00000001 << 1;
+	public static final int DEVICE_BLUETOOTH_ENABLE = 0x00000001 << 2;
 }
