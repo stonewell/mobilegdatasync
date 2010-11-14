@@ -71,10 +71,10 @@
         android:gravity="center_horizontal|bottom"
         >
         
-        <ImageView android:id="@+id/norton_logo_image_view"
+        <ImageView android:id="@+id/default_logo_image_view"
         	   android:layout_width="85dip"
 	           android:layout_height="35dip"
-	           android:src="@drawable/norton_logo"
+	           android:src="@drawable/default_logo"
 	           />
        
 	           

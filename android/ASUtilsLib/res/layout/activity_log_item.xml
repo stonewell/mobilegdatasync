@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-/*
-   Copyright (C) 2010 Symantec Corporate. All rights reserved.
-
-   This document contains proprietary information and trade secrets of
-   Symantec Corporate.
-
-   This information is provided only under a written agreement containing
-   restrictions on the use and disclosure of this information and
-   is also protected by law.
-
-   Any unauthorized review, use, disclosure, or distribution is prohibited.
-*/
--->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">

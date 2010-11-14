@@ -9,7 +9,7 @@
 	<color name="lightgray">#c0c0c0</color>
 	<color name="subwhite">#f0f0f0</color>
     <color name="transparent">#00000000</color>
-    <color name="nortoncolor">#fdb900</color>
+    <color name="defaultcolor">#fdb900</color>
     
 <color name="calling_color">#A12008</color>
 </resources> 
