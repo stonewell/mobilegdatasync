@@ -28,11 +28,12 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 				+ Profile.COLUMN_PHONE_VOLUME + " INTEGER,"
 				+ Profile.COLUMN_NOTIFY_VOLUME + " INTEGER,"
 				+ Profile.COLUMN_ALARM_VOLUME + " INTEGER,"
-				+ Profile.COLUMN_PHONE_RING_TONE + "VARCHAR,"
-				+ Profile.COLUMN_NOTIFY_RING_TONE + "VARCHAR,"
-				+ Profile.COLUMN_ALARM_RING_TONE + "VARCHAR,"
-				+ Profile.COLUMN_EMAIL_RING_TONE + "VARCHAR,"
-				+ Profile.COLUMN_ACTIVE + "INTEGER,"
+				+ Profile.COLUMN_PHONE_RING_TONE + " VARCHAR,"
+				+ Profile.COLUMN_NOTIFY_RING_TONE + " VARCHAR,"
+				+ Profile.COLUMN_ALARM_RING_TONE + " VARCHAR,"
+				+ Profile.COLUMN_EMAIL_RING_TONE + " VARCHAR,"
+				+ Profile.COLUMN_ACTIVE + " INTEGER,"
+				+ Profile.COLUMN_DEVICES + " INTEGER,"
 				+ Profile.COLUMN_NAME + " VARCHAR, " 
 				+ Profile.COLUMN_FLAGS + " INTEGER);");
 	}

@@ -1,11 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/title_profiles"
-    />
-</LinearLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="vertical">
+
+		<TableLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:stretchColumns="0">
+			<TableRow>
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="fill_parent" android:text="@string/devices" />
+			</TableRow>
+
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/gps" android:layout_width="wrap_content"
+					android:id="@+id/check_gps" android:layout_height="fill_parent" />
+				<ToggleButton android:id="@+id/toggle_gps"
+					android:layout_width="wrap_content" android:layout_height="fill_parent" />
+			</TableRow>
+
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/wifi" android:layout_width="wrap_content"
+					android:id="@+id/check_wifi" android:layout_height="fill_parent" />
+				<ToggleButton android:id="@+id/toggle_wifi"
+					android:layout_width="wrap_content" android:layout_height="fill_parent" />
+			</TableRow>
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/bluetooth" android:id="@+id/check_bluetooth"
+					android:layout_width="wrap_content" android:layout_height="fill_parent" />
+				<ToggleButton android:id="@+id/toggle_bluetooth"
+					android:layout_width="wrap_content" android:layout_height="fill_parent" />
+			</TableRow>
+		</TableLayout>
+
+		<TableLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:stretchColumns="0">
+			<TableRow>
+				<TextView android:layout_width="wrap_content"
+					android:layout_height="fill_parent" android:text="@string/ringtone_and_volume" />
+			</TableRow>
+
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/phone"
+					android:layout_width="wrap_content" android:id="@+id/check_phone"
+					android:layout_height="fill_parent" />
+				<ImageButton android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_marginRight="4dip"
+					android:layout_gravity="center_vertical" android:background="@drawable/btn_circle"
+					android:src="@drawable/ic_btn_round_more" />
+			</TableRow>
+
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/notification"
+					android:layout_width="wrap_content" android:id="@+id/check_notification"
+					android:layout_height="fill_parent" />
+				<ImageButton android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_marginRight="4dip"
+					android:layout_gravity="center_vertical" android:background="@drawable/btn_circle"
+					android:src="@drawable/ic_btn_round_more" />
+			</TableRow>
+
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/email"
+					android:layout_width="wrap_content" android:id="@+id/check_email"
+					android:layout_height="fill_parent" />
+				<ImageButton android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_marginRight="4dip"
+					android:layout_gravity="center_vertical" android:background="@drawable/btn_circle"
+					android:src="@drawable/ic_btn_round_more" />
+			</TableRow>
+
+			<TableRow android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal">
+				<CheckBox android:text="@string/alarm"
+					android:layout_width="wrap_content" android:id="@+id/check_alarm"
+					android:layout_height="fill_parent" />
+				<ImageButton android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_marginRight="4dip"
+					android:layout_gravity="center_vertical" android:background="@drawable/btn_circle"
+					android:src="@drawable/ic_btn_round_more" />
+			</TableRow>
+		</TableLayout>
+	</LinearLayout>
+</ScrollView>
