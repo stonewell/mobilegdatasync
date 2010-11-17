@@ -107,4 +107,9 @@ public abstract class GenericActivity extends Activity {
 		builder.create();
 		builder.show();
 	}
+
+	public int getOptionMenuStartPos() {
+		return mOptionMenuStartPos;
+	}
+
 }

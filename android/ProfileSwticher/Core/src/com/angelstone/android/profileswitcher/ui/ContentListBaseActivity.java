@@ -20,15 +20,16 @@ public abstract class ContentListBaseActivity extends GenericActivity {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu.clear();
+		if (getOptionMenuStartPos() - OPTION_MENUS.length == 0)
+			menu.clear();
 
-		createMenus(menu, 0, OPTION_MENUS);
+		createMenus(menu, getOptionMenuStartPos() - OPTION_MENUS.length, OPTION_MENUS);
 
 		return super.onPrepareOptionsMenu(menu);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
+		switch (item.getItemId() - getOptionMenuStartPos() + OPTION_MENUS.length) {
 		case 0: {
 			editContent(-1);
 			break;
