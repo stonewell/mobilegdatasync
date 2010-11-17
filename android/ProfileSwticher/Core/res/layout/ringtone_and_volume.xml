@@ -6,27 +6,29 @@
 		<TableRow android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:orientation="horizontal">
 			<CheckBox android:text="@string/volume"
-				android:layout_width="wrap_content" android:id="@+id/check_phone_volume"
+				android:layout_width="wrap_content" android:id="@+id/check_volume"
 				android:layout_height="fill_parent" />
-			<Spinner android:id="@+id/spinner_phone_volume"
+			<SeekBar android:id="@+id/seekbar_volume"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
-				android:drawSelectorOnTop="true" />
+				android:max="5" android:progress="2"
+				android:paddingLeft="20dip" android:paddingRight="20dip" />
 		</TableRow>
 		<TableRow android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:orientation="horizontal">
 			<CheckBox android:text="@string/ringtone"
-				android:layout_width="wrap_content" android:id="@+id/check_phone_ringtone"
+				android:layout_width="wrap_content" android:id="@+id/check_ringtone"
 				android:layout_height="fill_parent" />
-			<Spinner android:id="@+id/spinner_phone_ringtone"
+			<Spinner android:id="@+id/spinner_ringtone"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
 				android:drawSelectorOnTop="true" />
 		</TableRow>
 		<TableRow android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:orientation="horizontal">
+			android:layout_height="wrap_content" android:orientation="horizontal"
+			android:gravity="center_vertical">
 			<CheckBox android:text="@string/vibrate"
-				android:layout_width="wrap_content" android:id="@+id/check_phone_vibrate"
+				android:layout_width="wrap_content" android:id="@+id/check_vibrate"
 				android:layout_height="fill_parent" />
-			<ToggleButton android:id="@+id/toggle_phone_vibrate"
+			<ToggleButton android:id="@+id/toggle_vibrate"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />
 		</TableRow>
 	</TableLayout>
