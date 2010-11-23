@@ -12,6 +12,8 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.ToggleButton;
 
 import com.angelstone.android.profileswitcher.R;
@@ -254,9 +256,82 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		case DIALOG_RING_TONE_VIBRATE_VOLUME:
 			if (mCurrentEditingId == -1)
 				break;
+			CheckBox cVolume = (CheckBox)dialog.findViewById(R.id.check_volume);
+			CheckBox cVibrate = (CheckBox)dialog.findViewById(R.id.check_vibrate);
+			CheckBox cRingtone = (CheckBox)dialog.findViewById(R.id.check_ringtone);
+
+			SeekBar vVolume = (SeekBar)dialog.findViewById(R.id.seekbar_volume);
+			ToggleButton vVibrate = (ToggleButton)dialog.findViewById(R.id.toggle_vibrate);
+			Spinner vRingtone = (Spinner)dialog.findViewById(R.id.spinner_ringtone);
+
+			fillRingtongs(vRingtone);
 			
+			switch (mCurrentEditingId) {
+				case R.id.img_btn_phone:
+					cVolume.setChecked(mProfile.isPhoneVolumeConfigured());
+					vVolume.setEnabled(mProfile.isPhoneVolumeConfigured());
+					vVolume.setProgress(mProfile.getPhoneVolume());
+
+					cVibrate.setChecked(mProfile.isPhoneVibrateConfigured());
+					vVibrate.setEnabled(mProfile.isPhoneVibrateConfigured());
+					vVibrate.setChecked(mProfile.isPhoneVibrate());
+
+					cRingtone.setChecked(mProfile.isPhoneRingtoneConfigured());
+					vRingtone.setEnabled(mProfile.isPhoneRingtoneConfigured());
+					selectRingtone(vRingtone, mProfile.getPhoneRingtone());
+					break;
+				case R.id.img_btn_alarm:
+					cVolume.setChecked(mProfile.isAlarmVolumeConfigured());
+					vVolume.setEnabled(mProfile.isAlarmVolumeConfigured());
+					vVolume.setProgress(mProfile.getAlarmVolume());
+
+					cVibrate.setChecked(mProfile.isAlarmVibrateConfigured());
+					vVibrate.setEnabled(mProfile.isAlarmVibrateConfigured());
+					vVibrate.setChecked(mProfile.isAlarmVibrate());
+
+					cRingtone.setChecked(mProfile.isAlarmRingtoneConfigured());
+					vRingtone.setEnabled(mProfile.isAlarmRingtoneConfigured());
+					selectRingtone(vRingtone, mProfile.getAlarmRingtone());
+					break;
+				case R.id.img_btn_email:
+					cVolume.setChecked(mProfile.isEmailVolumeConfigured());
+					vVolume.setEnabled(mProfile.isEmailVolumeConfigured());
+					vVolume.setProgress(mProfile.getEmailVolume());
+
+					cVibrate.setChecked(mProfile.isEmailVibrateConfigured());
+					vVibrate.setEnabled(mProfile.isEmailVibrateConfigured());
+					vVibrate.setChecked(mProfile.isEmailVibrate());
+
+					cRingtone.setChecked(mProfile.isEmailRingtoneConfigured());
+					vRingtone.setEnabled(mProfile.isEmailRingtoneConfigured());
+					selectRingtone(vRingtone, mProfile.getEmailRingtone());
+					break;
+				case R.id.img_btn_notification:
+					cVolume.setChecked(mProfile.isNotificationVolumeConfigured());
+					vVolume.setEnabled(mProfile.isNotificationVolumeConfigured());
+					vVolume.setProgress(mProfile.getNotificationVolume());
+
+					cVibrate.setChecked(mProfile.isNotificationVibrateConfigured());
+					vVibrate.setEnabled(mProfile.isNotificationVibrateConfigured());
+					vVibrate.setChecked(mProfile.isNotificationVibrate());
+
+					cRingtone.setChecked(mProfile.isNotificationRingtoneConfigured());
+					vRingtone.setEnabled(mProfile.isNotificationRingtoneConfigured());
+					selectRingtone(vRingtone, mProfile.getNotificationRingtone());
+					break;
+			}
 			break;
 		}
+	}
+
+	private void fillRingtongs(Spinner vRingtone) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void selectRingtone(Spinner vRingtone, String phoneRingtone) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
