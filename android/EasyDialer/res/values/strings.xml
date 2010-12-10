@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Easy Dialer</string>
+	<!-- String describing the image on ImageButton one Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_one">one</string>
+
+	<!-- String describing the image on ImageButton two Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_two">two</string>
+
+	<!-- String describing the image on ImageButton three Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_three">three</string>
+
+	<!-- String describing the image on ImageButton four Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_four">four</string>
+
+	<!-- String describing the image on ImageButton five Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_five">five</string>
+
+	<!-- String describing the image on ImageButton six Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_six">six</string>
+
+	<!-- String describing the image on ImageButton seven Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_seven">seven</string>
+
+	<!-- String describing the image on ImageButton eight Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_eight">eight</string>
+
+	<!-- String describing the image on ImageButton nine Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_nine">nine</string>
+
+	<!-- String describing the image on ImageButton star Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_star">star</string>
+
+	<!-- String describing the image on ImageButton zero Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_zero">zero</string>
+
+	<!-- String describing the image on ImageButton pound Note: AccessibilityServices 
+		use this attribute to announce what the view represents. This is especially 
+		valuable for views without textual representation like ImageView. -->
+	<string name="description_image_button_pound">pound</string>
+
+	<!-- String describing the Dial ImageButton Used by AccessibilityService 
+		to announce the purpose of the button. -->
+	<string name="description_dial_button">dial</string>
+
+	<!-- String describing the Delete/Backspace ImageButton Used by AccessibilityService 
+		to announce the purpose of the button. -->
+	<string name="description_delete_button">backspace</string>
+
+	<!-- String describing the digits text box containing the number to dial. 
+		Used by AccessibilityService to announce the purpose of the view. -->
+	<string name="description_digits_edittext">number to dial</string>
+
+	<!-- String describing the Contact Photo Image Used by AccessibilityService 
+		to announce the purpose of the view. -->
+	<string name="description_contact_photo">contact photo</string>
+
+	<!-- String describing the Contact Editor Minus button Used by AccessibilityService 
+		to announce the purpose of the button. -->
+	<string name="description_minus_button">minus</string>
+
+	<!-- String describing the Contact Editor Plus button Used by AccessibilityService 
+		to announce the purpose of the button. -->
+	<string name="description_plus_button">plus</string>
+
+	<!-- Displayed in the text entry box in the dialer when in landscape mode 
+		to guide the user to dial using the physical keyboard -->
+	<string name="dialerKeyboardHintText">Use keyboard to dial</string>
+
+	<!-- Hint text displayed in the "digits" field above the dialer's dialpad, 
+		if there's already a call in progress. (This hint reminds the user that the 
+		dialer will add a new call, as opposed to sending DTMF tones over the current 
+		call.) -->
+	<string name="dialerDialpadHintText">Dial to add a call</string>
+
+	<string name="description_voicemail_button">voicemail</string>
+	<!-- Menu items for dialpad options as part of Pause and Wait ftr -->
+	<string name="add_2sec_pause">Add 2-sec pause</string>
+	<string name="add_wait">Add wait</string>
+	<string name="recentCalls_addToContact">Add to contacts</string>
+	<string name="dialer_useDtmfDialpad">Use touch tone keypad</string>
+
+	<!-- Item label: jump to the in-call UI. (Part of a list of options shown 
+		in the dialer when another call is already in progress.) -->
+	<string name="dialer_returnToInCallScreen">Return to call in progress</string>
+
+	<!-- Item label: use the Dialer's dialpad to add another call. (Part of 
+		a list of options shown in the dialer when another call is already in progress.) -->
+	<string name="dialer_addAnotherCall">Add call</string>
+	<!-- Attbution of a contact status update, when the time of update is unknown -->
+	<string name="contact_status_update_attribution">via %1$s</string>
+
+	<!-- Attbution of a contact status update, when the time of update is known -->
+	<string name="contact_status_update_attribution_with_date">%1$s via %2$s</string>
+</resources>

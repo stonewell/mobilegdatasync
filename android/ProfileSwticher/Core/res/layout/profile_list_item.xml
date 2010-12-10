@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="50dip"
+	android:orientation="horizontal" android:gravity="center_vertical"
+	android:background="@drawable/list_item_bg">
+
+	<ImageView android:id="@+id/status_img" android:layout_width="32dip"
+		android:layout_height="32dip" android:layout_gravity="right"
+		android:paddingLeft="5dip" />
+
+	<TextView android:id="@+id/profile_name" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:textColor="@color/white"
+		android:lines="1" android:layout_marginLeft="20dip" />
+
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:orientation="vertical"
+		android:gravity="left">
+
+		<TextView android:id="@+id/profile_active_time"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:textColor="@color/white" android:lines="1"
+			android:layout_marginLeft="20dip" />
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="16dip" android:orientation="horizontal"
+			android:gravity="left">
+			<ImageView android:id="@+id/status_1_img"
+				android:layout_width="16dip" android:layout_height="16dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
+			<ImageView android:id="@+id/status_2_img"
+				android:layout_width="16dip" android:layout_height="16dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
+			<ImageView android:id="@+id/status_3_img"
+				android:layout_width="16dip" android:layout_height="16dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
+			<ImageView android:id="@+id/status_4_img"
+				android:layout_width="16dip" android:layout_height="16dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
+			<ImageView android:id="@+id/status_5_img"
+				android:layout_width="16dip" android:layout_height="16dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
+		</LinearLayout>
+	</LinearLayout>
+
+</LinearLayout>
