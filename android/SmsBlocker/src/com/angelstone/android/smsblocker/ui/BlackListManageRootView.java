@@ -301,15 +301,17 @@ public class BlackListManageRootView extends Activity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 
-		menu.add(0, 0, 0, R.string.ClearAll).setIcon(
+		menu.add(0, 0, 1, R.string.ClearAll).setIcon(
 				android.R.drawable.ic_menu_delete);
-		menu.add(0, 1, 1, R.string.Log)
+		menu.add(0, 1, 2, R.string.Log)
 				.setIcon(R.drawable.ic_menu_activity_log);
-		menu.add(0, 2, 2, R.string.About).setIcon(
+		menu.add(0, 2, 3, R.string.About).setIcon(
 				android.R.drawable.ic_menu_help);
+		menu.add(0, 3, 0, R.string.backup).setIcon(
+				android.R.drawable.ic_menu_share);
 
 		if (mCursor == null || mCursor.getCount() == 0) {
-			menu.getItem(0).setEnabled(false);
+			menu.getItem(1).setEnabled(false);
 		}
 
 		return super.onPrepareOptionsMenu(menu);

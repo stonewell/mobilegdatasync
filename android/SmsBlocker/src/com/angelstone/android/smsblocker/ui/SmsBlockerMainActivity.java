@@ -61,7 +61,7 @@ public class SmsBlockerMainActivity extends TabActivity implements
 			mTabHost.setOnTabChangedListener(this);
 
 		} catch (Exception e) {
-			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
+			Log.d("scfw", "SmsBlockerMainActivity Create Fail", e);
 		}
 	}
 

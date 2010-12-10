@@ -69,7 +69,7 @@ public class AddBlackListNumberView extends Activity implements
 			tv.setText(initText);
 
 		} catch (Exception e) {
-			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
+			Log.d("scfw", "AddBlackListNumber Create Fail", e);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class AddBlackListNumberView extends Activity implements
 			tv.setText(initText);
 
 		} catch (Exception e) {
-			Log.d("scfw", this.toString() + ":" + e.getClass().toString());
+			Log.d("scfw", "AddBlackListNumber OnActivityResult Fail", e);
 		}
 	}
 
