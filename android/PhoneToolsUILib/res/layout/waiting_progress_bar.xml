@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="280dip"
+    android:layout_height="fill_parent"
+    android:gravity="center_vertical"
+    android:padding="15dip"
+    >
+   
+	<ProgressBar android:id="@+id/waiting_progress_bar_view"
+				 android:layout_height="fill_parent" 
+				 android:layout_width="wrap_content"
+				 android:visibility="visible" 
+				 />
+				 
+	<TextView android:layout_height="fill_parent" 
+			  android:layout_width="wrap_content"
+			  android:text="@string/PleaseWait"
+			  android:layout_marginLeft="15dip"
+			  android:textSize="14sp"
+			  android:layout_gravity="center_vertical"
+			  android:layout_marginTop="8dip"
+			  />
+
+</LinearLayout>

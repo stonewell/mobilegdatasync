@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>SmsBlocker</name>
+	<name>PhoneToolsUILib</name>
 	<comment></comment>
 	<projects>
-		<project>ASUtilsLib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -36,6 +35,11 @@
 			<name>ASUtilsLib_src</name>
 			<type>2</type>
 			<locationURI>_android_ASUtilsLib_4840aa66/src</locationURI>
+		</link>
+		<link>
+			<name>PhoneToolsLib_src</name>
+			<type>2</type>
+			<locationURI>_android_PhoneToolsLib_781cd218/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
