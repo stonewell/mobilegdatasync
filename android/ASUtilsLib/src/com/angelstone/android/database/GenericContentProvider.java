@@ -1,6 +1,8 @@
 package com.angelstone.android.database;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.ContentProvider;
@@ -19,11 +21,12 @@ public abstract class GenericContentProvider extends ContentProvider {
 
 	public static class ContentProviderArg {
 		public ContentProviderArg() {
-			
+
 		}
-		
+
 		public ContentProviderArg(String tableName, String contentType,
-				String contentItemType, String sortOrder, String authority, String uri, String columnNullableName) {
+				String contentItemType, String sortOrder, String authority,
+				String uri, String columnNullableName) {
 			TableName = tableName;
 			ContentType = contentType;
 			ContentItemType = contentItemType;
@@ -32,7 +35,7 @@ public abstract class GenericContentProvider extends ContentProvider {
 			Uri = uri;
 			ColumnNullableName = columnNullableName;
 		}
-		
+
 		public String TableName;
 		public String ContentType;
 		public String ContentItemType;
@@ -47,7 +50,7 @@ public abstract class GenericContentProvider extends ContentProvider {
 	private HashMap<Integer, ContentProviderArg> mContentCodeArgMap;
 	private HashMap<Integer, ContentProviderArg> mContentItemCodeArgMap;
 
-	protected void initialzie(List<ContentProviderArg> args) {
+	protected void initialize(List<ContentProviderArg> args) {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 		int code = 0;
@@ -64,6 +67,27 @@ public abstract class GenericContentProvider extends ContentProvider {
 		}
 	}
 
+	protected void initialize(String authority, List<Entity> entities) {
+		List<ContentProviderArg> args = new ArrayList<ContentProviderArg>();
+
+		Iterator<Entity> it = entities.iterator();
+
+		while (it.hasNext()) {
+			Entity entity = it.next();
+
+			ContentProviderArg arg = new ContentProviderArg(
+					entity.getTableName(), entity.getContentType(authority),
+					entity.getContentItemType(authority),
+					entity.getDefaultSortOrder(), authority, entity
+							.getContentUri(authority).toString(),
+					entity.getNullableColumnName());
+
+			args.add(arg);
+		}
+
+		initialize(args);
+	}
+
 	@Override
 	public int delete(Uri uri, String where, String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -75,9 +99,11 @@ public abstract class GenericContentProvider extends ContentProvider {
 					whereArgs);
 		} else if (mContentItemCodeArgMap.containsKey(code)) {
 			String id = uri.getPathSegments().get(1);
-			count = db.delete(mContentItemCodeArgMap.get(code).TableName, "_id ="
-					+ id + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""),
-					whereArgs);
+			count = db.delete(mContentItemCodeArgMap.get(code).TableName,
+					"_id ="
+							+ id
+							+ (!TextUtils.isEmpty(where) ? " AND (" + where
+									+ ')' : ""), whereArgs);
 		} else {
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -143,8 +169,8 @@ public abstract class GenericContentProvider extends ContentProvider {
 
 		// Get the database and run the query
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-		Cursor c = qb.query(db, projection, selection, selectionArgs, null, null,
-				orderBy);
+		Cursor c = qb.query(db, projection, selection, selectionArgs, null,
+				null, orderBy);
 
 		// Tell the cursor what uri to watch, so it knows when its source data
 		// changes
@@ -161,14 +187,15 @@ public abstract class GenericContentProvider extends ContentProvider {
 		int code = sUriMatcher.match(uri);
 
 		if (mContentCodeArgMap.containsKey(code)) {
-			count = db.update(mContentCodeArgMap.get(code).TableName, values, where,
-					whereArgs);
+			count = db.update(mContentCodeArgMap.get(code).TableName, values,
+					where, whereArgs);
 		} else if (mContentItemCodeArgMap.containsKey(code)) {
 			String id = uri.getPathSegments().get(1);
-			count = db.update(mContentItemCodeArgMap.get(code).TableName, values,
-					"_id =" + id
-							+ (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""),
-					whereArgs);
+			count = db.update(mContentItemCodeArgMap.get(code).TableName,
+					values, "_id ="
+							+ id
+							+ (!TextUtils.isEmpty(where) ? " AND (" + where
+									+ ')' : ""), whereArgs);
 		} else {
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
