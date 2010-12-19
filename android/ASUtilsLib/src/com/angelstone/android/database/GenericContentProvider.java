@@ -32,7 +32,7 @@ public abstract class GenericContentProvider extends ContentProvider {
 			ContentItemType = contentItemType;
 			SortOrder = sortOrder;
 			Authority = authority;
-			Uri = uri;
+			LastPartUri = uri;
 			ColumnNullableName = columnNullableName;
 		}
 
@@ -41,14 +41,14 @@ public abstract class GenericContentProvider extends ContentProvider {
 		public String ContentItemType;
 		public String SortOrder;
 		public String Authority;
-		public String Uri;
+		public String LastPartUri;
 		public String ColumnNullableName;
 	}
 
 	private UriMatcher sUriMatcher = null;
 	protected SQLiteOpenHelper mOpenHelper;
-	private HashMap<Integer, ContentProviderArg> mContentCodeArgMap;
-	private HashMap<Integer, ContentProviderArg> mContentItemCodeArgMap;
+	private HashMap<Integer, ContentProviderArg> mContentCodeArgMap = new HashMap<Integer, GenericContentProvider.ContentProviderArg>();
+	private HashMap<Integer, ContentProviderArg> mContentItemCodeArgMap = new HashMap<Integer, GenericContentProvider.ContentProviderArg>();
 
 	protected void initialize(List<ContentProviderArg> args) {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -56,12 +56,12 @@ public abstract class GenericContentProvider extends ContentProvider {
 		int code = 0;
 
 		for (ContentProviderArg arg : args) {
-			sUriMatcher.addURI(arg.Authority, arg.Uri, code++);
+			sUriMatcher.addURI(arg.Authority, arg.LastPartUri, code++);
 
 			mContentCodeArgMap.put(code - 1, arg);
 
 			if (arg.ContentItemType != null) {
-				sUriMatcher.addURI(arg.Authority, arg.Uri + "/#", code++);
+				sUriMatcher.addURI(arg.Authority, arg.LastPartUri + "/#", code++);
 				mContentItemCodeArgMap.put(code - 1, arg);
 			}
 		}
@@ -79,7 +79,7 @@ public abstract class GenericContentProvider extends ContentProvider {
 					entity.getTableName(), entity.getContentType(authority),
 					entity.getContentItemType(authority),
 					entity.getDefaultSortOrder(), authority, entity
-							.getContentUri(authority).toString(),
+							.getTableName(),
 					entity.getNullableColumnName());
 
 			args.add(arg);

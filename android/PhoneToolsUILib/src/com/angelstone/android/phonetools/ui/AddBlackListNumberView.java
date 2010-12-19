@@ -116,7 +116,7 @@ public class AddBlackListNumberView extends Activity implements
 		}
 		case R.id.add_bl_number_from_input_btn: {
 			Intent intent = new Intent();
-			intent.setClass(this, InputBlNumberEditorView.class);
+			intent.setClass(this, InputNumberView.class);
 			startActivityForResult(intent, 5);
 
 			break;

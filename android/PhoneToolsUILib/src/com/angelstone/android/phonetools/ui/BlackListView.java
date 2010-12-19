@@ -1,4 +1,4 @@
-package com.angelstone.android.smsblocker.ui;
+package com.angelstone.android.phonetools.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,19 +29,18 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.store.BlackList;
-import com.angelstone.android.smsblocker.store.DatabaseValues;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager;
+import com.angelstone.android.phonetools.store.BlackList;
+import com.angelstone.android.phonetools.store.BlackListManager;
+import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
+import com.angelstone.android.phonetools.store.PhoneToolsDatabaseValues;
 import com.angelstone.android.ui.ActivityLogActivity;
 import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 
-public class BlackListManageRootView extends Activity implements
+public class BlackListView extends Activity implements
 		OnClickListener, OnItemLongClickListener, OnItemClickListener {
 	private static final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 	private static final int FC = ViewGroup.LayoutParams.FILL_PARENT;
-	public static final int CLEAR_BLACK_LIST_NUMBER = 0;
 
 	private int mListLongClickPos = 0;
 
@@ -76,8 +75,8 @@ public class BlackListManageRootView extends Activity implements
 
 		CheckBox chkBox = (CheckBox) findViewById(R.id.sms_allow_contacts_check_box);
 		chkBox.setOnClickListener(this);
-		chkBox.setChecked(PhoneNumberManager.readSetting(this,
-				DatabaseValues.OPTION_ALLOW_CONTACTS));
+		chkBox.setChecked(PhoneToolsDBManager.getSettingsManager().readSetting(
+				this, PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS));
 
 		mAddbuttion = (Button) findViewById(R.id.add_number_btn);
 		mAddbuttion.setOnClickListener(this);
@@ -87,7 +86,8 @@ public class BlackListManageRootView extends Activity implements
 		mListview.setOnItemLongClickListener(this);
 		mListview.setOnItemClickListener(this);
 
-		mCursor = PhoneNumberManager.getBlacklistNumbers(this);
+		mCursor = PhoneToolsDBManager.getBlackListManager()
+				.getBlacklistNumbers(this);
 		startManagingCursor(mCursor);
 
 		BlackListViewAdapter adapter = new BlackListViewAdapter(this, mCursor);
@@ -97,7 +97,8 @@ public class BlackListManageRootView extends Activity implements
 
 		mObserver = new BlackListObserver(mHandler);
 		getContentResolver().registerContentObserver(
-				BlackList.CONTENT_BLACK_LIST_URI, true, mObserver);
+				PhoneToolsDBManager.getBlackListManager().getContentUri(),
+				true, mObserver);
 	}
 
 	private void refreshViewList() {
@@ -144,8 +145,8 @@ public class BlackListManageRootView extends Activity implements
 		mCursor.requery();
 
 		CheckBox chkBox = (CheckBox) findViewById(R.id.sms_allow_contacts_check_box);
-		chkBox.setChecked(PhoneNumberManager.readSetting(this,
-				DatabaseValues.OPTION_ALLOW_CONTACTS));
+		chkBox.setChecked(PhoneToolsDBManager.getSettingsManager().readSetting(
+				this, PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS));
 	}
 
 	public void onClick(View v) {
@@ -160,8 +161,9 @@ public class BlackListManageRootView extends Activity implements
 		case R.id.sms_allow_contacts_check_box: {
 			CheckBox chkBox = (CheckBox) findViewById(R.id.sms_allow_contacts_check_box);
 
-			PhoneNumberManager.writeSetting(this,
-					DatabaseValues.OPTION_ALLOW_CONTACTS, chkBox.isChecked());
+			PhoneToolsDBManager.getSettingsManager().writeSetting(this,
+					PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS,
+					chkBox.isChecked());
 			break;
 		}
 		default:
@@ -185,16 +187,16 @@ public class BlackListManageRootView extends Activity implements
 		case 1: {
 			Cursor c = (Cursor) mListview.getItemAtPosition(mListLongClickPos);
 
-			int numberColumnId = c.getColumnIndex(BlackList.NUMBER);
-			int blockSmsColumnId = c.getColumnIndex(BlackList.BLOCK_SMS);
+			int numberColumnId = c.getColumnIndex(BlackList.COL_NUMBER);
+			int blockSmsColumnId = c.getColumnIndex(BlackList.COL_BLOCK);
 
 			String number = c.getString(numberColumnId);
 
 			boolean blockSms = c.getInt(blockSmsColumnId) == 1;
 
 			Intent intent = new Intent();
-			intent.setClass(BlackListManageRootView.this,
-					EditBlackListNumberView.class);
+			intent.setClass(BlackListView.this,
+					EditNumberView.class);
 
 			Bundle bundle = new Bundle();
 			bundle.putInt("POSITION", mListLongClickPos);
@@ -215,13 +217,15 @@ public class BlackListManageRootView extends Activity implements
 									Cursor c = (Cursor) mListview
 											.getItemAtPosition(mListLongClickPos);
 
-									int id = c.getColumnIndex(BlackList._ID);
+									int id = c.getColumnIndex(BlackList.COL_ID);
 
 									Uri uri = ContentUris.withAppendedId(
-											BlackList.CONTENT_BLACK_LIST_URI,
-											c.getLong(id));
+											PhoneToolsDBManager
+													.getBlackListManager()
+													.getContentUri(), c
+													.getLong(id));
 
-									BlackListManageRootView.this
+									BlackListView.this
 											.getContentResolver().delete(uri,
 													null, null);
 								}
@@ -264,8 +268,8 @@ public class BlackListManageRootView extends Activity implements
 
 			// //phone_id is useless, always set it to 0 is OK
 			for (int i = 0; i < addedNumbers.length; i++) {
-				if (PhoneNumberManager.blacklistAddNumber(this,
-						addedNumbers[i], blockSms) == PhoneNumberManager.INSERT_ERROR_AREADY_EXIST) {
+				if (PhoneToolsDBManager.getBlackListManager()
+						.blacklistAddNumber(this, addedNumbers[i], blockSms) == BlackListManager.INSERT_ERROR_AREADY_EXIST) {
 					continue;
 				}
 
@@ -283,8 +287,8 @@ public class BlackListManageRootView extends Activity implements
 			boolean blockSms = data.getExtras().getBoolean("sms_block");
 
 			editNum = PhoneNumberHelpers.removeNonNumbericChar(editNum);
-			PhoneNumberManager.blacklistUpdateNumber(this, editNumBefore,
-					editNum, blockSms);
+			PhoneToolsDBManager.getBlackListManager().blacklistUpdateNumber(
+					this, editNumBefore, editNum, blockSms);
 			break;
 		}
 		case 5: {
@@ -301,11 +305,11 @@ public class BlackListManageRootView extends Activity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 
-		menu.add(0, 0, 1, R.string.ClearAll).setIcon(
+		menu.add(0, 0, 0, R.string.ClearAll).setIcon(
 				android.R.drawable.ic_menu_delete);
-		menu.add(0, 1, 2, R.string.Log)
+		menu.add(0, 1, 1, R.string.Log)
 				.setIcon(R.drawable.ic_menu_activity_log);
-		menu.add(0, 2, 3, R.string.About).setIcon(
+		menu.add(0, 2, 2, R.string.About).setIcon(
 				android.R.drawable.ic_menu_help);
 		menu.add(0, 3, 0, R.string.backup).setIcon(
 				android.R.drawable.ic_menu_share);
@@ -335,10 +339,10 @@ public class BlackListManageRootView extends Activity implements
 										int whichButton) {
 									Intent intent = new Intent();
 									intent.setClass(
-											BlackListManageRootView.this,
+											BlackListView.this,
 											ClearWaitingDialog.class);
 									intent.putExtra("clear_type",
-											CLEAR_BLACK_LIST_NUMBER);
+											UIConstants.CLEAR_BLACK_LIST_NUMBER);
 									startActivityForResult(intent, 5);
 								}
 							})
@@ -361,6 +365,10 @@ public class BlackListManageRootView extends Activity implements
 		}
 		case 2: {
 			showAbout();
+			break;
+		}
+		case 3: {
+			doBackup();
 			break;
 		}
 		default:
@@ -400,5 +408,9 @@ public class BlackListManageRootView extends Activity implements
 		builder.setView(messageView);
 		builder.create();
 		builder.show();
+	}
+
+	protected void doBackup() {
+		
 	}
 }

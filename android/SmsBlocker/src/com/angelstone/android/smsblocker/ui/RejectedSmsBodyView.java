@@ -7,9 +7,9 @@ import android.text.format.DateUtils;
 import android.view.Window;
 import android.widget.TextView;
 
+import com.angelstone.android.phonetools.store.EventLog;
+import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
 import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.store.EventLog;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 
 public class RejectedSmsBodyView extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
@@ -22,14 +22,14 @@ public class RejectedSmsBodyView extends Activity {
 		Bundle bundle = this.getIntent().getExtras();
 		int id = bundle.getInt("click_id");
 
-		Cursor cur = PhoneNumberManager.getEventLog(this, id);
+		Cursor cur = PhoneToolsDBManager.getEventLogManager().getEventLog(this, id);
 
 		try {
 			cur.moveToNext();
 
-			String number = cur.getString(cur.getColumnIndex(EventLog.NUMBER));
-			String body = cur.getString(cur.getColumnIndex(EventLog.SMS_TEXT));
-			long time = cur.getLong(cur.getColumnIndex(EventLog.TIME));
+			String number = cur.getString(cur.getColumnIndex(EventLog.COL_NUMBER));
+			String body = cur.getString(cur.getColumnIndex(EventLog.COL_CONTENT));
+			long time = cur.getLong(cur.getColumnIndex(EventLog.COL_TIME));
 
 			String timeStr = DateUtils.formatDateTime(this, time,
 					DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME

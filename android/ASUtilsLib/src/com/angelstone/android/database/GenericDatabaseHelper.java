@@ -26,7 +26,7 @@ public class GenericDatabaseHelper extends SQLiteOpenHelper {
 		while(it.hasNext()) {
 			Entity entity = it.next();
 			
-			db.execSQL(it.next().getCreateTableSQL());
+			db.execSQL(entity.getCreateTableSQL());
 			
 			entity.initData(db);
 		}

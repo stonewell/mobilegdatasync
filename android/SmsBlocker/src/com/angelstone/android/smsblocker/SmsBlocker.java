@@ -8,17 +8,22 @@ import android.content.Intent;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
+import com.angelstone.android.phonetools.store.EventLog;
+import com.angelstone.android.phonetools.store.PhoneNumberDisposition;
+import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
+import com.angelstone.android.phonetools.store.PhoneToolsDatabaseValues;
 import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.smsblocker.store.DatabaseValues;
-import com.angelstone.android.smsblocker.store.EventLog;
-import com.angelstone.android.smsblocker.store.PhoneNumberDisposition;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager;
 import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.google.android.mms.pdu.GenericPdu;
 import com.google.android.mms.pdu.PduParser;
 
 public class SmsBlocker {
+	static {
+		PhoneToolsDBManager.initialize(DatabaseValues.AUTHORITY);
+	}
+
 	public static boolean isSmsBlocked(Intent intent, Context context) {
 
 		SysCompat sc = SysCompat.register(context);
@@ -44,15 +49,15 @@ public class SmsBlocker {
 			sender = PhoneNumberHelpers.delete86String(sender);
 			sender = PhoneNumberHelpers.removeNonNumbericChar(sender);
 
-			if (PhoneNumberManager.readSetting(context,
-					DatabaseValues.OPTION_ALLOW_CONTACTS)) {
+			if (PhoneToolsDBManager.getSettingsManager().readSetting(context,
+					PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS)) {
 				if (PhoneNumberHelpers.isContact(context, sender))
 					return false;
 			}
 
-			PhoneNumberDisposition disp = PhoneNumberManager.queryAction(
+			PhoneNumberDisposition disp = PhoneToolsDBManager.getBlackListManager().queryAction(
 					context, sender);
-			if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
+			if (disp.mAction == PhoneNumberDisposition.REJECT) {
 				WriteToLog(messageBody, sender, context);
 
 				return true;
@@ -65,9 +70,9 @@ public class SmsBlocker {
 			Context context) {
 		smsNumber = PhoneNumberHelpers.delete86String(smsNumber);
 		EventLog evt = new EventLog(PhoneNumberUtils.formatNumber(smsNumber));
-		evt.setSmsTxt(smsBody);
+		evt.setContent(smsBody);
 
-		PhoneNumberManager.writeLog(context, evt);
+		PhoneToolsDBManager.getEventLogManager().writeLog(context, evt);
 	}
 
 	public static boolean isMmsBlocked(Intent intent, Context context) {
@@ -84,15 +89,15 @@ public class SmsBlocker {
 				ActivityLog
 						.logInfo(context, "MMS Received", "Sender:" + sender);
 
-				if (PhoneNumberManager.readSetting(context,
-						DatabaseValues.OPTION_ALLOW_CONTACTS)) {
+				if (PhoneToolsDBManager.getSettingsManager().readSetting(context,
+						PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS)) {
 					if (PhoneNumberHelpers.isContact(context, sender))
 						return false;
 				}
 
-				PhoneNumberDisposition disp = PhoneNumberManager.queryAction(
+				PhoneNumberDisposition disp = PhoneToolsDBManager.getBlackListManager().queryAction(
 						context, sender);
-				if (disp.m_SmsAction == PhoneNumberDisposition.SMS_REJECT) {
+				if (disp.mAction == PhoneNumberDisposition.REJECT) {
 					WriteToLog("MMS", sender, context);
 
 					return true;
