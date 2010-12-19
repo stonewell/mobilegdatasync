@@ -13,7 +13,7 @@
 	<string name="app_descrip">A Sms&amp;MMS blocker application, using full number or prefix number matching</string>
 	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com.\n
 		Many thanks to Xiong Peng and YiFan."</string>
-	<string name="block_sms_from_number">Block sms&amp;MMS from the number</string>
+	<string name="block_from_number">Block sms&amp;MMS from the number</string>
 	
 	<string name="filter_reject_sms_content">Content</string>
 </resources>

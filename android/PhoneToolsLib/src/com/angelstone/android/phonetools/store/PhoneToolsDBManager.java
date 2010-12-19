@@ -5,12 +5,14 @@ public class PhoneToolsDBManager {
 	private static SettingsManager mSettingsManager;
 	private static EventLogManager mEventLogManager;
 	private static boolean mInitialized = false;
-
+	private static String mAuthority;
+	
 	public static synchronized void initialize(String authority) {
 		
 		if (mInitialized)
 			return;
-		
+	
+		mAuthority = authority;
 		mBlackListManager = new BlackListManager(authority);
 		mSettingsManager = new SettingsManager(authority);
 		mEventLogManager = new EventLogManager(authority);
@@ -28,5 +30,9 @@ public class PhoneToolsDBManager {
 
 	public static EventLogManager getEventLogManager() {
 		return mEventLogManager;
+	}
+
+	public static String getAuthority() {
+		return mAuthority;
 	}
 }

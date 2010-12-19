@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Must override in application -->
+	<string name="app_descrip">Override Me</string>
+	<string name="app_credits">Override Me</string>
+	<string name="block_from_number">Override Me</string>
+
 	<!--common used value -->
 	<string name="btn_ok">OK</string>
 	<string name="btn_cancel">Cancel</string>
@@ -88,19 +93,12 @@
 	<string name="allow_sms_from_number">Not a Spam</string>
 	<string name="add_number_to_allow_list">Add {0} to allowed list?</string>
 	<string name="number_in_list_continue_update">The number is already in your block list.</string>
-	<string name="backup">Backup</string>
-
-  <!-- Must override in application -->
-	<string name="app_name">Override Me</string>
-	<string name="add_number_block_sms">Override Me</string>
-
-	<string name="main_copyright">Override Me</string>
-	<string name="main_allright">Override Me</string>
-
-	<string name="Blacklist">Override Me</string>
-	<string name="BlacklistSMSBlockLog">Override Me</string>
-	<string name="block_sms_log">Override Me</string>
-	<string name="app_descrip">Override Me</string>
-	<string name="app_credits">Override Me</string>
-	<string name="block_sms_from_number">Override Me</string>
+	<string name="import_export">Import/Export</string>
+	<string name="import_from_sdcard">Import From SDCard</string>
+	<string name="export_to_sdcard">Export To SDCard</string>
+	<string name="unkown_error_template">{0} file {1} fail, error:{2}</string>
+	<string name="success_template">{0} file {1}</string>
+	<string name="can_not_write_template">Can not write to file {1}</string>
+	<string name="can_not_create_template">Can not create file {1}</string>
+	<string name="no_record_template">{0} no records found</string>
 </resources>
