@@ -4,11 +4,18 @@ public class PhoneToolsDBManager {
 	private static BlackListManager mBlackListManager;
 	private static SettingsManager mSettingsManager;
 	private static EventLogManager mEventLogManager;
+	private static boolean mInitialized = false;
 
-	public static void initialize(String authority) {
+	public static synchronized void initialize(String authority) {
+		
+		if (mInitialized)
+			return;
+		
 		mBlackListManager = new BlackListManager(authority);
 		mSettingsManager = new SettingsManager(authority);
 		mEventLogManager = new EventLogManager(authority);
+		
+		mInitialized = true;
 	}
 
 	public static BlackListManager getBlackListManager() {

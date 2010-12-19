@@ -7,8 +7,8 @@ import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
+import com.angelstone.android.phonetools.store.EventLog;
 import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.store.EventLog;
 
 public class RejectedSmsLogAdapter extends ResourceCursorAdapter {
 
@@ -17,8 +17,8 @@ public class RejectedSmsLogAdapter extends ResourceCursorAdapter {
 
 		public RejectedSmsLogAdapter(Context context, int layout, Cursor c) {
 			super(context, layout, c, true);
-			mNumberColumnId = c.getColumnIndexOrThrow(EventLog.NUMBER);
-			mSmsBodyColumnId = c.getColumnIndexOrThrow(EventLog.SMS_TEXT);
+			mNumberColumnId = c.getColumnIndexOrThrow(EventLog.COL_NUMBER);
+			mSmsBodyColumnId = c.getColumnIndexOrThrow(EventLog.COL_CONTENT);
 		}
 
 		@Override

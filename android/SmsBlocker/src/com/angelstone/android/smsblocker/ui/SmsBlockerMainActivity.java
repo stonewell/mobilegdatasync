@@ -13,10 +13,18 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 
+import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
+import com.angelstone.android.phonetools.ui.BlackListView;
 import com.angelstone.android.smsblocker.R;
+import com.angelstone.android.smsblocker.store.DatabaseValues;
 
 public class SmsBlockerMainActivity extends TabActivity implements
 		OnTabChangeListener {
+
+	static {
+		PhoneToolsDBManager.initialize(DatabaseValues.AUTHORITY);
+	}
+
 	private TabHost mTabHost;
 
 	private Drawable mDefaultDrawable;
@@ -30,15 +38,13 @@ public class SmsBlockerMainActivity extends TabActivity implements
 		try {
 			mTabHost.addTab(mTabHost
 					.newTabSpec("tab1")
-					.setIndicator(
-							this.getResources().getText(R.string.Blacklist),
+					.setIndicator(this.getResources().getText(R.string.Blacklist),
 							this.getResources().getDrawable(R.drawable.bl_mgr))
-					.setContent(new Intent(this, BlackListManageRootView.class)));
+					.setContent(new Intent(this, BlackListView.class)));
 
 			mTabHost.addTab(mTabHost
 					.newTabSpec("tab3")
-					.setIndicator(
-							this.getResources().getText(R.string.block_sms_log),
+					.setIndicator(this.getResources().getText(R.string.block_sms_log),
 							this.getResources().getDrawable(R.drawable.sys_log))
 					.setContent(new Intent(this, RejectedSmsLogView.class)));
 
@@ -49,8 +55,8 @@ public class SmsBlockerMainActivity extends TabActivity implements
 			mDefaultDrawable = rl.getBackground();
 
 			for (int i = 1; i < tw.getChildCount(); i++) {
-				ImageView iv = (ImageView) mTabHost.getTabWidget()
-						.getChildAt(i).findViewById(android.R.id.icon);
+				ImageView iv = (ImageView) mTabHost.getTabWidget().getChildAt(i)
+						.findViewById(android.R.id.icon);
 				iv.setMaxHeight(16);
 				iv.setMaxWidth(16);
 

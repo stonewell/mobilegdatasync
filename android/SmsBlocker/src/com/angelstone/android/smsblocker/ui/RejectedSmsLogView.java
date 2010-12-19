@@ -24,10 +24,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.angelstone.android.phonetools.store.BlackListManager.BlockListAction;
+import com.angelstone.android.phonetools.store.EventLog;
+import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
+import com.angelstone.android.phonetools.ui.ClearWaitingDialog;
 import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.store.EventLog;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager.BlockListAction;
+import com.angelstone.android.smsblocker.store.DatabaseValues;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.SmsHelper;
 
@@ -67,7 +69,7 @@ public class RejectedSmsLogView extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.reject_log_view_layout);
 
-		mCursor = PhoneNumberManager.getEventLogs(this);
+		mCursor = PhoneToolsDBManager.getEventLogManager().getEventLogs(this);
 		startManagingCursor(mCursor);
 
 		lv = (ListView) this.findViewById(R.id.reject_log_list);
@@ -78,8 +80,10 @@ public class RejectedSmsLogView extends Activity implements
 		refreshList();
 
 		mObserver = new EventLogObserver(mHandler);
-		getContentResolver().registerContentObserver(
-				EventLog.CONTENT_EVENT_LOG_URI, true, mObserver);
+		getContentResolver()
+				.registerContentObserver(
+						new EventLog().getContentUri(DatabaseValues.AUTHORITY), true,
+						mObserver);
 	}
 
 	protected void onDestroy() {
@@ -116,8 +120,9 @@ public class RejectedSmsLogView extends Activity implements
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int whichButton) {
 									mCursor.moveToPosition(mPosition);
-									PhoneNumberManager.deleteLog(RejectedSmsLogView.this,
-											mCursor.getInt(mCursor.getColumnIndex(EventLog._ID)));
+									PhoneToolsDBManager.getEventLogManager().deleteLog(
+											RejectedSmsLogView.this,
+											mCursor.getInt(mCursor.getColumnIndex(EventLog.COL_ID)));
 								}
 							})
 					.setNegativeButton(R.string.alert_dialog_cancel,
@@ -139,7 +144,7 @@ public class RejectedSmsLogView extends Activity implements
 	private void setNotASpam() {
 		mCursor.moveToPosition(mPosition);
 		final String number = mCursor.getString(mCursor
-				.getColumnIndex(EventLog.NUMBER));
+				.getColumnIndex(EventLog.COL_NUMBER));
 		String text = MessageFormat.format(
 				getString(R.string.add_number_to_allow_list), number);
 		AlertDialog ad = new AlertDialog.Builder(this)
@@ -151,13 +156,15 @@ public class RejectedSmsLogView extends Activity implements
 							public void onClick(DialogInterface dialog, int whichButton) {
 								String realnumber = PhoneNumberHelpers
 										.removeNonNumbericChar(number);
-								if (PhoneNumberManager.blacklistContainsNumber(
-										RejectedSmsLogView.this, realnumber) == BlockListAction.NO_NUMBER) {
-									PhoneNumberManager.blacklistAddNumber(
+								if (PhoneToolsDBManager.getBlackListManager()
+										.blacklistContainsNumber(RejectedSmsLogView.this,
+												realnumber) == BlockListAction.NO_NUMBER) {
+									PhoneToolsDBManager.getBlackListManager().blacklistAddNumber(
 											RejectedSmsLogView.this, realnumber, false);
 								} else {
-									PhoneNumberManager.blacklistUpdateNumber(
-											RejectedSmsLogView.this, realnumber, false);
+									PhoneToolsDBManager.getBlackListManager()
+											.blacklistUpdateNumber(RejectedSmsLogView.this,
+													realnumber, false);
 								}
 
 								clearNotSpamLogs(number);
@@ -175,11 +182,11 @@ public class RejectedSmsLogView extends Activity implements
 	}
 
 	private void clearNotSpamLogs(String number) {
-		Cursor cur = PhoneNumberManager.getEventLogs(this, "number=?",
-				new String[] { number });
+		Cursor cur = PhoneToolsDBManager.getEventLogManager().getEventLogs(this,
+				EventLog.COL_NUMBER + "=?", new String[] { number });
 		try {
-			int bodyIndex = cur.getColumnIndex(EventLog.SMS_TEXT);
-			int timeIndex = cur.getColumnIndex(EventLog.TIME);
+			int bodyIndex = cur.getColumnIndex(EventLog.COL_CONTENT);
+			int timeIndex = cur.getColumnIndex(EventLog.COL_TIME);
 			while (cur.moveToNext()) {
 				String body = cur.getString(bodyIndex);
 				long date = Long.parseLong(cur.getString(timeIndex));
@@ -187,7 +194,8 @@ public class RejectedSmsLogView extends Activity implements
 				SmsHelper.sendToSmsInbox(this, number, body, date);
 			}
 
-			PhoneNumberManager.deleteLogs(this, "number=?", new String[] { number });
+			PhoneToolsDBManager.getEventLogManager().deleteLogs(this,
+					EventLog.COL_NUMBER + "=?", new String[] { number });
 		} finally {
 			cur.close();
 		}
@@ -298,7 +306,8 @@ public class RejectedSmsLogView extends Activity implements
 
 		mCursor.moveToPosition(position);
 		Bundle bundle = new Bundle();
-		bundle.putInt("click_id", mCursor.getInt(mCursor.getColumnIndex(EventLog._ID)));
+		bundle.putInt("click_id",
+				mCursor.getInt(mCursor.getColumnIndex(EventLog.COL_ID)));
 		intent.putExtras(bundle);
 
 		startActivity(intent);

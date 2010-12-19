@@ -1,4 +1,4 @@
-package com.angelstone.android.smsblocker.ui;
+package com.angelstone.android.phonetools.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,13 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.angelstone.android.smsblocker.R;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager;
-import com.angelstone.android.smsblocker.store.PhoneNumberManager.BlockListAction;
+import com.angelstone.android.phonetools.store.BlackListManager.BlockListAction;
+import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.ToastShowWaitHandler;
 
-public class InputBlNumberEditorView extends Activity implements
+public class InputNumberView extends Activity implements
 		OnClickListener {
 
 	private ToastShowWaitHandler toastShowWaitHandler = new ToastShowWaitHandler();
@@ -64,7 +63,7 @@ public class InputBlNumberEditorView extends Activity implements
 				break;
 			}
 
-			if (PhoneNumberManager.blacklistContainsNumber(this,
+			if (PhoneToolsDBManager.getBlackListManager().blacklistContainsNumber(this,
 					PhoneNumberHelpers.removeNonNumbericChar(number)) != BlockListAction.NO_NUMBER) {
 				if (toastShowWaitHandler.IsAllowShow()) {
 					Toast.makeText(this, R.string.TheNumberAlreadyExists,

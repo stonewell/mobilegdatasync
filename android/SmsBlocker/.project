@@ -35,7 +35,17 @@
 		<link>
 			<name>ASUtilsLib_src</name>
 			<type>2</type>
-			<locationURI>_android_ASUtilsLib_4840aa66/src</locationURI>
+			<locationURI>_android_ASUtilsLib/src</locationURI>
+		</link>
+		<link>
+			<name>PhoneToolsLib_src</name>
+			<type>2</type>
+			<locationURI>_android_PhoneToolsLib/src</locationURI>
+		</link>
+		<link>
+			<name>PhoneToolsUILib_src</name>
+			<type>2</type>
+			<locationURI>_android_PhoneToolsUILib/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

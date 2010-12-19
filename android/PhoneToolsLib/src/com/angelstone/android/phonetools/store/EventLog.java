@@ -23,6 +23,11 @@ public class EventLog extends Entity implements Comparable<EventLog> {
 		return mTime.compareTo(cmp.mTime);
 	}
 
+	public EventLog() {
+		mTime = new Date();
+		mNumber = "";
+	}
+
 	public EventLog(String Number) {
 		mTime = new Date();
 		mNumber = Number;

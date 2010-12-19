@@ -19,7 +19,7 @@ import com.angelstone.android.phonetools.store.BlackListManager.BlockListAction;
 import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 
-public class EditBlackListNumberView extends Activity implements
+public class EditNumberView extends Activity implements
 		OnClickListener, DialogInterface.OnClickListener {
 
 	private int mPosition;
