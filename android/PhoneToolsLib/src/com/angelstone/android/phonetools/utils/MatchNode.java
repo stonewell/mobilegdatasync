@@ -4,9 +4,20 @@ public class MatchNode {
 	private Object mValue = null;
 	private MatchNode[] mChildrenNodes = new MatchNode[15];
 
-	public MatchNode() {
-		for(int i=0;i<mChildrenNodes.length;i++)
-			mChildrenNodes[i] = new ValueNode();
+	private MatchNode() {
+	}
+	
+	protected MatchNode(Object value) {
+		mValue = value;
+	}
+	
+	public static MatchNode createMatchNode() {
+		MatchNode node = new MatchNode();
+		
+		for(int i=0;i<node.mChildrenNodes.length;i++)
+			node.mChildrenNodes[i] = ValueNode.createValueNode();
+		
+		return node;
 	}
 	
 	public Object getValue() {

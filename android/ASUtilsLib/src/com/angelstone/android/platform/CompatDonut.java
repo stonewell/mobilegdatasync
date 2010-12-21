@@ -2,6 +2,7 @@ package com.angelstone.android.platform;
 
 import java.util.Map;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.SmsMessage;
@@ -29,5 +30,10 @@ public class CompatDonut extends CompatCupcake {
 			}
 		}
 		return true;
+	}
+	
+	public void setServiceForeground(Service service)
+	{
+		service.setForeground(true);
 	}
 }

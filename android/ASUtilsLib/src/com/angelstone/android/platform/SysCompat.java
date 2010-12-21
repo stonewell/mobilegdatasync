@@ -2,8 +2,10 @@ package com.angelstone.android.platform;
 
 import java.util.Map;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 
 public abstract class SysCompat {
@@ -56,4 +58,9 @@ public abstract class SysCompat {
 
 	public abstract boolean parseSmsMessages(Intent intent,
 			Map<String, String> messages);
+
+	public abstract void setServiceForeground(Service service);
+
+	public abstract boolean SetRingerSilence(AudioManager audioManager,
+			boolean beforeQueryAction);
 }

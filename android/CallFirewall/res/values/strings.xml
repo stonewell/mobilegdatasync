@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World!</string>
-    <string name="app_name">Call Firewall</string>
+    <string name="app_name">Call FireWall</string>
+    <string name="block_call_log">Blocked Call Log</string>
+    <string name="black_list">Call Block Rules</string>
 </resources>

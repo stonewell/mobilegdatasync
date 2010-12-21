@@ -1,5 +1,7 @@
 package com.angelstone.android.platform;
 
+import android.app.Notification;
+import android.app.Service;
 import android.content.Context;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
@@ -23,5 +25,10 @@ public class CompatEclair extends CompatDonut {
 		PHONE_LOOKUP_FILTER_URI = PhoneLookup.CONTENT_FILTER_URI;
 		PHONE_LOOKUP_NAME = PhoneLookup.DISPLAY_NAME;
 		PHONE_LOOKUP_NUMBER = PhoneLookup.NUMBER;
+	}
+
+	public void setServiceForeground(Service service)
+	{
+		service.startForeground(999, new Notification());
 	}
 }
