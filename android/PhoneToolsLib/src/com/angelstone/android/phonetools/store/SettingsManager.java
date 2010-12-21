@@ -94,4 +94,8 @@ public class SettingsManager {
 		return "1".equals(readSettingString(context, option_name));
 	}
 
+	public Uri getContentUri() {
+		return mContentUri;
+	}
+
 }
