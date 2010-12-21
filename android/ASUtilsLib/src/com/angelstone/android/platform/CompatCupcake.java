@@ -2,8 +2,10 @@ package com.angelstone.android.platform;
 
 import java.util.Map;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.provider.Contacts;
 import android.telephony.gsm.SmsMessage;
 
@@ -44,5 +46,21 @@ public class CompatCupcake extends SysCompat {
 			}
 		}
 		return true;
+	}
+
+	public void setServiceForeground(Service service)
+	{
+	}
+	
+	public boolean SetRingerSilence(AudioManager audioManager, boolean beforeQueryAction)
+	{
+		if (beforeQueryAction)
+		{
+			audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+			
+			return true;
+		}
+		
+		return false;
 	}
 }

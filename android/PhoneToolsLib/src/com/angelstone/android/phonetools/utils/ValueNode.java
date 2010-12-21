@@ -2,12 +2,8 @@ package com.angelstone.android.phonetools.utils;
 
 public class ValueNode extends MatchNode{
 	
-	public ValueNode() {
-		MatchNode[] nodes = super.getChildrenNodes();
-		
-		for(int i=0;i<nodes.length;i++){
-			nodes[i] = this;
-		}
+	private ValueNode() {
+		super(null);
 	}
 
 	@Override
@@ -21,5 +17,17 @@ public class ValueNode extends MatchNode{
 
 	@Override
 	public void setChildNode(char ch, MatchNode node) {
+	}
+
+	public static ValueNode createValueNode() {
+		ValueNode node = new ValueNode();
+		
+		MatchNode[] nodes = node.getChildrenNodes();
+		
+		for(int i=0;i<nodes.length;i++){
+			nodes[i] = node;
+		}
+		
+		return node;
 	}
 }

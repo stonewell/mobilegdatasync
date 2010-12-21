@@ -159,10 +159,10 @@ public abstract class GenericContentProvider extends ContentProvider {
 			if (TextUtils.isEmpty(sortOrder))
 				orderBy = mContentCodeArgMap.get(code).SortOrder;
 		} else if (mContentItemCodeArgMap.containsKey(code)) {
-			qb.setTables(mContentCodeArgMap.get(code).TableName);
+			qb.setTables(mContentItemCodeArgMap.get(code).TableName);
 			qb.appendWhere("_id" + "=" + uri.getPathSegments().get(1));
 			if (TextUtils.isEmpty(sortOrder))
-				orderBy = mContentCodeArgMap.get(code).SortOrder;
+				orderBy = mContentItemCodeArgMap.get(code).SortOrder;
 		} else {
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}

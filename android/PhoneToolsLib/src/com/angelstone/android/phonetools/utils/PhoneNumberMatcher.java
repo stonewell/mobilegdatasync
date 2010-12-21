@@ -8,7 +8,7 @@ public class PhoneNumberMatcher {
 	private Set<String> mCountryCodes = new HashSet<String>();
 	private Set<String> mAreaCodes = new HashSet<String>();
 	private HashMap<String, Object> mNumbers = new HashMap<String, Object>();
-	private MatchNode mRootNode = null;
+	private MatchNode mRootNode = MatchNode.createMatchNode();
 
 	public PhoneNumberMatcher() {
 
@@ -58,7 +58,7 @@ public class PhoneNumberMatcher {
 		if (lastNode == null)
 			return false;
 
-		MatchNode childNode = new ValueNode();
+		MatchNode childNode = ValueNode.createValueNode();
 		childNode.setValue(value);
 		lastNode.setChildNode(number.charAt(length - 1), childNode);
 		
@@ -81,7 +81,7 @@ public class PhoneNumberMatcher {
 
 		mNumbers.remove(number);
 
-		MatchNode childNode = new ValueNode();
+		MatchNode childNode = ValueNode.createValueNode();
 		childNode.setValue(null);
 		lastNode.setChildNode(number.charAt(length - 1), childNode);
 	}
@@ -102,13 +102,13 @@ public class PhoneNumberMatcher {
 		if (lastNode == null)
 			return;
 
-		MatchNode childNode = new ValueNode();
+		MatchNode childNode = ValueNode.createValueNode();
 		childNode.setValue(value);
 		lastNode.setChildNode(number.charAt(length - 1), childNode);
 	}
 
 	public void build() {
-		mRootNode = new MatchNode();
+		mRootNode = MatchNode.createMatchNode();
 		buildCountryCode();
 		buildAreaCode();
 		buildNumbers();
@@ -151,11 +151,11 @@ public class PhoneNumberMatcher {
 			MatchNode childNode = node.getChildNode(number.charAt(i));
 
 			if (childNode == null) {
-				childNode = new MatchNode();
+				childNode = MatchNode.createMatchNode();
 				node.setChildNode(number.charAt(i), childNode);
 			} else if (childNode instanceof ValueNode) {
 				if (childNode.getValue() == null) {
-					childNode = new MatchNode();
+					childNode = MatchNode.createMatchNode();
 					node.setChildNode(number.charAt(i), childNode);
 				} else {
 					skip = true;
@@ -178,14 +178,11 @@ public class PhoneNumberMatcher {
 		if (length == 0)
 			return;
 
-		MatchNode node = findOrCreateNodeAtPos(number, length);
+		MatchNode node = findOrCreateNodeAtPos(number, length - 1);
 
 		if (node == null)
 			return;
 		
-		MatchNode[] nodes = node.getChildrenNodes();
-		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = mRootNode;
-		}
+		node.setChildNode(number.charAt(length - 1), mRootNode);
 	}
 }
