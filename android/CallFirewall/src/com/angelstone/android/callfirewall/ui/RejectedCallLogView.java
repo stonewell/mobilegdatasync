@@ -24,8 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.angelstone.android.callfirewall.CallFireWallConstants;
 import com.angelstone.android.callfirewall.R;
-import com.angelstone.android.callfirewall.store.DatabaseValues;
 import com.angelstone.android.phonetools.store.BlackListManager.BlockListAction;
 import com.angelstone.android.phonetools.store.EventLog;
 import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
@@ -81,7 +81,7 @@ public class RejectedCallLogView extends Activity implements
 
 		mObserver = new EventLogObserver(mHandler);
 		getContentResolver().registerContentObserver(
-				new EventLog().getContentUri(DatabaseValues.AUTHORITY), true,
+				new EventLog().getContentUri(CallFireWallConstants.AUTHORITY), true,
 				mObserver);
 	}
 

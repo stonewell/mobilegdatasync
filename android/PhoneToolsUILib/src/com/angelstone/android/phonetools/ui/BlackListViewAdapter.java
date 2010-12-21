@@ -28,9 +28,9 @@ public class BlackListViewAdapter extends ResourceCursorAdapter {
 		int block_sms = cursor.getInt(mBlockSmsColumnId);
 
 		if (block_sms == 1)
-			iv.setImageResource(R.drawable.sms_reject);
+			iv.setImageResource(R.drawable.block);
 		else
-			iv.setImageResource(R.drawable.sms);
+			iv.setImageResource(R.drawable.non_block);
 
 		String number = cursor.getString(mNumberColumnId);
 		TextView tv = (TextView) view.findViewById(R.id.black_list_item_text);

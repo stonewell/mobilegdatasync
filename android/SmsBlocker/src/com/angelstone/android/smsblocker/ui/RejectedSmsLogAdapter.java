@@ -25,7 +25,7 @@ public class RejectedSmsLogAdapter extends ResourceCursorAdapter {
 		public void bindView(View view, Context context, Cursor cursor) {
 			ImageView iv = (ImageView) view
 					.findViewById(R.id.call_reject_record_item_img);
-			iv.setImageResource(R.drawable.sms_reject);
+			iv.setImageResource(R.drawable.block);
 
 			String number = cursor.getString(mNumberColumnId);
 			TextView tv = (TextView) view

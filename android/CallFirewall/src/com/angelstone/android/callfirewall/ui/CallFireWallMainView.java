@@ -14,8 +14,8 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 
 import com.angelstone.android.callfirewall.CallFireWallService;
+import com.angelstone.android.callfirewall.CallFireWallConstants;
 import com.angelstone.android.callfirewall.R;
-import com.angelstone.android.callfirewall.store.DatabaseValues;
 import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
 import com.angelstone.android.phonetools.ui.BlackListView;
 import com.angelstone.android.utils.ActivityLog;
@@ -23,7 +23,7 @@ import com.angelstone.android.utils.ActivityLog;
 public class CallFireWallMainView extends TabActivity implements
 		OnTabChangeListener {
 	static {
-		PhoneToolsDBManager.initialize(DatabaseValues.AUTHORITY);
+		PhoneToolsDBManager.initialize(CallFireWallConstants.AUTHORITY);
 	}
 
 	private TabHost mTabHost;
@@ -36,7 +36,7 @@ public class CallFireWallMainView extends TabActivity implements
 
 		startService(new Intent(getApplicationContext(),
 				CallFireWallService.class));
-		
+
 		mTabHost = getTabHost();
 
 		try {
@@ -73,6 +73,17 @@ public class CallFireWallMainView extends TabActivity implements
 			}
 			mTabHost.setOnTabChangedListener(this);
 
+			Intent intent = getIntent();
+
+			if (intent != null
+					&& intent.getBooleanExtra(
+							CallFireWallConstants.DATA_NOTIFY, false)) {
+				mTabHost.setCurrentTab(1);
+				
+				intent.setClass(getApplicationContext(), CallFireWallService.class);
+				
+				startService(intent);
+			}
 		} catch (Exception e) {
 			ActivityLog.logError(this, "CallFireWall", e.getLocalizedMessage());
 			Log.e("CallFireWall", "CallFirewallMainActivity Create Fail", e);
@@ -88,7 +99,6 @@ public class CallFireWallMainView extends TabActivity implements
 	public void onTabChanged(String arg0) {
 		int tabId = mTabHost.getCurrentTab();
 		changeTab(tabId);
-
 	}
 
 	private void changeTab(int tabId) {

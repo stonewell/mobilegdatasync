@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Call FireWall</string>
-    <string name="block_call_log">Blocked Call Log</string>
-    <string name="black_list">Call Block Rules</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<string name="app_name">Call FireWall</string>
+	<string name="block_call_log">Blocked Call Log</string>
+	<string name="black_list">Call Block Rules</string>
+	<string name="notification_blockedCallTitle">Blocked Call</string>
+	<string name="notification_blockedCallsTitle">Blocked Call</string>
+	<string name="notification_blockedCallsMsg">
+		<xliff:g id="num_blocked_calls">%s</xliff:g>
+		blocked calls
+	</string>
+	<string name="notification_blockedCallTicker">
+		Blocked call from
+		<xliff:g id="missed_call_from">%s</xliff:g>
+	</string>
+
+	<!-- Must override in application -->
+	<string name="app_descrip">A Call blocker application, using full number or prefix number matching</string>
+	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com.\n"</string>
+	<string name="block_from_number">Block Call from the number</string>
 </resources>

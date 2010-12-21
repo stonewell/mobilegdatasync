@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<string name="app_name">来电防火墙</string>
+	<string name="block_call_log">阻止呼入记录</string>
+	<string name="black_list">黑名单</string>
+	<string name="notification_blockedCallTitle">阻止呼入</string>
+	<string name="notification_blockedCallsTitle">阻止呼入</string>
+	<string name="notification_blockedCallsMsg">
+		<xliff:g id="num_blocked_calls">%s</xliff:g>
+		个来电被阻止
+	</string>
+	<string name="notification_blockedCallTicker">
+		阻止呼入号码<xliff:g id="missed_call_from">%s</xliff:g>
+	</string>
+
+	<!-- Must override in application -->
+	<string name="app_descrip">来电防火墙，支持根据前缀匹配号码</string>
+	<string name="app_credits">"任何问题及建议请发送邮件到
+		jingnan.si@gmail.com."</string>
+	<string name="block_from_number">阻止呼入</string>
+</resources>
