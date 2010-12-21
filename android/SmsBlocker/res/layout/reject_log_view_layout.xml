@@ -28,7 +28,7 @@
 
 		<ImageView android:id="@+id/default_logo_image_view"
 			android:layout_width="85dip" android:layout_height="35dip"
-			android:src="@drawable/default_logo" />
+			android:src="@drawable/icon" />
 
 
 	</LinearLayout>
