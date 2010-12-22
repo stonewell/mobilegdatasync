@@ -1,4 +1,4 @@
-package com.angelstone.android.phonetools.utils;
+package com.angelstone.android.utils;
 
 import android.content.Intent;
 
