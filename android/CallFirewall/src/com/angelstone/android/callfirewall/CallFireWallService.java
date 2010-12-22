@@ -23,6 +23,7 @@ import android.os.ServiceManager;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
@@ -77,8 +78,8 @@ public class CallFireWallService extends Service {
 
 				switch (msg.what) {
 				case MSG_INTENT: {
-					Intent intent = (Intent)msg.obj;
-					
+					Intent intent = (Intent) msg.obj;
+
 					if (intent != null
 							&& intent.getBooleanExtra(
 									CallFireWallConstants.DATA_NOTIFY, false)) {
@@ -211,8 +212,7 @@ public class CallFireWallService extends Service {
 
 	private boolean mInitialized = false;
 
-	private CallFireWallCallStateChangeListener mPhoneStateListener = 
-			new CallFireWallCallStateChangeListener();
+	private CallFireWallCallStateChangeListener mPhoneStateListener = new CallFireWallCallStateChangeListener();
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -356,10 +356,9 @@ public class CallFireWallService extends Service {
 						handler_.sendEmptyMessage(MSG_UPDATE_BLACK_LIST);
 					}
 				});
-		
-		getContentResolver().registerContentObserver(
-				mSysCompat.PHONE_URI, true,
-				new ContentObserver(handler_) {
+
+		getContentResolver().registerContentObserver(mSysCompat.PHONE_URI,
+				true, new ContentObserver(handler_) {
 
 					@Override
 					public void onChange(boolean selfChange) {
@@ -448,7 +447,8 @@ public class CallFireWallService extends Service {
 		}
 
 		for (String n : newNumbers) {
-			matcher.addNumber(n, ONE);
+			if (validNumber(n))
+				matcher.addNumber(n, ONE);
 		}
 	}
 
@@ -461,10 +461,28 @@ public class CallFireWallService extends Service {
 		return PendingIntent.getActivity(getApplicationContext(), 0, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 	}
-	
+
 	public void cancelNotification() {
 		mNumberMissedCalls = 0;
 
 		mNotificationMgr.cancel(BLOCKED_CALL_NOTIFICATION);
+	}
+
+	private boolean validNumber(String n) {
+		if (TextUtils.isEmpty(n))
+			return false;
+
+		if (!(n.charAt(0) == '+')
+				&& !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
+			return false;
+		}
+		
+		for(int i=1;i<n.length();i++) {
+			if (!(n.charAt(i) >= '0' && n.charAt(i) <= '9')) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
