@@ -40,7 +40,8 @@
 	<string name="alert_dialog_two_buttons_title_2">Note</string>
 	<string name="alert_dialog_two_buttons_title_3">OK to clear all?</string>
 	<string name="alert_dialog_two_buttons_msg">The numbers will be added into your block list. Do
-		you also want to remove them from your contacts list?</string>
+		you also want to remove them from your contacts list?
+	</string>
 	<string name="NoRecord">No record.</string>
 	<string name="EmptyNumberIsNotAllowed">Empty number is not allowed.</string>
 	<string name="TheNumberAlreadyExists">The number is already in your block list.</string>
@@ -84,7 +85,7 @@
 
 	<string name="bl_root_mgr_user_guide_string_1">
 		(Empty) \r\nYou don\'t have any numbers in your
-		block list.\r\n\r\n 		
+		block list.\r\n\r\n
 	</string>
 
 	<string name="bl_root_mgr_user_guide_string_2">
@@ -101,4 +102,13 @@
 	<string name="can_not_write_template">Can not write to file {1}</string>
 	<string name="can_not_create_template">Can not create file {1}</string>
 	<string name="no_record_template">{0} no records found</string>
+
+	<string name="details_ok">OK</string>
+	<string name="crop_save_text">Save</string>
+	<string name="crop_discard_text">Discard</string>
+	<string name="runningFaceDetection">Please wait\u2026</string>
+	<string name="multiface_crop_help">Tap a face to begin.</string>
+	<string name="wallpaper">Setting wallpaper, please wait\u2026</string>
+	<string name="savingImage">Saving picture\u2026</string>
+	<string name="crop_label">Crop picture</string>
 </resources>
