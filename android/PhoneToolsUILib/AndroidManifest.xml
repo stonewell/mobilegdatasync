@@ -33,9 +33,6 @@
 		<activity android:name=".ui.ClearWaitingDialog"
 			android:theme="@android:style/Theme.Dialog" android:configChanges="keyboardHidden|orientation" />
 
-		<activity android:name=".ui.CropImage" android:process=":CropImage"
-			android:configChanges="orientation|keyboardHidden" android:label="@string/crop_label">
-		</activity>
 	</application>
 
 	<uses-sdk android:minSdkVersion="4" />

@@ -106,10 +106,9 @@ public class EditNumberView extends Activity implements
 				PhoneNumberHelpers.removeNonNumbericChar(number)) != BlockListAction.NO_NUMBER) {
 			Builder b = new AlertDialog.Builder(this);
 			b.setIcon(R.drawable.alert_dialog_icon);
-			b.setTitle(R.string.alert_dialog_two_buttons_title_1);
+			b.setTitle(R.string.note);
 			b.setMessage(R.string.number_in_list_continue_update);
-			b.setPositiveButton(R.string.btn_ok, this);
-			// b.setNegativeButton(R.string.btn_no, this);
+			b.setPositiveButton(android.R.string.ok, this);
 			AlertDialog dlg = b.create();
 			dlg.show();
 			return true;

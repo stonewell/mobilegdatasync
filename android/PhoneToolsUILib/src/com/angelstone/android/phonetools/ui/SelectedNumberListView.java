@@ -133,8 +133,8 @@ public class SelectedNumberListView extends Activity implements OnClickListener
 				
 				AlertDialog ad = new AlertDialog.Builder(this)
                 .setIcon(R.drawable.alert_dialog_icon)
-                .setTitle(R.string.confirmToDelete)
-                .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+                .setTitle(R.string.delete_confirm)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) 
                     {     
                     	
@@ -151,7 +151,7 @@ public class SelectedNumberListView extends Activity implements OnClickListener
 
                     }
                 })
-                .setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) 
                     {
                        

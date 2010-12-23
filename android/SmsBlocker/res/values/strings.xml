@@ -16,4 +16,5 @@
 	<string name="block_from_number">Block sms&amp;MMS from the number</string>
 	
 	<string name="filter_reject_sms_content">Content</string>
+	<string name="phone_number_list_string">Sms&amp;MMS Process Rules</string>
 </resources>

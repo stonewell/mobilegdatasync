@@ -68,7 +68,7 @@
 			android:paddingRight="5dip" android:layout_weight="1" />
 
 		<Button android:id="@+id/add_number_view_done_btn"
-			android:text="@string/btn_done" android:layout_width="wrap_content"
+			android:text="@string/done" android:layout_width="wrap_content"
 			android:layout_height="40dip" android:layout_gravity="center_vertical"
 			android:minWidth="90dip" />
 

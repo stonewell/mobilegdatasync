@@ -125,9 +125,9 @@ public class AddBlackListNumberView extends Activity implements
 			if (hasContactNumber()) {
 				new AlertDialog.Builder(this)
 						.setIcon(R.drawable.alert_dialog_icon)
-						.setTitle(R.string.alert_dialog_two_buttons_title_2)
-						.setMessage(R.string.alert_dialog_two_buttons_msg)
-						.setPositiveButton(R.string.btn_yes,
+						.setTitle(R.string.note)
+						.setMessage(R.string.remove_from_contacts_confirm)
+						.setPositiveButton(android.R.string.yes,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int which) {
 										mIsRemoveFromContact = true;
@@ -154,7 +154,7 @@ public class AddBlackListNumberView extends Activity implements
 										finish();
 									}
 								})
-						.setNegativeButton(R.string.btn_no,
+						.setNegativeButton(android.R.string.no,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int whichButton) {
 										mIsRemoveFromContact = false;

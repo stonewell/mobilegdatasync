@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<!-- Must override in application -->
-	<string name="app_descrip">Override Me</string>
-	<string name="app_credits">Override Me</string>
 	<string name="block_from_number">Override Me</string>
-
-	<!--common used value -->
-	<string name="btn_ok">OK</string>
-	<string name="btn_cancel">Cancel</string>
-	<string name="btn_confirm">Confirm</string>
-	<string name="help">Help</string>
-	<string name="btn_agree">Agree</string>
-	<string name="btn_disagree">Disagree</string>
-	<string name="btn_delete">Delete</string>
-	<string name="btn_return">Return</string>
-	<string name="check_btn_check_all">Check all</string>
-	<string name="btn_done">Done</string>
-	<string name="btn_yes">Yes</string>
-	<string name="btn_no">No</string>
-	<string name="btn_add">Add</string>
-	<string name="or_string">Or</string>
+	<string name="phone_number_list_string">Override Me</string>
 
 	<string name="check_btn_sms_allow_contacts">Do not block any number in contacts.</string>
 
@@ -29,36 +12,16 @@
 	<string name="add_from_call_record_string">Import from call log</string>
 	<string name="add_from_sms_record_string">Import from SMS&amp;MMS log</string>
 	<string name="add_phone_number_from">Add phone number ...</string>
-	<string name="phone_number_list_string">Sms&amp;MMS Rules:</string>
-	<string name="alert_dialog_two_buttons_title">Confirm to delete?</string>
-	<string name="alert_dialog_ok">Confirm</string>
-	<string name="alert_dialog_cancel">Cancel</string>
-	<string name="reply_editor_ok_string">Confirm</string>
 	<string name="pls_select">Please select</string>
 	<string name="income_number_list_string">Incoming phone list</string>
-	<string name="alert_dialog_two_buttons_title_1">Note</string>
-	<string name="alert_dialog_two_buttons_title_2">Note</string>
-	<string name="alert_dialog_two_buttons_title_3">OK to clear all?</string>
-	<string name="alert_dialog_two_buttons_msg">The numbers will be added into your block list. Do
+	<string name="remove_from_contacts_confirm">The numbers will be added into your block list. Do
 		you also want to remove them from your contacts list?
 	</string>
 	<string name="NoRecord">No record.</string>
 	<string name="EmptyNumberIsNotAllowed">Empty number is not allowed.</string>
 	<string name="TheNumberAlreadyExists">The number is already in your block list.</string>
 	<string name="PleaseWait">Please wait...</string>
-	<string name="Setting">Setting</string>
-	<string name="Log">Log</string>
-	<string name="About">About</string>
-	<string name="Exit">Exit</string>
-	<string name="Menu">Menu</string>
-	<string name="Edit">Edit</string>
-	<string name="Delete">Delete</string>
-	<string name="Return">Return</string>
-	<string name="ClearAll">Clear All</string>
-	<string name="Unknown">Unknown</string>
-	<string name="NumberAlreadyInBlacklist">The number is already in block list</string>
 	<string name="AddedToBlacklist">Successfully added to block list</string>
-	<string name="BlacklistContactName">BLOCK LIST</string>
 	<string name="AddToBlacklist">Add to block list</string>
 	<string name="ClearAllRecords">Clear Records</string>
 	<string name="ChangeTo">change to</string>
@@ -69,14 +32,10 @@
 	<string name="add_bl_number_from_input_string">Input Number</string>
 	<string name="add_from_string">Add numbers from:</string>
 	<string name="input_number_dlg_title_string">Please Input Number</string>
-	<string name="input_number_title_string">Number</string>
-	<string name="input_name_title_string">Name</string>
 	<string name="PleaseSelectOneNumberAtLeast">Please select at least one number.</string>
 	<string name="how_many_number_selected_string">number(s) selected</string>
-	<string name="nameNumberStr">Name</string>
 	<string name="showSelectedNumbers">Show selected Numbers</string>
 	<string name="selectedNumbersTitle">Selected Numbers</string>
-	<string name="confirmToDelete">OK to delete?</string>
 	<string name="logDetailInfo">Detail Information </string>
 	<string name="hold_down_to_edit">Hold down a record to edit</string>
 	<string name="press_menu_to_view_selected_numbers">Press \"menu\" to view selected numbers</string>
@@ -91,24 +50,7 @@
 	<string name="bl_root_mgr_user_guide_string_2">
 		Click Add to start.
 	</string>
-	<string name="allow_sms_from_number">Not a Spam</string>
+	<string name="not_spam">Not a Spam</string>
 	<string name="add_number_to_allow_list">Add {0} to allowed list?</string>
 	<string name="number_in_list_continue_update">The number is already in your block list.</string>
-	<string name="import_export">Import/Export</string>
-	<string name="import_from_sdcard">Import From SDCard</string>
-	<string name="export_to_sdcard">Export To SDCard</string>
-	<string name="unkown_error_template">{0} file {1} fail, error:{2}</string>
-	<string name="success_template">{0} file {1}</string>
-	<string name="can_not_write_template">Can not write to file {1}</string>
-	<string name="can_not_create_template">Can not create file {1}</string>
-	<string name="no_record_template">{0} no records found</string>
-
-	<string name="details_ok">OK</string>
-	<string name="crop_save_text">Save</string>
-	<string name="crop_discard_text">Discard</string>
-	<string name="runningFaceDetection">Please wait\u2026</string>
-	<string name="multiface_crop_help">Tap a face to begin.</string>
-	<string name="wallpaper">Setting wallpaper, please wait\u2026</string>
-	<string name="savingImage">Saving picture\u2026</string>
-	<string name="crop_label">Crop picture</string>
 </resources>

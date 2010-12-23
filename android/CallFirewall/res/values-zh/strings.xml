@@ -18,4 +18,5 @@
 	<string name="app_credits">"任何问题及建议请发送邮件到
 		jingnan.si@gmail.com."</string>
 	<string name="block_from_number">阻止呼入</string>
+	<string name="phone_number_list_string">已阻止的号码:</string>
 </resources>

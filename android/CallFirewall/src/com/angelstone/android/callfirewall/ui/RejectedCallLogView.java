@@ -99,9 +99,9 @@ public class RejectedCallLogView extends Activity implements
 
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		menu.add(0, 0, 0, R.string.allow_sms_from_number);
-		menu.add(0, 1, 1, R.string.Delete);
-		menu.setHeaderTitle(R.string.Menu);
+		menu.add(0, 0, 0, R.string.not_spam);
+		menu.add(0, 1, 1, R.string.delete);
+		menu.setHeaderTitle(R.string.menu);
 		super.onCreateContextMenu(menu, v, menuInfo);
 	}
 
@@ -114,8 +114,8 @@ public class RejectedCallLogView extends Activity implements
 		case 1: {
 			AlertDialog ad = new AlertDialog.Builder(this)
 					.setIcon(R.drawable.alert_dialog_icon)
-					.setTitle(R.string.alert_dialog_two_buttons_title)
-					.setPositiveButton(R.string.alert_dialog_ok,
+					.setTitle(R.string.delete_confirm)
+					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
@@ -128,7 +128,7 @@ public class RejectedCallLogView extends Activity implements
 															.getColumnIndex(EventLog.COL_ID)));
 								}
 							})
-					.setNegativeButton(R.string.alert_dialog_cancel,
+					.setNegativeButton(android.R.string.cancel,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
@@ -153,9 +153,9 @@ public class RejectedCallLogView extends Activity implements
 				getString(R.string.add_number_to_allow_list), number);
 		AlertDialog ad = new AlertDialog.Builder(this)
 				.setIcon(R.drawable.alert_dialog_icon)
-				.setTitle(R.string.allow_sms_from_number)
+				.setTitle(R.string.not_spam)
 				.setMessage(text)
-				.setPositiveButton(R.string.alert_dialog_ok,
+				.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
@@ -181,7 +181,7 @@ public class RejectedCallLogView extends Activity implements
 								mCursor.requery();
 							}
 						})
-				.setNegativeButton(R.string.alert_dialog_cancel,
+				.setNegativeButton(android.R.string.cancel,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
@@ -242,8 +242,8 @@ public class RejectedCallLogView extends Activity implements
 		case 0: {
 			AlertDialog ad = new AlertDialog.Builder(this)
 					.setIcon(R.drawable.alert_dialog_icon)
-					.setTitle(R.string.alert_dialog_two_buttons_title_3)
-					.setPositiveButton(R.string.alert_dialog_ok,
+					.setTitle(R.string.note)
+					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
@@ -256,7 +256,7 @@ public class RejectedCallLogView extends Activity implements
 
 								}
 							})
-					.setNegativeButton(R.string.alert_dialog_cancel,
+					.setNegativeButton(android.R.string.cancel,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
