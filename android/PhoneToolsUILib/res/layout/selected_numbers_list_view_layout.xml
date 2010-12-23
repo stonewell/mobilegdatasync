@@ -31,14 +31,14 @@
         		> 
         
 	        <Button android:id="@+id/selected_number_list_view_delete_btn"
-                android:text="@string/btn_delete"
+                android:text="@string/delete"
 	        		android:layout_width="fill_parent"
 	        		android:layout_height="wrap_content"
 	        		android:layout_weight="1.0"
 	        		/>
 	        		
 	        <Button android:id="@+id/selected_number_list_view_return_btn"
-                android:text="@string/btn_return"
+                android:text="@string/ret"
 	        		android:layout_width="fill_parent"
 	        		android:layout_height="wrap_content"
 	        		android:layout_weight="1.0"

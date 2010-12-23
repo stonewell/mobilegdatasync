@@ -2,4 +2,43 @@
 <resources>
     <string name="app_name"></string>
     <string name="activity_log_title">Activity Log</string>
+	<string name="app_descrip">Override Me</string>
+	<string name="app_credits">Override Me</string>
+	
+	<string name="view_logs">Log</string>
+	<string name="about">About</string>
+	<string name="preference">Preferences</string>
+	<string name="import_export">Import/Export</string>
+	<string name="import_from_sdcard">Import From SDCard</string>
+	<string name="export_to_sdcard">Export To SDCard</string>
+	<string name="unkown_error_template">{0} file {1} fail, error:{2}</string>
+	<string name="success_template">{0} file {1}</string>
+	<string name="can_not_write_template">Can not write to file {1}</string>
+	<string name="can_not_create_template">Can not create file {1}</string>
+	<string name="no_record_template">{0} no records found</string>
+	
+	<!--common used value -->
+	<string name="confirm">Confirm</string>
+	<string name="help">Help</string>
+	<string name="agree">Agree</string>
+	<string name="disagree">Disagree</string>
+	<string name="delete">Delete</string>
+	<string name="ret">Return</string>
+	<string name="check_all">Check all</string>
+	<string name="done">Done</string>
+	<string name="add">Add</string>
+	<string name="or">Or</string>
+	<string name="note">Note</string>
+	<string name="setting">Setting</string>
+	<string name="exit">Exit</string>
+	<string name="menu">Menu</string>
+	<string name="edit">Edit</string>
+	<string name="clear_all">Clear All</string>
+	<string name="unknown">Unknown</string>
+	<string name="number">Number</string>
+	<string name="name">Name</string>
+	<string name="save">Save</string>
+
+	<string name="clear_all_confirm">OK to clear all?</string>
+	<string name="delete_confirm">OK to delete?</string>
 </resources>

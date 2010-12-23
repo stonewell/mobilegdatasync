@@ -18,4 +18,5 @@
 	<string name="app_descrip">A Call blocker application, using full number or prefix number matching</string>
 	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com.\n"</string>
 	<string name="block_from_number">Block Call from the number</string>
+	<string name="phone_number_list_string">Blocking Rules:</string>
 </resources>

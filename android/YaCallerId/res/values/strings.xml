@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Yet Another Caller id</string>
+    <string name="app_name">Yet Another Caller Id</string>
     <string name="clear_all">Clear All</string>
+    <string name="new_caller_id">Create New Caller Id</string>
+    <string name="edit_caller_id">Edit Caller Id</string>
+    <string name="btn_choose_number">Choose</string>
 </resources>
