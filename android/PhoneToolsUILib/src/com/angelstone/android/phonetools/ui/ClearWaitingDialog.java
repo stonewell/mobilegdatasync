@@ -68,13 +68,13 @@ public class ClearWaitingDialog extends Activity {
 			switch (type) {
 			case UIConstants.CLEAR_BLACK_LIST_NUMBER: {
 				Intent intent = new Intent();
-				setResult(5, intent);
+				setResult(RESULT_OK, intent);
 				finish();
 				break;
 			}
 			default: {
 				Intent intent = new Intent();
-				setResult(3, intent);
+				setResult(RESULT_OK, intent);
 				finish();
 				break;
 			}

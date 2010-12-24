@@ -5,4 +5,5 @@
     <string name="new_caller_id">Create New Caller Id</string>
     <string name="edit_caller_id">Edit Caller Id</string>
     <string name="btn_choose_number">Choose</string>
+    <string name="choose_number_from">Choose Number From</string>
 </resources>

@@ -13,7 +13,7 @@ public class AddFromCallLogView extends AddFromListBaseView {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@Override
 	protected ListAdapter createAdapter(Context context, Cursor c,
 			Map<String, Integer> checkStates) {
@@ -22,8 +22,12 @@ public class AddFromCallLogView extends AddFromListBaseView {
 
 	@Override
 	protected Cursor getListCursor() {
-		return getContentResolver().query(CallLog.Calls.CONTENT_URI, null,
-				CallLog.Calls.NUMBER + " is not null", null, CallLog.Calls.DEFAULT_SORT_ORDER);
+		return getContentResolver().query(
+				CallLog.Calls.CONTENT_URI,
+				null,
+				CallLog.Calls.NUMBER + " is not null) group by ("
+						+ CallLog.Calls.NUMBER, null,
+				CallLog.Calls.DEFAULT_SORT_ORDER);
 	}
 
 	@Override

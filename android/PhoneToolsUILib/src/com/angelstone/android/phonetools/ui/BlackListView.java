@@ -257,7 +257,7 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (resultCode) {
+		switch (requestCode) {
 		case 1: // add result
 		{
 			String[] addedNumbers = data.getExtras().getStringArray(

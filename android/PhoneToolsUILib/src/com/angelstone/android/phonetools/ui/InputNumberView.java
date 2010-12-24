@@ -16,8 +16,7 @@ import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.ToastShowWaitHandler;
 
-public class InputNumberView extends Activity implements
-		OnClickListener {
+public class InputNumberView extends Activity implements OnClickListener {
 
 	private ToastShowWaitHandler toastShowWaitHandler = new ToastShowWaitHandler();
 
@@ -28,10 +27,7 @@ public class InputNumberView extends Activity implements
 
 		requestWindowFeature(Window.FEATURE_LEFT_ICON);
 
-		// See assets/res/any/layout/dialog_activity.xml for this
-		// view layout definition, which is being set here as
-		// the content of our screen.
-		setContentView(R.layout.input_bl_number_dialog_activity);
+		setContentView(R.layout.input_bl_number_view);
 
 		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				android.R.drawable.ic_menu_more);
@@ -47,11 +43,9 @@ public class InputNumberView extends Activity implements
 		switch (v.getId()) {
 		case R.id.input_number_view_ok_btn: {
 			EditText numEt = (EditText) findViewById(R.id.input_number_edit);
-			EditText nameEt = (EditText) findViewById(R.id.input_name_edit);
 
 			String number = PhoneNumberHelpers.removeNonNumbericChar(
 					String.valueOf(numEt.getText())).trim();
-			String name = String.valueOf(nameEt.getText()).trim();
 
 			if (number == null || number.equals("")) {
 				if (toastShowWaitHandler.IsAllowShow()) {
@@ -63,8 +57,9 @@ public class InputNumberView extends Activity implements
 				break;
 			}
 
-			if (PhoneToolsDBManager.getBlackListManager().blacklistContainsNumber(this,
-					PhoneNumberHelpers.removeNonNumbericChar(number)) != BlockListAction.NO_NUMBER) {
+			if (PhoneToolsDBManager.getBlackListManager()
+					.blacklistContainsNumber(this,
+							PhoneNumberHelpers.removeNonNumbericChar(number)) != BlockListAction.NO_NUMBER) {
 				if (toastShowWaitHandler.IsAllowShow()) {
 					Toast.makeText(this, R.string.TheNumberAlreadyExists,
 							Toast.LENGTH_SHORT).show();
@@ -75,14 +70,10 @@ public class InputNumberView extends Activity implements
 
 			Intent intent = new Intent();
 			intent.putExtra("input_return_number", number);
-			intent.putExtra("input_return_name", name);
-			setResult(6, intent);
+			setResult(RESULT_OK, intent);
 
 			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
 					.hideSoftInputFromWindow(numEt.getWindowToken(),
-							InputMethodManager.HIDE_NOT_ALWAYS);
-			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-					.hideSoftInputFromWindow(nameEt.getWindowToken(),
 							InputMethodManager.HIDE_NOT_ALWAYS);
 
 			finish();
@@ -90,13 +81,10 @@ public class InputNumberView extends Activity implements
 		}
 		case R.id.input_number_view_cancel_btn: {
 			EditText numEt = (EditText) findViewById(R.id.input_number_edit);
-			EditText nameEt = (EditText) findViewById(R.id.input_name_edit);
 			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
 					.hideSoftInputFromWindow(numEt.getWindowToken(),
 							InputMethodManager.HIDE_NOT_ALWAYS);
-			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-					.hideSoftInputFromWindow(nameEt.getWindowToken(),
-							InputMethodManager.HIDE_NOT_ALWAYS);
+			setResult(RESULT_CANCELED);
 			finish();
 			break;
 		}

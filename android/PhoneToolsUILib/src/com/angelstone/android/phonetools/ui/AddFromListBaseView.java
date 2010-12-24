@@ -1,7 +1,10 @@
 package com.angelstone.android.phonetools.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import android.app.Activity;
 import android.content.Context;
@@ -29,13 +32,28 @@ public abstract class AddFromListBaseView extends Activity implements
 
 	private Map<String, Integer> mCheckState = new HashMap<String, Integer>();
 
+	private List<String> mSelectedNumbers = new Vector<String>();
+
+	private boolean mSingleSelect = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_from_list_view_layout);
 
-		for (String selNumber : AddBlackListNumberView.mSelectedNumbers) {
-			mCheckState.put(selNumber, UIConstants.CHECK_ON);
+		if (getIntent() != null) {
+			String[] selectedNumbers = getIntent().getStringArrayExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS);
+
+			if (selectedNumbers != null && selectedNumbers.length > 0) {
+				for (String selNumber : selectedNumbers) {
+					mCheckState.put(selNumber, UIConstants.CHECK_ON);
+					mSelectedNumbers.add(selNumber);
+				}
+			}
+
+			mSingleSelect = getIntent().getBooleanExtra(
+					UIConstants.EXTRA_SINGLE_SELECT, false);
 		}
 
 		mCursor = getListCursor();
@@ -71,14 +89,23 @@ public abstract class AddFromListBaseView extends Activity implements
 		String number = PhoneNumberHelpers.removeNonNumbericChar(adapter
 				.getNumber(this, position));
 
-		if (mCheckState.containsKey(number)) {
-			if (mCheckState.get(number) == UIConstants.CHECK_OFF) {
+		if (mSingleSelect) {
+			if (!mCheckState.containsKey(number)) {
+				mCheckState.clear();
 				mCheckState.put(number, UIConstants.CHECK_ON);
-			} else if (mCheckState.get(number) == UIConstants.CHECK_ON) {
-				mCheckState.put(number, UIConstants.CHECK_OFF);
+			} else {
+				mCheckState.clear();
 			}
 		} else {
-			mCheckState.put(number, UIConstants.CHECK_ON);
+			if (mCheckState.containsKey(number)) {
+				if (mCheckState.get(number) == UIConstants.CHECK_OFF) {
+					mCheckState.put(number, UIConstants.CHECK_ON);
+				} else if (mCheckState.get(number) == UIConstants.CHECK_ON) {
+					mCheckState.put(number, UIConstants.CHECK_OFF);
+				}
+			} else {
+				mCheckState.put(number, UIConstants.CHECK_ON);
+			}
 		}
 
 		((CursorAdapter) listView.getAdapter()).notifyDataSetChanged();
@@ -88,25 +115,31 @@ public abstract class AddFromListBaseView extends Activity implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.content_ok_btn: {
+			ArrayList<String> addedNumber = new ArrayList<String>();
+			ArrayList<String> removedNumber = new ArrayList<String>();
+
 			for (String number : mCheckState.keySet()) {
 				if (mCheckState.get(number) == UIConstants.CHECK_ON) {
-					if (AddBlackListNumberView.indexOfSelectedNumber(number) == -1) {
-						AddBlackListNumberView.mSelectedNumbers.add(number);
-						AddBlackListNumberView.mSelectedNames.add("");
+					if (PhoneNumberHelpers.indexOfSelectedNumber(
+							mSelectedNumbers, number) == -1) {
+						addedNumber.add(number);
 					}
 				} else if (mCheckState.get(number) == UIConstants.CHECK_OFF) {
-					int pos = AddBlackListNumberView
-							.indexOfSelectedNumber(number);
+					int pos = PhoneNumberHelpers.indexOfSelectedNumber(
+							mSelectedNumbers, number);
 
 					if (pos >= 0) {
-						AddBlackListNumberView.mSelectedNumbers.remove(pos);
-						AddBlackListNumberView.mSelectedNames.remove(pos);
+						removedNumber.add(number);
 					}
 				}
 			}
 
 			Intent intent = new Intent();
-			setResult(getResultCode(), intent);
+			intent.putStringArrayListExtra(UIConstants.EXTRA_ADDED_NUMBERS,
+					addedNumber);
+			intent.putStringArrayListExtra(UIConstants.EXTRA_REMOVED_NUMBERS,
+					removedNumber);
+			setResult(RESULT_OK, intent);
 
 			finish();
 
@@ -117,6 +150,6 @@ public abstract class AddFromListBaseView extends Activity implements
 		}
 
 	}
-	
+
 	protected abstract int getResultCode();
 }
