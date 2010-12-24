@@ -1,6 +1,7 @@
 package com.angelstone.android.utils;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -177,4 +178,18 @@ public class PhoneNumberHelpers {
 				c.close();
 		}
 	}
-}
+	
+	public static int indexOfSelectedNumber(List<String> selectedNumbers, String number) {
+		for (int i = 0; i < selectedNumbers.size(); i++) {
+			if (PhoneNumberHelpers
+					.isSameNumber(selectedNumbers.get(i), number)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	public static boolean containsNumber(List<String> selectedNumbers, String number) {
+		return indexOfSelectedNumber(selectedNumbers, number) >= 0;
+	}}

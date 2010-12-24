@@ -22,6 +22,26 @@
 		<!-- Library Activity -->
 		<activity android:name="com.angelstone.android.ui.ActivityLogActivity"
 			android:label="@string/activity_log_title" />
+
+		<activity
+			android:name="com.angelstone.android.phonetools.ui.AddBlackListNumberView"
+			android:label="@string/app_name" android:windowSoftInputMode="stateHidden|adjustResize" />
+			
+		<activity android:name="com.angelstone.android.phonetools.ui.AddFromContactView"
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
+		<activity android:name="com.angelstone.android.phonetools.ui.AddFromCallLogView"
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
+		<activity android:name="com.angelstone.android.phonetools.ui.AddFromSmsRecordView"
+			android:label="@string/app_name" android:configChanges="keyboardHidden|orientation" />
+
+		<activity android:name="com.angelstone.android.phonetools.ui.InputNumberView"
+			android:label="@string/input_number_dlg_title_string" android:theme="@android:style/Theme.Dialog" />
+		<activity android:name="com.angelstone.android.phonetools.ui.EditNumberView" android:label="@string/app_name"
+			android:windowSoftInputMode="stateHidden|adjustResize" />
+		<activity android:name="com.angelstone.android.phonetools.ui.SelectedNumberListView"
+			android:theme="@android:style/Theme.Dialog" />
+		<activity android:name="com.angelstone.android.phonetools.ui.ClearWaitingDialog"
+			android:theme="@android:style/Theme.Dialog" android:configChanges="keyboardHidden|orientation" />
 	</application>
 	<uses-sdk android:minSdkVersion="4" />
 

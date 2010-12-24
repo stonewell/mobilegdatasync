@@ -91,7 +91,7 @@ public class EditNumberView extends Activity implements
 		intent.putExtra("edited_name_return", String.valueOf(nameEt.getText()));
 		intent.putExtra("sms_block", chk.isChecked());
 		intent.putExtra("position", mPosition);
-		setResult(2, intent);
+		setResult(RESULT_OK, intent);
 
 		((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
 				.hideSoftInputFromWindow(nameEt.getWindowToken(),

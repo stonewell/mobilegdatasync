@@ -21,9 +21,11 @@ import com.angelstone.android.utils.PhoneNumberHelpers;
 
 public class AddBlackListNumberView extends Activity implements
 		OnClickListener, OnCheckedChangeListener {
+	private static final int CALL_ADD_FROM_LIST = 1000;
+	private static final int CALL_SELECT_FROM_CURRENT_LIST = 1001;
+	private static final int CALL_INPUT = 1002;
 
-	public static ArrayList<String> mSelectedNumbers;
-	public static ArrayList<String> mSelectedNames;
+	private ArrayList<String> mSelectedNumbers;
 
 	private boolean mIsRemoveFromContact = false;
 
@@ -47,16 +49,13 @@ public class AddBlackListNumberView extends Activity implements
 			btn.setOnClickListener(this);
 
 			mSelectedNumbers = new ArrayList<String>();
-			mSelectedNames = new ArrayList<String>();
 
 			if (savedInstanceState != null) {
 				String[] numbers = savedInstanceState
 						.getStringArray("selected_numbers");
-				String[] names = savedInstanceState.getStringArray("selected_names");
 
 				for (int i = 0; i < numbers.length; i++) {
 					mSelectedNumbers.add(numbers[i]);
-					mSelectedNames.add(names[i]);
 				}
 			}
 
@@ -78,17 +77,12 @@ public class AddBlackListNumberView extends Activity implements
 
 		String[] numbers = (String[]) mSelectedNumbers
 				.toArray(new String[mSelectedNumbers.size()]);
-		String[] names = (String[]) mSelectedNames
-				.toArray(new String[mSelectedNames.size()]);
 
 		outState.putStringArray("selected_numbers", numbers);
-		outState.putStringArray("selected_names", names);
 	}
 
 	@Override
 	protected void onDestroy() {
-		mSelectedNumbers.clear();
-
 		mSelectedNumbers.clear();
 
 		super.onDestroy();
@@ -99,25 +93,37 @@ public class AddBlackListNumberView extends Activity implements
 		case R.id.add_bl_number_from_contact_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, AddFromContactView.class);
-			startActivityForResult(intent, 2);
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
+					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
+			startActivityForResult(intent, CALL_ADD_FROM_LIST);
 			break;
 		}
 		case R.id.add_bl_number_from_call_record_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, AddFromCallLogView.class);
-			startActivityForResult(intent, 3);
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
+					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
+			startActivityForResult(intent, CALL_ADD_FROM_LIST);
 			break;
 		}
 		case R.id.add_bl_number_from_sms_record_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, AddFromSmsRecordView.class);
-			startActivityForResult(intent, 4);
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
+					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
+			startActivityForResult(intent, CALL_ADD_FROM_LIST);
 			break;
 		}
 		case R.id.add_bl_number_from_input_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, InputNumberView.class);
-			startActivityForResult(intent, 5);
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
+					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
+			startActivityForResult(intent, CALL_INPUT);
 
 			break;
 		}
@@ -129,50 +135,49 @@ public class AddBlackListNumberView extends Activity implements
 						.setMessage(R.string.remove_from_contacts_confirm)
 						.setPositiveButton(android.R.string.yes,
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int which) {
+									public void onClick(DialogInterface dialog,
+											int which) {
 										mIsRemoveFromContact = true;
 
 										String[] numbers = (String[]) mSelectedNumbers
-												.toArray(new String[mSelectedNumbers.size()]);
-										String[] names = (String[]) mSelectedNames
-												.toArray(new String[mSelectedNames.size()]);
+												.toArray(new String[mSelectedNumbers
+														.size()]);
 
 										Intent intent = new Intent();
-										intent.putExtra("added_numbers_result", numbers);
-										intent.putExtra("added_names_result", names);
+										intent.putExtra("added_numbers_result",
+												numbers);
 
 										intent.putExtra("sms_block", true);
 
-										intent.putExtra("is_remove_from_contact",
+										intent.putExtra(
+												"is_remove_from_contact",
 												mIsRemoveFromContact);
 
-										setResult(1, intent);
-
-										// ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(smsEt.getWindowToken(),
-										// InputMethodManager.HIDE_NOT_ALWAYS);
+										setResult(RESULT_OK, intent);
 
 										finish();
 									}
 								})
 						.setNegativeButton(android.R.string.no,
 								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int whichButton) {
+									public void onClick(DialogInterface dialog,
+											int whichButton) {
 										mIsRemoveFromContact = false;
 
 										String[] numbers = (String[]) mSelectedNumbers
-												.toArray(new String[mSelectedNumbers.size()]);
-										String[] names = (String[]) mSelectedNames
-												.toArray(new String[mSelectedNames.size()]);
+												.toArray(new String[mSelectedNumbers
+														.size()]);
 
 										Intent intent = new Intent();
-										intent.putExtra("added_numbers_result", numbers);
-										intent.putExtra("added_names_result", names);
+										intent.putExtra("added_numbers_result",
+												numbers);
 
 										intent.putExtra("sms_block", true);
-										intent.putExtra("is_remove_from_contact",
+										intent.putExtra(
+												"is_remove_from_contact",
 												mIsRemoveFromContact);
 
-										setResult(1, intent);
+										setResult(RESULT_OK, intent);
 
 										finish();
 									}
@@ -181,12 +186,9 @@ public class AddBlackListNumberView extends Activity implements
 
 				String[] numbers = (String[]) mSelectedNumbers
 						.toArray(new String[mSelectedNumbers.size()]);
-				String[] names = (String[]) mSelectedNames
-						.toArray(new String[mSelectedNames.size()]);
 
 				Intent intent = new Intent();
 				intent.putExtra("added_numbers_result", numbers);
-				intent.putExtra("added_names_result", names);
 				intent.putExtra("is_remove_from_contact", false);
 
 				intent.putExtra("sms_block", true);
@@ -215,41 +217,45 @@ public class AddBlackListNumberView extends Activity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		try {
-			switch (resultCode) {
-			case 2: {
+			switch (requestCode) {
+			case CALL_SELECT_FROM_CURRENT_LIST: {
 				String[] deleteNumbers = data.getExtras().getStringArray(
 						"delete_numbers");
-				String[] deleteNames = data.getExtras().getStringArray("delete_names");
 
 				for (int i = 0; i < deleteNumbers.length; i++) {
 					mSelectedNumbers.remove(deleteNumbers[i]);
-					mSelectedNames.remove(deleteNames[i]);
 				}
 
 				break;
 			}
-
-			case 3: {
-				break;
-			}
-			case 4: {
-				break;
-			}
-			case 5: {
-				break;
-			}
-			case 6: {
+			case CALL_INPUT: {
 				String number = PhoneNumberHelpers.removeNonNumbericChar(data
 						.getExtras().getString("input_return_number"));
-				String name = data.getExtras().getString("input_return_name");
 
-				if (!containsNumber(number)) {
+				if (!PhoneNumberHelpers
+						.containsNumber(mSelectedNumbers, number)) {
 					mSelectedNumbers.add(number);
-					mSelectedNames.add(name);
 				}
 
+				break;
 			}
-			case 0: {
+			case CALL_ADD_FROM_LIST: {
+				ArrayList<String> addedNumbers = data
+						.getStringArrayListExtra(UIConstants.EXTRA_ADDED_NUMBERS);
+				ArrayList<String> removedNumbers = data
+						.getStringArrayListExtra(UIConstants.EXTRA_REMOVED_NUMBERS);
+
+				for (String n : addedNumbers) {
+					if (!PhoneNumberHelpers.containsNumber(mSelectedNumbers, n)) {
+						mSelectedNumbers.add(n);
+					}
+				}
+
+				for (String n : removedNumbers) {
+					if (PhoneNumberHelpers.containsNumber(mSelectedNumbers, n)) {
+						mSelectedNumbers.remove(n);
+					}
+				}
 				break;
 			}
 			default:
@@ -268,24 +274,11 @@ public class AddBlackListNumberView extends Activity implements
 		}
 	}
 
-	public static int indexOfSelectedNumber(String number) {
-		for (int i = 0; i < mSelectedNumbers.size(); i++) {
-			if (PhoneNumberHelpers.isSameNumber(mSelectedNumbers.get(i), number)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	public static boolean containsNumber(String number) {
-		return indexOfSelectedNumber(number) >= 0;
-	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 0, 0, R.string.showSelectedNumbers).setIcon(
-				this.getResources().getDrawable(android.R.drawable.ic_menu_more));
+				this.getResources()
+						.getDrawable(android.R.drawable.ic_menu_more));
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -299,13 +292,10 @@ public class AddBlackListNumberView extends Activity implements
 
 			String[] numbers = (String[]) mSelectedNumbers
 					.toArray(new String[mSelectedNumbers.size()]);
-			String[] names = (String[]) mSelectedNames
-					.toArray(new String[mSelectedNames.size()]);
 
 			intent.putExtra("selected_numbers", numbers);
-			intent.putExtra("selected_names", names);
 
-			startActivityForResult(intent, 6);
+			startActivityForResult(intent, CALL_SELECT_FROM_CURRENT_LIST);
 			break;
 		}
 		default:
