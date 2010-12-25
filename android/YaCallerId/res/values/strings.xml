@@ -6,4 +6,8 @@
     <string name="edit_caller_id">Edit Caller Id</string>
     <string name="btn_choose_number">Choose</string>
     <string name="choose_number_from">Choose Number From</string>
+    <string name="caller_id_saved">Caller Id Saved!</string>
+    <string name="empty_image_is_not_allowed">Please choose an image before save!</string>
+    
+    <string name="unale_choose_img_template">Unable to choose image, reason:{0}</string>
 </resources>

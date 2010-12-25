@@ -8,8 +8,8 @@ public class CallerId extends Entity {
 	public static final String TABLE_NAME = "callers";
 
 	public static final String COL_NUMBER = "number";
-	public static final String COL_DATA = "data";
-	public static final String DEFAULT_SORT_ORDER = COL_DATA + " asc";
+	public static final String COL_DATA = "_data";
+	public static final String DEFAULT_SORT_ORDER = COL_NUMBER + " asc";
 
 	@Override
 	public String getTableName() {

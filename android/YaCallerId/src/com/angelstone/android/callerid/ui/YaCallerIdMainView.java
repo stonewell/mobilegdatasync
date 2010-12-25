@@ -115,19 +115,16 @@ public class YaCallerIdMainView extends GenericActivity implements
 			AlertDialog ad = new AlertDialog.Builder(this)
 					.setIcon(android.R.drawable.ic_dialog_alert)
 					.setTitle(R.string.note)
+					.setMessage(R.string.clear_all_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
+									mCallerIdManager.clearCallerIds(YaCallerIdMainView.this);
 								}
 							})
 					.setNegativeButton(android.R.string.cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-
-								}
-							}).create();
+							null).create();
 			ad.show();
 
 			break;
