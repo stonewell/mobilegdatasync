@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -94,8 +96,8 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 		mListview.setOnItemLongClickListener(this);
 		mListview.setOnItemClickListener(this);
 
-		mCursor = PhoneToolsDBManager.getBlackListManager()
-				.getBlacklistNumbers(this);
+		mCursor = PhoneToolsDBManager.getBlackListManager().getBlacklistNumbers(
+				this);
 		startManagingCursor(mCursor);
 
 		BlackListViewAdapter adapter = new BlackListViewAdapter(this, mCursor);
@@ -105,30 +107,26 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 
 		mObserver = new BlackListObserver(mHandler);
 		getContentResolver().registerContentObserver(
-				PhoneToolsDBManager.getBlackListManager().getContentUri(),
-				true, mObserver);
+				PhoneToolsDBManager.getBlackListManager().getContentUri(), true,
+				mObserver);
 	}
 
 	private void refreshViewList() {
 		if (mCursor.getCount() == 0) {
-			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC,
-					FC);
+			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC, FC);
 			ScrollView sv = (ScrollView) findViewById(R.id.bl_root_mgr_user_guide_text);
 			sv.setLayoutParams(param);
 
-			LinearLayout.LayoutParams param1 = new LinearLayout.LayoutParams(0,
-					0);
+			LinearLayout.LayoutParams param1 = new LinearLayout.LayoutParams(0, 0);
 			TextView tv = (TextView) findViewById(R.id.add_bl_number_edit_guide_text);
 			tv.setLayoutParams(param1);
 
 		} else {
-			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0,
-					0);
+			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, 0);
 			ScrollView sv = (ScrollView) findViewById(R.id.bl_root_mgr_user_guide_text);
 			sv.setLayoutParams(param);
 
-			LinearLayout.LayoutParams param1 = new LinearLayout.LayoutParams(
-					WC, WC);
+			LinearLayout.LayoutParams param1 = new LinearLayout.LayoutParams(WC, WC);
 			param1.gravity = Gravity.CENTER_HORIZONTAL;
 			TextView tv = (TextView) findViewById(R.id.add_bl_number_edit_guide_text);
 			tv.setLayoutParams(param1);
@@ -165,8 +163,7 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 			CheckBox chkBox = (CheckBox) findViewById(R.id.sms_allow_contacts_check_box);
 
 			PhoneToolsDBManager.getSettingsManager().writeSetting(this,
-					PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS,
-					chkBox.isChecked());
+					PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS, chkBox.isChecked());
 			break;
 		}
 		default:
@@ -197,15 +194,7 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 
 			boolean blockSms = c.getInt(blockSmsColumnId) == 1;
 
-			Intent intent = new Intent();
-			intent.setClass(BlackListView.this, EditNumberView.class);
-
-			Bundle bundle = new Bundle();
-			bundle.putInt("POSITION", mListLongClickPos);
-			bundle.putString("EDIT_NUMBER", number);
-			bundle.putBoolean("block_sms", blockSms);
-			intent.putExtras(bundle);
-			startActivityForResult(intent, 2);
+			editBlackListNumber(number, blockSms);
 			break;
 		}
 		case 2: {
@@ -214,27 +203,22 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 					.setTitle(R.string.delete_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 									Cursor c = (Cursor) mListview
 											.getItemAtPosition(mListLongClickPos);
 
 									int id = c.getColumnIndex(BlackList.COL_ID);
 
-									Uri uri = ContentUris.withAppendedId(
-											PhoneToolsDBManager
-													.getBlackListManager()
-													.getContentUri(), c
-													.getLong(id));
+									Uri uri = ContentUris.withAppendedId(PhoneToolsDBManager
+											.getBlackListManager().getContentUri(), c.getLong(id));
 
-									BlackListView.this.getContentResolver()
-											.delete(uri, null, null);
+									BlackListView.this.getContentResolver().delete(uri, null,
+											null);
 								}
 							})
 					.setNegativeButton(android.R.string.cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 									/* User clicked Cancel so do some stuff */
 								}
 							}).create();
@@ -268,8 +252,8 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 
 			// //phone_id is useless, always set it to 0 is OK
 			for (int i = 0; i < addedNumbers.length; i++) {
-				if (PhoneToolsDBManager.getBlackListManager()
-						.blacklistAddNumber(this, addedNumbers[i], blockSms) == BlackListManager.INSERT_ERROR_AREADY_EXIST) {
+				if (PhoneToolsDBManager.getBlackListManager().blacklistAddNumber(this,
+						addedNumbers[i], blockSms) == BlackListManager.INSERT_ERROR_AREADY_EXIST) {
 					continue;
 				}
 
@@ -278,17 +262,6 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 					PhoneNumberHelpers.removeFromContact(this, addedNumbers[i]);
 				}
 			}
-			break;
-		}
-		case 2: // edit result
-		{
-			String editNumBefore = data.getExtras().getString("edited_number");
-			String editNum = data.getExtras().getString("edited_number_return");
-			boolean blockSms = data.getExtras().getBoolean("sms_block");
-
-			editNum = PhoneNumberHelpers.removeNonNumbericChar(editNum);
-			PhoneToolsDBManager.getBlackListManager().blacklistUpdateNumber(
-					this, editNumBefore, editNum, blockSms);
 			break;
 		}
 		case 5: {
@@ -329,11 +302,9 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 					.setTitle(R.string.clear_all_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 									Intent intent = new Intent();
-									intent.setClass(BlackListView.this,
-											ClearWaitingDialog.class);
+									intent.setClass(BlackListView.this, ClearWaitingDialog.class);
 									intent.putExtra("clear_type",
 											UIConstants.CLEAR_BLACK_LIST_NUMBER);
 									startActivityForResult(intent, 5);
@@ -341,8 +312,7 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 							})
 					.setNegativeButton(android.R.string.cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
 								}
 							}).create();
@@ -353,7 +323,7 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 		default:
 			break;
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -408,10 +378,10 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 		}
 
 		for (String key : numbers.keySet()) {
-			PhoneToolsDBManager.getBlackListManager().blacklistDeleteNumber(
-					this, key);
-			PhoneToolsDBManager.getBlackListManager().blacklistAddNumber(this,
-					key, numbers.get(key) == 1);
+			PhoneToolsDBManager.getBlackListManager()
+					.blacklistDeleteNumber(this, key);
+			PhoneToolsDBManager.getBlackListManager().blacklistAddNumber(this, key,
+					numbers.get(key) == 1);
 		}
 
 		return 0;
@@ -455,4 +425,42 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 
 		numbers.put(parts[0], parts[1].charAt(0) == '0' ? 0 : 1);
 	}
+
+	private void editBlackListNumber(final String number, final boolean blockSms) {
+		LayoutInflater factory = LayoutInflater.from(this);
+		final View textEntryView = factory.inflate(R.layout.edit_bl_number_view,
+				null);
+
+		final EditText etNumber = (EditText) textEntryView
+				.findViewById(R.id.edit_bl_number_editor);
+		final CheckBox chkBlock = (CheckBox) textEntryView
+				.findViewById(R.id.block_sms_check_box);
+
+		etNumber.setText(number);
+		chkBlock.setChecked(blockSms);
+
+		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String editNum = etNumber.getText().toString();
+
+				boolean editblockSms = chkBlock.isChecked();
+
+				if (editNum.equals(number) && editblockSms == blockSms)
+					return;
+
+				editNum = PhoneNumberHelpers.removeNonNumbericChar(editNum);
+				PhoneToolsDBManager.getBlackListManager().blacklistUpdateNumber(
+						BlackListView.this, number, editNum, editblockSms);
+			}
+
+		};
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.edit)
+				.setNegativeButton(android.R.string.cancel, null)
+				.setView(textEntryView)
+				.setPositiveButton(android.R.string.ok, listener).show();
+	}
+
 }

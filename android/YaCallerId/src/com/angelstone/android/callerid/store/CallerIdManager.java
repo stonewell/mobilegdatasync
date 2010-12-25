@@ -1,5 +1,6 @@
 package com.angelstone.android.callerid.store;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,10 +15,6 @@ public class CallerIdManager {
 	public static final int INSERT_ERROR_AREADY_EXIST = 2;
 	public static final int INSERT_ERROR_EXCEPTION_OCCUR = -1;
 
-	public static enum BlockListAction {
-		NO_NUMBER, BLOCK, NOT_BLOCK,
-	};
-
 	private String mAuthority = null;
 	private Uri mContentUri = null;
 
@@ -27,43 +24,46 @@ public class CallerIdManager {
 	}
 
 	public Cursor getCallerIds(Context context) {
-		return context.getContentResolver().query(
-				mContentUri,
-				new String[] { CallerId.COL_ID, CallerId.COL_NUMBER,
-						CallerId.COL_DATA }, null, null, null);
+		return context.getContentResolver()
+				.query(
+						mContentUri,
+						new String[] { CallerId.COL_ID, CallerId.COL_NUMBER,
+								CallerId.COL_DATA }, null, null, null);
 	}
 
-	public int addCallerId(Context context, String number, byte[] data) {
-		int err = INSERT_ERROR_NONE;
+	public Uri addCallerId(Context context, String number, byte[] data) {
 		Cursor cur = null;
 
 		try {
 			String where_str = CallerId.COL_NUMBER + "=?";
 
 			cur = context.getContentResolver().query(mContentUri,
-					new String[] { CallerId.COL_ID }, where_str,
-					new String[] { number }, null);
+					new String[] { CallerId.COL_ID }, where_str, new String[] { number },
+					null);
 
 			if (cur != null && cur.getCount() != 0) {
-				return INSERT_ERROR_AREADY_EXIST;
+				return null;
 			} // number already existed
 
 			ContentValues args = new ContentValues();
 			args.put(CallerId.COL_NUMBER, number);
-			args.put(CallerId.COL_DATA, data);
-			context.getContentResolver().insert(mContentUri, args);
+
+			if (data != null)
+				args.put(CallerId.COL_DATA, data);
+
+			return context.getContentResolver().insert(mContentUri, args);
 
 		} catch (Exception e) {
-			ActivityLog.logError(context, context.getString(R.string.app_name), e.getLocalizedMessage());
+			ActivityLog.logError(context, context.getString(R.string.app_name),
+					e.getLocalizedMessage());
 			Log.e(context.getString(R.string.app_name), "addCallerId", e);
-			err = INSERT_ERROR_EXCEPTION_OCCUR;
 		} finally {
 			if (cur != null) {
 				cur.close();
 			}
 		}
 
-		return err;
+		return null;
 	}
 
 	public int clearCallerIds(Context context) {
@@ -85,22 +85,14 @@ public class CallerIdManager {
 		return err;
 	}
 
-	public int updateCallerId(Context context, String number,
-			byte[] data) {
-		return updateCallerId(context, number, number, data);
-	}
-
-	public int updateCallerId(Context context, String oldNumber,
-			String number, byte[] data) {
-		int err = 0;
+	public int updateCallerId(Context context, long id, String number, byte[] data) {
 		ContentValues args = new ContentValues();
 		args.put(CallerId.COL_DATA, data);
-		if (!oldNumber.equals(number)) {
-			args.put(CallerId.COL_NUMBER, number);
-		}
-		context.getContentResolver().update(mContentUri, args,
-				CallerId.COL_NUMBER + "=?", new String[] { oldNumber });
-		return err;
+		args.put(CallerId.COL_NUMBER, number);
+
+		Uri uri = ContentUris.withAppendedId(mContentUri, id);
+
+		return context.getContentResolver().update(uri, args, null, null);
 	}
 
 	public Uri getContentUri() {
@@ -109,5 +101,17 @@ public class CallerIdManager {
 
 	public void setContentUri(Uri contentUri) {
 		mContentUri = contentUri;
+	}
+
+	public void deleteCallerId(Context context, long id) {
+		Uri uri = ContentUris.withAppendedId(mContentUri, id);
+
+		context.getContentResolver().delete(uri, null, null);
+	}
+
+	public Cursor getCallerId(Context context, long id) {
+		Uri uri = ContentUris.withAppendedId(mContentUri, id);
+
+		return context.getContentResolver().query(uri, null, null, null, null);
 	}
 }
