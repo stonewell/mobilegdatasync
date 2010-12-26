@@ -5,6 +5,7 @@ import java.util.Map;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 
@@ -38,6 +39,8 @@ public abstract class SysCompat {
 	public Uri PHONE_LOOKUP_FILTER_URI = null;
 	public String PHONE_LOOKUP_NUMBER = null;
 	public String PHONE_LOOKUP_NAME = null;
+	public String PHONE_LOOKUP_TYPE = null;
+	public String PHONE_LOOKUP_PHOTO_ID = null;
 
 	public SysCompat(Context ctx) {
 		mCtx = ctx;
@@ -63,4 +66,8 @@ public abstract class SysCompat {
 
 	public abstract boolean SetRingerSilence(AudioManager audioManager,
 			boolean beforeQueryAction);
+	
+	public abstract CharSequence getPhoneTypeLabel(int type);
+	
+	public abstract Bitmap getPhoto(int photoId, int defaultResource);
 }

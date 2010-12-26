@@ -3,6 +3,9 @@ package com.angelstone.android.callerid.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -20,6 +23,7 @@ import com.android.internal.telephony.ITelephony;
 import com.angelstone.android.callerid.CallerIdConstants;
 import com.angelstone.android.callerid.R;
 import com.angelstone.android.callerid.utils.PhotoLoader;
+import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.utils.ActivityLog;
 
 public class FullScreenCallerIdView extends Activity implements OnClickListener {
@@ -27,6 +31,8 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private PhotoLoader mPhotoLoader = null;
 	private boolean mHide = false;
 	private ITelephony mTelephony = null;
+	private SysCompat mSysCompat = null;
+	private Bitmap mContactPhoto = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,8 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		mTelephony = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
+
+		mSysCompat = SysCompat.register(this);
 
 		mHide = false;
 		mPhotoLoader = new PhotoLoader(this, R.drawable.ic_contact_list_picture);
@@ -70,6 +78,9 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		super.onDestroy();
 
 		mPhotoLoader.stop();
+
+		if (mContactPhoto != null)
+			mContactPhoto.recycle();
 
 		try {
 			mTelephony.showCallScreen();
@@ -133,7 +144,9 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private void updateView(Intent intent, long id) {
 		ImageView iv = (ImageView) findViewById(R.id.caller_img);
 
-		mPhotoLoader.loadPhoto(iv, id);
+		if (id > 0) {
+			mPhotoLoader.loadPhoto(iv, id);
+		}
 
 		TextView tv = (TextView) findViewById(R.id.incoming_number);
 
@@ -143,6 +156,44 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		if (TextUtils.isEmpty(number))
 			number = getString(R.string.unknown);
 		tv.setText(number);
+
+		// Load Contacts Infomation
+		Cursor cur = getContentResolver().query(
+				Uri.withAppendedPath(mSysCompat.PHONE_LOOKUP_FILTER_URI, number),
+				new String[] { mSysCompat.PHONE_LOOKUP_NUMBER,
+						mSysCompat.PHONE_LOOKUP_NAME, mSysCompat.PHONE_LOOKUP_TYPE,
+						mSysCompat.PHONE_LOOKUP_PHOTO_ID }, null, null, null);
+
+		try {
+			String name = "";
+			String type = "";
+
+			if (cur.moveToNext()) {
+				int idxName = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_NAME);
+				int idxType = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_TYPE);
+				int idxPhoto = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_PHOTO_ID);
+
+				name = cur.getString(idxName);
+				type = mSysCompat.getPhoneTypeLabel(cur.getInt(idxType)).toString();
+
+				if (id <= 0) {
+					if (mContactPhoto != null)
+						mContactPhoto.recycle();
+
+					mContactPhoto = mSysCompat.getPhoto(cur.getInt(idxPhoto),
+							R.drawable.ic_contact_list_picture);
+
+					ImageView contactImage = (ImageView) findViewById(R.id.contact_img);
+					contactImage.setImageBitmap(mContactPhoto);
+				}
+			}
+
+			TextView ci = (TextView) findViewById(R.id.contact_info);
+
+			ci.setText(name + " " + type);
+		} finally {
+			cur.close();
+		}
 	}
 
 	@Override

@@ -229,7 +229,11 @@ public class PhotoLoader implements Callback {
 		pause();
 
 		if (mLoaderThread != null) {
-			mLoaderThread.quit();
+			try {
+				HandlerThreadQuiter.quit(mLoaderThread);
+			} catch (VerifyError ex) {
+
+			}
 			mLoaderThread = null;
 		}
 
