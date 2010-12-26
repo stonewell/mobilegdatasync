@@ -10,4 +10,6 @@
     <string name="empty_image_is_not_allowed">Please choose an image before save!</string>
     <string name="replace_caller_id_confirm_template">There is another caller id with same number: {0}, replace it with current?</string>
     <string name="unale_choose_img_template">Unable to choose image, reason:{0}</string>
+    <string name="answer_call">Answer</string>
+    <string name="end_call">End</string>
 </resources>
