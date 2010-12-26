@@ -367,6 +367,8 @@ public class CallerIdEditView extends GenericActivity implements
 		try {
 			if (c.getCount() == 0)
 				return;
+
+			c.moveToFirst();
 			
 			int idxNumber = c.getColumnIndex(CallerId.COL_NUMBER);
 			int idxData = c.getColumnIndex(CallerId.COL_DATA);
