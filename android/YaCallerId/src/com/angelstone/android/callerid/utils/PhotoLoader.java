@@ -139,7 +139,7 @@ public class PhotoLoader implements Callback {
 				BitmapHolder holder = mBitmapCache.get(mId);
 				mBitmapCache.remove(mId);
 
-				if (holder != null)
+				if (holder != null && holder.observer != null)
 					mContext.getContentResolver().unregisterContentObserver(
 							holder.observer);
 			}
@@ -240,7 +240,7 @@ public class PhotoLoader implements Callback {
 		while (it.hasMoreElements()) {
 			BitmapHolder holder = it.nextElement();
 
-			if (holder != null)
+			if (holder != null && holder.observer != null)
 				mContext.getContentResolver()
 						.unregisterContentObserver(holder.observer);
 		}
@@ -256,7 +256,7 @@ public class PhotoLoader implements Callback {
 		while (it.hasMoreElements()) {
 			BitmapHolder holder = it.nextElement();
 
-			if (holder != null)
+			if (holder != null && holder.observer != null)
 				mContext.getContentResolver()
 						.unregisterContentObserver(holder.observer);
 		}

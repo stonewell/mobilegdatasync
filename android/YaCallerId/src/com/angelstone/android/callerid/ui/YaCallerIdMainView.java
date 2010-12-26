@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import com.angelstone.android.callerid.CallerIdConstants;
 import com.angelstone.android.callerid.R;
+import com.angelstone.android.callerid.service.CallerIdService;
 import com.angelstone.android.callerid.store.CallerIdManager;
 import com.angelstone.android.callerid.utils.PhotoLoader;
 import com.angelstone.android.ui.GenericActivity;
@@ -52,6 +53,9 @@ public class YaCallerIdMainView extends GenericActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.caller_list_view);
+
+		startService(new Intent(getApplicationContext(),
+				CallerIdService.class));
 
 		mCallerIdManager = new CallerIdManager(CallerIdConstants.AUTHORITY);
 		mPhotoLoader = new PhotoLoader(this, R.drawable.ic_contact_list_picture);

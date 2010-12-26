@@ -104,7 +104,7 @@ public class CallerIdEditView extends GenericActivity implements
 			}
 		} else if (mId >= 0) {
 			updateView();
-		} 
+		}
 	}
 
 	@Override
@@ -319,69 +319,92 @@ public class CallerIdEditView extends GenericActivity implements
 	protected void deleteCallerId() {
 		if (mId < 0)
 			return;
-		
-		mCallerIdManager.deleteCallerId(this, mId);			
-		
+
+		mCallerIdManager.deleteCallerId(this, mId);
+
 		finish();
 	}
 
 	private void saveCallerId() {
 		EditText et = (EditText) findViewById(R.id.number);
 
-		String number = et.getText().toString();
-		
+		final String number = et.getText().toString();
+
 		if (TextUtils.isEmpty(number)) {
 			showToast(getString(R.string.EmptyNumberIsNotAllowed));
 			return;
 		}
-		
+
 		if (mPhotoBuf == null || mPhotoBuf.length == 0 || mPhoto == null) {
 			showToast(getString(R.string.empty_image_is_not_allowed));
 			return;
 		}
-		
-		if (mId < 0) {
-			Uri uri = mCallerIdManager.addCallerId(this, number, mPhotoBuf);
-			
-			mId = ContentUris.parseId(uri);
+
+		final long id = mCallerIdManager.findOtherCaller(this, number, mId);
+
+		if (id < 0) {
+			if (mId < 0) {
+				Uri uri = mCallerIdManager.addCallerId(this, number, mPhotoBuf);
+
+				mId = ContentUris.parseId(uri);
+			} else {
+				mCallerIdManager.updateCallerId(this, mId, number, mPhotoBuf);
+			}
 		} else {
-			mCallerIdManager.updateCallerId(this, mId, number, mPhotoBuf);
+			String msg = MessageFormat.format(
+					getString(R.string.replace_caller_id_confirm_template),
+					new Object[] { number });
+			AlertDialog ad = new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.note)
+					.setMessage(msg)
+					.setPositiveButton(android.R.string.ok,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int whichButton) {
+									mCallerIdManager.updateCallerId(CallerIdEditView.this, id,
+											number, mPhotoBuf);
+									mId = id;
+								}
+							}).setNegativeButton(android.R.string.cancel, null).create();
+			ad.show();
 		}
-		
+
 		showToast(getString(R.string.caller_id_saved));
 	}
 
 	private void updateView() {
 		EditText et = (EditText) findViewById(R.id.number);
 		et.setText("");
-		
+
 		mPhoto = null;
 		mPhotoBuf = null;
-		
+
 		if (mId < 0) {
 			return;
 		}
-		
+
 		Cursor c = mCallerIdManager.getCallerId(this, mId);
-		
+
 		try {
 			if (c.getCount() == 0)
 				return;
 
 			c.moveToFirst();
-			
+
 			int idxNumber = c.getColumnIndex(CallerId.COL_NUMBER);
 			int idxData = c.getColumnIndex(CallerId.COL_DATA);
-			
+
 			et.setText(c.getString(idxNumber));
-			
+
 			mPhotoBuf = c.getBlob(idxData);
-			
+
 			updateImage();
-		}finally {
+		} finally {
 			if (c != null)
 				c.close();
 		}
+
+		setTitle(R.string.edit_caller_id);
 	}
 
 	@Override

@@ -114,4 +114,17 @@ public class CallerIdManager {
 
 		return context.getContentResolver().query(uri, null, null, null, null);
 	}
+
+	public long findOtherCaller(Context context, String number,
+			long id) {
+		Cursor c =
+			context.getContentResolver().query(mContentUri, 
+					new String[] {CallerId.COL_ID}, 
+					CallerId.COL_NUMBER + "=? AND " + CallerId.COL_ID + " != ?", 
+					new String[] {number, String.valueOf(id)}, null);
+		
+		if (c.moveToFirst())
+			return c.getLong(0);
+		return -1;
+	}
 }

@@ -10,4 +10,8 @@ public interface CallerIdConstants {
 
 	public static final String DATA_ID = "data_id";
 
+	public static final String DATA_HIDE = "data_hide";
+
+	public static final String DATA_PAUSE_Call = "data_pause_call";
+
 }
