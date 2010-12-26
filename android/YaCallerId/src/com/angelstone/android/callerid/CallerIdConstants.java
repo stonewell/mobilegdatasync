@@ -14,4 +14,6 @@ public interface CallerIdConstants {
 
 	public static final String DATA_PAUSE_Call = "data_pause_call";
 
+	public static final String DATA_INCOMING_NUMBER = "data_unknown";
+
 }

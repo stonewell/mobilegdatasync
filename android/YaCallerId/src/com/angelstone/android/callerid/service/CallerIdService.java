@@ -101,6 +101,7 @@ public class CallerIdService extends Service {
 							CallerIdService.this.getApplicationContext(),
 							FullScreenCallerIdView.class);
 					intent.putExtra(CallerIdConstants.DATA_ID, id);
+					intent.putExtra(CallerIdConstants.DATA_INCOMING_NUMBER, incomingNumber);
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_FROM_BACKGROUND
 							| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
