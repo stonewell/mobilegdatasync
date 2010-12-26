@@ -9,8 +9,22 @@
 		<TextView android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			style="@style/InCallNumber"
-			android:id="@+id/incoming_number">
-		</TextView>
+			android:id="@+id/incoming_number"/>
+
+		<TextView android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			style="@style/InCallNumber"
+			android:textSize="26sp"
+			android:id="@+id/contact_info"
+			android:layout_below="@id/incoming_number"/>
+
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/contact_img"
+			android:gravity="center_horizontal"
+			android:layout_centerHorizontal="true"
+			android:layout_below="@id/contact_info"/>
+
 		<TableLayout android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:stretchColumns="0,1"
 			android:layout_alignParentBottom="true"

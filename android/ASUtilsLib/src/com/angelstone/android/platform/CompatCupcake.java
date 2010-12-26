@@ -3,11 +3,16 @@ package com.angelstone.android.platform;
 import java.util.Map;
 
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.provider.Contacts;
 import android.telephony.gsm.SmsMessage;
+
+import com.angelstone.android.R;
 
 @SuppressWarnings("deprecation")
 public class CompatCupcake extends SysCompat {
@@ -27,6 +32,8 @@ public class CompatCupcake extends SysCompat {
 		PHONE_LOOKUP_FILTER_URI = Contacts.Phones.CONTENT_FILTER_URL;
 		PHONE_LOOKUP_NAME = Contacts.Phones.DISPLAY_NAME;
 		PHONE_LOOKUP_NUMBER = Contacts.Phones.NUMBER_KEY;
+		PHONE_LOOKUP_TYPE = Contacts.Phones.TYPE;
+		PHONE_LOOKUP_PHOTO_ID = Contacts.Phones.PERSON_ID;
 	}
 
 	public boolean parseSmsMessages(Intent intent, Map<String, String> messages) {
@@ -36,7 +43,7 @@ public class CompatCupcake extends SysCompat {
 			return false;
 
 		for (Object pdu : pdus) {
-			SmsMessage msg = SmsMessage.createFromPdu((byte[])pdu);
+			SmsMessage msg = SmsMessage.createFromPdu((byte[]) pdu);
 			String sender = msg.getOriginatingAddress();
 
 			if (messages.containsKey(sender)) {
@@ -48,19 +55,27 @@ public class CompatCupcake extends SysCompat {
 		return true;
 	}
 
-	public void setServiceForeground(Service service)
-	{
+	public void setServiceForeground(Service service) {
 	}
-	
-	public boolean SetRingerSilence(AudioManager audioManager, boolean beforeQueryAction)
-	{
-		if (beforeQueryAction)
-		{
+
+	public boolean SetRingerSilence(AudioManager audioManager,
+			boolean beforeQueryAction) {
+		if (beforeQueryAction) {
 			audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-			
+
 			return true;
 		}
-		
+
 		return false;
+	}
+
+	public CharSequence getPhoneTypeLabel(int type) {
+		return Contacts.Phones.getDisplayLabel(mCtx, type,
+				mCtx.getString(R.string.unknown));
+	}
+
+	public Bitmap getPhoto(int photoId, int defaultResource) {
+		Uri uri = ContentUris.withAppendedId(Contacts.People.CONTENT_URI, photoId);
+		return Contacts.People.loadContactPhoto(mCtx, uri, defaultResource, null);
 	}
 }

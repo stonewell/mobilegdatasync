@@ -3,8 +3,14 @@ package com.angelstone.android.platform;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.PhoneLookup;
+
+import com.angelstone.android.R;
 
 public class CompatEclair extends CompatDonut {
 
@@ -25,10 +31,35 @@ public class CompatEclair extends CompatDonut {
 		PHONE_LOOKUP_FILTER_URI = PhoneLookup.CONTENT_FILTER_URI;
 		PHONE_LOOKUP_NAME = PhoneLookup.DISPLAY_NAME;
 		PHONE_LOOKUP_NUMBER = PhoneLookup.NUMBER;
+		PHONE_LOOKUP_TYPE = PhoneLookup.TYPE;
+		PHONE_LOOKUP_PHOTO_ID = PhoneLookup.PHOTO_ID;
 	}
 
-	public void setServiceForeground(Service service)
-	{
+	public void setServiceForeground(Service service) {
 		service.startForeground(999, new Notification());
+	}
+
+	public CharSequence getPhoneTypeLabel(int type) {
+		return ContactsContract.CommonDataKinds.Phone.getTypeLabel(
+				mCtx.getResources(), type, mCtx.getString(R.string.unknown));
+	}
+
+	public Bitmap getPhoto(int photoId, int defaultResource) {
+		Cursor c = mCtx.getContentResolver().query(
+				ContactsContract.Data.CONTENT_URI,
+				new String[] { Photo._ID, Photo.PHOTO }, Photo._ID + "=" + photoId,
+				null, null);
+
+		try {
+			if (c.moveToNext()) {
+				byte[] buf = c.getBlob(1);
+
+				return BitmapFactory.decodeByteArray(buf, 0, buf.length);
+			}
+
+			return BitmapFactory.decodeResource(mCtx.getResources(), defaultResource);
+		} finally {
+			c.close();
+		}
 	}
 }
