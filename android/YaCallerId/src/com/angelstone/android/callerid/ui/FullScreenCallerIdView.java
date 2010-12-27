@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.text.TextUtils;
@@ -34,7 +33,6 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private ITelephony mTelephony = null;
 	private SysCompat mSysCompat = null;
 	private Bitmap mContactPhoto = null;
-	private PowerManager.WakeLock mLock = null;
 	private long mId = 0;
 	private String mNumber = null;
 	
@@ -42,13 +40,6 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-
-		mLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE,
-				CallerIdConstants.TAG);
-		mLock.setReferenceCounted(false);
-		mLock.acquire();
-		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
@@ -104,13 +95,6 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 					e.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when show call screen", e);
 		}
-
-		try {
-			if (mLock != null && mLock.isHeld())
-				mLock.release();
-		} catch (Throwable t) {
-
-		}
 	}
 
 	@Override
@@ -118,13 +102,6 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		super.onResume();
 
 		mPhotoLoader.resume();
-
-		try {
-			if (mLock != null && !mLock.isHeld())
-				mLock.acquire();
-		} catch (Throwable t) {
-
-		}
 	}
 
 	@Override
@@ -132,9 +109,6 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		super.onPause();
 
 		if (!mHide) {
-			if (mLock.isHeld())
-				mLock.release();
-			
 			Intent intent = new Intent(getApplicationContext(),
 					FullScreenCallerIdView.class);
 

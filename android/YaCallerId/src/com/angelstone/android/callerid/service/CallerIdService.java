@@ -91,8 +91,6 @@ public class CallerIdService extends Service {
 				switch (state) {
 				case TelephonyManager.CALL_STATE_RINGING: {
 
-					mFullLock.acquire();
-
 					Object result = mCallerIdMatcher.match(incomingNumber);
 
 					long id = -1;
@@ -116,11 +114,6 @@ public class CallerIdService extends Service {
 					break;
 				default: {
 					if (mFullScreenCallerIdViewVisible) {
-						try {
-							mFullLock.release();
-						} catch (Throwable t) {
-
-						}
 						Intent intent = new Intent(
 								CallerIdService.this.getApplicationContext(),
 								FullScreenCallerIdView.class);
@@ -159,7 +152,6 @@ public class CallerIdService extends Service {
 	private TelephonyManager mTelephonyMgr = null;
 	private CallerIdManager mCallerIdManager = null;
 	private boolean mFullScreenCallerIdViewVisible = false;
-	private PowerManager.WakeLock mFullLock = null;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -210,11 +202,6 @@ public class CallerIdService extends Service {
 	private void initialize() {
 		mCallerIdManager = new CallerIdManager(CallerIdConstants.AUTHORITY);
 		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-
-		mFullLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK
-				| PowerManager.ON_AFTER_RELEASE, "CallerIdServiceFullLocker");
-
 	}
 
 	private void regContentObserver() {
