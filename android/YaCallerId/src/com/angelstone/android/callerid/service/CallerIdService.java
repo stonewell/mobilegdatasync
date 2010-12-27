@@ -68,7 +68,8 @@ public class CallerIdService extends Service {
 					break;
 				}
 			} catch (Throwable t) {
-				Log.e(CallerIdConstants.TAG, "CallerId service get exception", t);
+				Log.e(CallerIdConstants.TAG, "CallerId service get exception",
+						t);
 			} finally {
 				try {
 					if (lock != null)
@@ -90,6 +91,8 @@ public class CallerIdService extends Service {
 				switch (state) {
 				case TelephonyManager.CALL_STATE_RINGING: {
 
+					mFullLock.acquire();
+
 					Object result = mCallerIdMatcher.match(incomingNumber);
 
 					long id = -1;
@@ -101,7 +104,8 @@ public class CallerIdService extends Service {
 							CallerIdService.this.getApplicationContext(),
 							FullScreenCallerIdView.class);
 					intent.putExtra(CallerIdConstants.DATA_ID, id);
-					intent.putExtra(CallerIdConstants.DATA_INCOMING_NUMBER, incomingNumber);
+					intent.putExtra(CallerIdConstants.DATA_INCOMING_NUMBER,
+							incomingNumber);
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 							| Intent.FLAG_FROM_BACKGROUND
 							| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
@@ -112,6 +116,11 @@ public class CallerIdService extends Service {
 					break;
 				default: {
 					if (mFullScreenCallerIdViewVisible) {
+						try {
+							mFullLock.release();
+						} catch (Throwable t) {
+
+						}
 						Intent intent = new Intent(
 								CallerIdService.this.getApplicationContext(),
 								FullScreenCallerIdView.class);
@@ -129,7 +138,8 @@ public class CallerIdService extends Service {
 			} catch (Throwable e) {
 				ActivityLog.logError(CallerIdService.this, "CallerId",
 						e.getLocalizedMessage());
-				Log.e(CallerIdConstants.TAG, "Fail when do caller id operation", e);
+				Log.e(CallerIdConstants.TAG,
+						"Fail when do caller id operation", e);
 			}
 		}
 	}
@@ -149,6 +159,7 @@ public class CallerIdService extends Service {
 	private TelephonyManager mTelephonyMgr = null;
 	private CallerIdManager mCallerIdManager = null;
 	private boolean mFullScreenCallerIdViewVisible = false;
+	private PowerManager.WakeLock mFullLock = null;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -199,11 +210,17 @@ public class CallerIdService extends Service {
 	private void initialize() {
 		mCallerIdManager = new CallerIdManager(CallerIdConstants.AUTHORITY);
 		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+		mFullLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK
+				| PowerManager.ON_AFTER_RELEASE, "CallerIdServiceFullLocker");
+
 	}
 
 	private void regContentObserver() {
 		getContentResolver().registerContentObserver(
-				mCallerIdManager.getContentUri(), true, new ContentObserver(handler_) {
+				mCallerIdManager.getContentUri(), true,
+				new ContentObserver(handler_) {
 
 					@Override
 					public void onChange(boolean selfChange) {
@@ -235,7 +252,8 @@ public class CallerIdService extends Service {
 
 	private void updateNumberMatcher(PhoneNumberMatcher matcher,
 			HashMap<String, Long> newNumbers) {
-		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers().keySet());
+		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers()
+				.keySet());
 
 		for (String n : oldNumbers) {
 			if (!newNumbers.containsKey(n))
@@ -254,7 +272,8 @@ public class CallerIdService extends Service {
 		if (TextUtils.isEmpty(n))
 			return false;
 
-		if (!(n.charAt(0) == '+') && !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
+		if (!(n.charAt(0) == '+')
+				&& !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
 			return false;
 		}
 
