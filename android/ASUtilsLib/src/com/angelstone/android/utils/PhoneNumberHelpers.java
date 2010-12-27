@@ -192,4 +192,28 @@ public class PhoneNumberHelpers {
 
 	public static boolean containsNumber(List<String> selectedNumbers, String number) {
 		return indexOfSelectedNumber(selectedNumbers, number) >= 0;
+	}
+
+	public static boolean isValidNumber(String part) {
+		// Validate number
+		part = part.trim();
+	
+		if (part.length() == 0)
+			return false;
+	
+		if (part.charAt(0) != '+'
+				&& (part.charAt(0) < '0' || part.charAt(0) > '9')) {
+			return false;
+		}
+	
+		if (part.charAt(0) == '+' && part.length() == 1)
+			return false;
+	
+		for (int i = 1; i < part.length(); i++) {
+			if (part.charAt(i) < '0' || part.charAt(i) > '9') {
+				return false;
+			}
+		}
+		
+		return true;
 	}}

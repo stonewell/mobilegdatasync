@@ -3,12 +3,15 @@ package com.angelstone.android.callerid.ui;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
@@ -24,9 +27,11 @@ import android.widget.ListView;
 import com.angelstone.android.callerid.CallerIdConstants;
 import com.angelstone.android.callerid.R;
 import com.angelstone.android.callerid.service.CallerIdService;
+import com.angelstone.android.callerid.store.CallerId;
 import com.angelstone.android.callerid.store.CallerIdManager;
 import com.angelstone.android.callerid.utils.PhotoLoader;
 import com.angelstone.android.ui.GenericActivity;
+import com.angelstone.android.utils.PhoneNumberHelpers;
 
 public class YaCallerIdMainView extends GenericActivity implements
 		OnScrollListener {
@@ -54,8 +59,7 @@ public class YaCallerIdMainView extends GenericActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.caller_list_view);
 
-		startService(new Intent(getApplicationContext(),
-				CallerIdService.class));
+		startService(new Intent(getApplicationContext(), CallerIdService.class));
 
 		mCallerIdManager = new CallerIdManager(CallerIdConstants.AUTHORITY);
 		mPhotoLoader = new PhotoLoader(this, R.drawable.ic_contact_list_picture);
@@ -67,8 +71,8 @@ public class YaCallerIdMainView extends GenericActivity implements
 		mCursor = mCallerIdManager.getCallerIds(this);
 		startManagingCursor(mCursor);
 
-		CallerListViewAdapter adapter = new CallerListViewAdapter(this, mCursor,
-				mPhotoLoader);
+		CallerListViewAdapter adapter = new CallerListViewAdapter(this,
+				mCursor, mPhotoLoader);
 		mListview.setAdapter(adapter);
 
 		mObserver = new ContentObserver(mHandler) {
@@ -118,10 +122,13 @@ public class YaCallerIdMainView extends GenericActivity implements
 					.setMessage(R.string.clear_all_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-									mCallerIdManager.clearCallerIds(YaCallerIdMainView.this);
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									mCallerIdManager
+											.clearCallerIds(YaCallerIdMainView.this);
 								}
-							}).setNegativeButton(android.R.string.cancel, null).create();
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 			ad.show();
 
 			break;
@@ -135,8 +142,25 @@ public class YaCallerIdMainView extends GenericActivity implements
 
 	@Override
 	protected void exportTo(BufferedWriter writer) throws IOException {
-		// TODO Auto-generated method stub
 		super.exportTo(writer);
+
+		Cursor c = mCallerIdManager.getCallerIds(this);
+		try {
+			int idxNumber = c.getColumnIndex(CallerId.COL_NUMBER);
+			int idxData = c.getColumnIndex(CallerId.COL_DATA);
+
+			while (c.moveToNext()) {
+				byte[] data = c.getBlob(idxData);
+				String number = c.getString(idxNumber);
+
+				writer.write(number);
+				writer.write(",");
+				writer.write(toHexString(data));
+				writer.newLine();
+			}
+		} finally {
+			c.close();
+		}
 	}
 
 	@Override
@@ -146,8 +170,48 @@ public class YaCallerIdMainView extends GenericActivity implements
 
 	@Override
 	protected int importFrom(BufferedReader br) throws IOException {
-		// TODO Auto-generated method stub
-		return super.importFrom(br);
+		int ret = super.importFrom(br);
+
+		if (ret != IMPORT_SUCCESS)
+			return ret;
+
+		String line = null;
+
+		HashMap<String, byte[]> values = new HashMap<String, byte[]>();
+
+		while ((line = br.readLine()) != null) {
+			String[] parts = line.split(",");
+
+			if (parts == null || parts.length != 2) {
+				continue;
+			}
+
+			if (!PhoneNumberHelpers.isValidNumber(parts[0]))
+				continue;
+
+			byte[] buf = fromHexString(parts[1]);
+
+			if (buf == null || buf.length == 0)
+				continue;
+
+			if (!isValidBitmap(buf))
+				continue;
+
+			values.put(parts[0].trim(), buf);
+		}
+
+		if (values.size() == 0)
+			return IMPORT_NO_RECORD;
+
+		for (String number : values.keySet()) {
+			if (null == mCallerIdManager.addCallerId(this, number,
+					values.get(number))) {
+				mCallerIdManager.updateCallerId(this, number,
+						values.get(number));
+			}
+		}
+
+		return IMPORT_SUCCESS;
 	}
 
 	@Override
@@ -205,10 +269,13 @@ public class YaCallerIdMainView extends GenericActivity implements
 					.setTitle(R.string.delete_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-									mCallerIdManager.deleteCallerId(YaCallerIdMainView.this, id);			
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									mCallerIdManager.deleteCallerId(
+											YaCallerIdMainView.this, id);
 								}
-							}).setNegativeButton(android.R.string.cancel, null).create();
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 			ad.show();
 			break;
 
@@ -229,6 +296,52 @@ public class YaCallerIdMainView extends GenericActivity implements
 
 		super.onCreateContextMenu(menu, v, menuInfo);
 
+	}
+
+	private String toHexString(byte[] data) {
+		StringBuilder sb = new StringBuilder(data.length * 2);
+
+		for (int i = 0; i < data.length; i++) {
+			String tmp = Integer.toHexString(data[i]);
+
+			if (tmp.length() < 2)
+				sb.append("0");
+			sb.append(tmp);
+		}
+
+		return sb.toString();
+	}
+
+	private boolean isValidBitmap(byte[] buf) {
+		Bitmap bmp = null;
+
+		try {
+			bmp = BitmapFactory.decodeByteArray(buf, 0, buf.length);
+
+			return true;
+		} catch (Throwable t) {
+			return false;
+		} finally {
+			try {
+				if (bmp != null && !bmp.isRecycled()) {
+					bmp.recycle();
+				}
+			} catch (Throwable t) {
+
+			}
+		}
+	}
+
+	private byte[] fromHexString(String string) {
+		byte[] buf = new byte[string.length() / 2];
+
+		if (buf.length == 0)
+			return null;
+
+		for (int i = 0; i < buf.length; i++) {
+			buf[i] = (byte)Integer.parseInt(string.substring(i * 2, i * 2 + 2), 16);
+		}
+		return buf;
 	}
 
 }

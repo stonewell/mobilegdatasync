@@ -393,25 +393,8 @@ public class BlackListView extends GenericActivity implements OnClickListener,
 		if (parts.length != 2)
 			return;
 
-		// Validate number
-		parts[0] = parts[0].trim();
-
-		if (parts[0].length() == 0)
+		if (!PhoneNumberHelpers.isValidNumber(parts[0]))
 			return;
-
-		if (parts[0].charAt(0) != '+'
-				&& (parts[0].charAt(0) < '0' || parts[0].charAt(0) > '9')) {
-			return;
-		}
-
-		if (parts[0].charAt(0) == '+' && parts[0].length() == 1)
-			return;
-
-		for (int i = 1; i < parts[0].length(); i++) {
-			if (parts[0].charAt(i) < '0' || parts[0].charAt(i) > '9') {
-				return;
-			}
-		}
 
 		// Validate block
 		parts[1] = parts[1].trim();

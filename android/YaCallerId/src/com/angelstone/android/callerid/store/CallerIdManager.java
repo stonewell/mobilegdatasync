@@ -24,11 +24,10 @@ public class CallerIdManager {
 	}
 
 	public Cursor getCallerIds(Context context) {
-		return context.getContentResolver()
-				.query(
-						mContentUri,
-						new String[] { CallerId.COL_ID, CallerId.COL_NUMBER,
-								CallerId.COL_DATA }, null, null, null);
+		return context.getContentResolver().query(
+				mContentUri,
+				new String[] { CallerId.COL_ID, CallerId.COL_NUMBER,
+						CallerId.COL_DATA }, null, null, null);
 	}
 
 	public Uri addCallerId(Context context, String number, byte[] data) {
@@ -38,8 +37,8 @@ public class CallerIdManager {
 			String where_str = CallerId.COL_NUMBER + "=?";
 
 			cur = context.getContentResolver().query(mContentUri,
-					new String[] { CallerId.COL_ID }, where_str, new String[] { number },
-					null);
+					new String[] { CallerId.COL_ID }, where_str,
+					new String[] { number }, null);
 
 			if (cur != null && cur.getCount() != 0) {
 				return null;
@@ -85,7 +84,8 @@ public class CallerIdManager {
 		return err;
 	}
 
-	public int updateCallerId(Context context, long id, String number, byte[] data) {
+	public int updateCallerId(Context context, long id, String number,
+			byte[] data) {
 		ContentValues args = new ContentValues();
 		args.put(CallerId.COL_DATA, data);
 		args.put(CallerId.COL_NUMBER, number);
@@ -93,6 +93,15 @@ public class CallerIdManager {
 		Uri uri = ContentUris.withAppendedId(mContentUri, id);
 
 		return context.getContentResolver().update(uri, args, null, null);
+	}
+
+	public int updateCallerId(Context context, String number, byte[] data) {
+		ContentValues args = new ContentValues();
+		args.put(CallerId.COL_DATA, data);
+		args.put(CallerId.COL_NUMBER, number);
+
+		return context.getContentResolver().update(mContentUri, args,
+				CallerId.COL_NUMBER + "=?", new String[] { number });
 	}
 
 	public Uri getContentUri() {
@@ -115,14 +124,12 @@ public class CallerIdManager {
 		return context.getContentResolver().query(uri, null, null, null, null);
 	}
 
-	public long findOtherCaller(Context context, String number,
-			long id) {
-		Cursor c =
-			context.getContentResolver().query(mContentUri, 
-					new String[] {CallerId.COL_ID}, 
-					CallerId.COL_NUMBER + "=? AND " + CallerId.COL_ID + " != ?", 
-					new String[] {number, String.valueOf(id)}, null);
-		
+	public long findOtherCaller(Context context, String number, long id) {
+		Cursor c = context.getContentResolver().query(mContentUri,
+				new String[] { CallerId.COL_ID },
+				CallerId.COL_NUMBER + "=? AND " + CallerId.COL_ID + " != ?",
+				new String[] { number, String.valueOf(id) }, null);
+
 		if (c.moveToFirst())
 			return c.getLong(0);
 		return -1;
