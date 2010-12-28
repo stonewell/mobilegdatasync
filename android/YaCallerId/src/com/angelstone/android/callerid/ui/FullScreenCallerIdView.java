@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.text.TextUtils;
@@ -35,7 +36,8 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private Bitmap mContactPhoto = null;
 	private long mId = 0;
 	private String mNumber = null;
-	
+	private PowerManager.WakeLock mLock = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,7 +46,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 
-		//flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+		// flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
 		flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 		flags |= WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
@@ -53,6 +55,13 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		setContentView(R.layout.fullscreen_caller_id);
 
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+		mLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+				| PowerManager.ACQUIRE_CAUSES_WAKEUP, "FullScreenCallerId");
+	    mLock.setReferenceCounted(false);
+	    mLock.acquire();
+	    
 		mTelephony = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
 
@@ -70,8 +79,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		Intent intent = getIntent();
 
 		mId = intent.getLongExtra(CallerIdConstants.DATA_ID, -1);
-		mNumber = intent
-				.getStringExtra(CallerIdConstants.DATA_INCOMING_NUMBER);
+		mNumber = intent.getStringExtra(CallerIdConstants.DATA_INCOMING_NUMBER);
 
 		if (mId < 0)
 			mId = 0;
@@ -95,6 +103,15 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 					e.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when show call screen", e);
 		}
+		
+		try {
+			if (mLock != null && mLock.isHeld())
+				mLock.release();
+		}catch(Throwable t) {
+			ActivityLog.logError(this, getString(R.string.app_name),
+					t.getLocalizedMessage());
+			Log.e(CallerIdConstants.TAG, "Fail when release lock", t);
+		}
 	}
 
 	@Override
@@ -102,11 +119,29 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		super.onResume();
 
 		mPhotoLoader.resume();
+
+		try {
+			if (mLock != null && !mLock.isHeld())
+				mLock.acquire();
+		}catch(Throwable t) {
+			ActivityLog.logError(this, getString(R.string.app_name),
+					t.getLocalizedMessage());
+			Log.e(CallerIdConstants.TAG, "Fail when acquire lock", t);
+		}
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+
+		try {
+			if (mLock != null && mLock.isHeld())
+				mLock.release();
+		}catch(Throwable t) {
+			ActivityLog.logError(this, getString(R.string.app_name),
+					t.getLocalizedMessage());
+			Log.e(CallerIdConstants.TAG, "Fail when release lock", t);
+		}
 
 		if (!mHide) {
 			Intent intent = new Intent(getApplicationContext(),

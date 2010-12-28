@@ -24,7 +24,8 @@ public class ProfileSwitcherProvider extends GenericContentProvider implements
 				Schedule.CONTENT_ITEM_TYPE, Schedule.DEFAULT_SORT_ORDER,
 				Schedule.AUTHORITY, Schedule.URI_STRING,
 				Schedule.COLUMN_REPEAT_WEEKDAYS));
-		initialzie(args);
+		
+		initialize(args);
 
 		return true;
 	}

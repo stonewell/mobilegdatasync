@@ -32,9 +32,14 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>ASUtilsLib_src</name>
+			<type>2</type>
+			<locationURI>_android_ASUtilsLib_4840aa66/src</locationURI>
+		</link>
+		<link>
 			<name>ProfileSwitcherCore_src</name>
 			<type>2</type>
-			<locationURI>_android_ProfileSwitcherCore/src</locationURI>
+			<locationURI>_android_ProfileSwitcherCore_58a20249/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
