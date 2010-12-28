@@ -328,6 +328,8 @@ public class ProfileEditActivity extends EditBaseActivity implements
 								Uri uri = ContentUris.withAppendedId(
 										Profile.CONTENT_URI, mId);
 								getContentResolver().delete(uri, null, null);
+								
+								finish();
 							}
 						}).setNegativeButton(android.R.string.cancel, null)
 				.show();
@@ -580,18 +582,17 @@ public class ProfileEditActivity extends EditBaseActivity implements
 	}
 
 	private void selectRingtone(TextView v, String phoneRingtone) {
-		v.setText("");
-
-		if (TextUtils.isEmpty(phoneRingtone))
-			mCurrentSelectedRingtoneUri = null;
-		else {
-			try {
-				mCurrentSelectedRingtoneUri = Uri.parse(phoneRingtone);
-				v.setText(getRingtoneName(mCurrentSelectedRingtoneUri));
-			} catch (Throwable t) {
+		
+		try {
+			if (TextUtils.isEmpty(phoneRingtone))
 				mCurrentSelectedRingtoneUri = null;
-			}
+			else
+				mCurrentSelectedRingtoneUri = Uri.parse(phoneRingtone);
+		} catch (Throwable t) {
+			mCurrentSelectedRingtoneUri = null;
 		}
+		
+		v.setText(getRingtoneName(mCurrentSelectedRingtoneUri));
 	}
 
 	private String getRingtoneName(Uri currentSelectedRingtoneUri) {
@@ -652,26 +653,6 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		tb = (ToggleButton) findViewById(R.id.toggle_bluetooth);
 		mProfile.setBlueToothEnable(tb.isChecked());
 		mProfile.setBlueToothConfigured(cb.isChecked());
-
-		cb = (CheckBox) findViewById(R.id.check_phone);
-		mProfile.setPhoneRingtoneConfigured(cb.isChecked());
-		mProfile.setPhoneVolumeConfigured(cb.isChecked());
-		mProfile.setPhoneVibrateConfigured(cb.isChecked());
-
-		cb = (CheckBox) findViewById(R.id.check_notification);
-		mProfile.setNotificationRingtoneConfigured(cb.isChecked());
-		mProfile.setNotificationVolumeConfigured(cb.isChecked());
-		mProfile.setNotificationVibrateConfigured(cb.isChecked());
-
-		cb = (CheckBox) findViewById(R.id.check_email);
-		mProfile.setEmailRingtoneConfigured(cb.isChecked());
-		mProfile.setEmailVolumeConfigured(cb.isChecked());
-		mProfile.setEmailVibrateConfigured(cb.isChecked());
-
-		cb = (CheckBox) findViewById(R.id.check_alarm);
-		mProfile.setAlarmRingtoneConfigured(cb.isChecked());
-		mProfile.setAlarmVolumeConfigured(cb.isChecked());
-		mProfile.setAlarmVibrateConfigured(cb.isChecked());
 
 		ContentValues values = new ContentValues();
 		values.put(Profile.COLUMN_NAME, mProfile.getName());
