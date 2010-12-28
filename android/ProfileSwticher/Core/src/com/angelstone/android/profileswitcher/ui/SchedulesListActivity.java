@@ -14,13 +14,19 @@ public class SchedulesListActivity extends ContentListBaseActivity {
 	}
 
 	@Override
-	protected void editContent(int id) {
+	protected void clearAllContent() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	protected void clearAllContent() {
+	protected void editContent(long id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void deleteContent(long id) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -2,15 +2,21 @@ package com.angelstone.android.profileswitcher.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,9 +32,14 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		OnClickListener {
 	private static final int DIALOG_RING_TONE_VIBRATE_VOLUME = 0;
 
-	private int mId = -1;
+	private static final int CHOOSE_RINGTONE = 0;
+
+	private long mId = -1;
 	private Profile mProfile = null;
 	private int mCurrentEditingId = -1;
+	private Uri mCurrentSelectedRingtoneUri = null;
+
+	private TextView mRingtoneTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +48,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		setContentView(R.layout.profile_edit);
 
 		Intent intent = getIntent();
-		mId = intent.getIntExtra("id", -1);
+		mId = intent.getLongExtra(ProfileSwitcherConstants.EXTRA_ID, -1);
 
 		mProfile = loadProfile(mId);
 
@@ -101,13 +112,59 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		ib.setEnabled(mProfile.isAlarmConfigured());
 	}
 
-	private Profile loadProfile(int id) {
+	private Profile loadProfile(long id) {
 		Profile p = new Profile();
 
 		if (id == -1)
 			return p;
 
-		// TODO: Load Profile from db
+		Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, id);
+
+		Cursor c = getContentResolver().query(uri, null, null, null, null);
+
+		try {
+			if (c.moveToNext()) {
+				int idxName = c.getColumnIndex(Profile.COLUMN_NAME);
+				int idxFlags = c.getColumnIndex(Profile.COLUMN_FLAGS);
+
+				int idxDevices = c.getColumnIndex(Profile.COLUMN_DEVICES);
+
+				int idxEmailVolume = c
+						.getColumnIndex(Profile.COLUMN_EMAIL_VOLUME);
+				int idxPhoneVolume = c
+						.getColumnIndex(Profile.COLUMN_PHONE_VOLUME);
+				int idxNotifyVolume = c
+						.getColumnIndex(Profile.COLUMN_NOTIFY_VOLUME);
+				int idxAlarmVolume = c
+						.getColumnIndex(Profile.COLUMN_ALARM_VOLUME);
+
+				int idxPhoneRingtone = c
+						.getColumnIndex(Profile.COLUMN_PHONE_RING_TONE);
+				int idxNotifyRingtone = c
+						.getColumnIndex(Profile.COLUMN_NOTIFY_RING_TONE);
+				int idxAlarmRingtone = c
+						.getColumnIndex(Profile.COLUMN_ALARM_RING_TONE);
+				int idxEmailRingtone = c
+						.getColumnIndex(Profile.COLUMN_EMAIL_RING_TONE);
+
+				p.setName(c.getString(idxName));
+				p.setEmailRingtone(c.getString(idxEmailRingtone));
+				p.setEmailVolume(c.getInt(idxEmailVolume));
+				p.setPhoneRingtone(c.getString(idxPhoneRingtone));
+				p.setPhoneVolume(c.getInt(idxPhoneVolume));
+				p.setNotificationRingtone(c.getString(idxNotifyRingtone));
+				p.setNotificationVolume(c.getInt(idxNotifyVolume));
+				p.setAlarmRingtone(c.getString(idxAlarmRingtone));
+				p.setAlarmVolume(c.getInt(idxAlarmVolume));
+
+				// Set flags later since set volumn ringtone will change flags
+				p.setFlags(c.getInt(idxFlags));
+				p.setDevices(c.getInt(idxDevices));
+			}
+		} finally {
+			c.close();
+		}
+
 		return p;
 	}
 
@@ -174,6 +231,8 @@ public class ProfileEditActivity extends EditBaseActivity implements
 			View viewParent = (View) v.getParent();
 			View vv = viewParent.findViewById(R.id.img_view_show_ringtones);
 			vv.setEnabled(((CheckBox) v).isChecked());
+			vv = viewParent.findViewById(R.id.btn_ringtone_uri);
+			vv.setEnabled(((CheckBox) v).isChecked());
 		}
 			break;
 		case R.id.img_view_show_ringtones: {
@@ -198,13 +257,80 @@ public class ProfileEditActivity extends EditBaseActivity implements
 
 	@Override
 	protected void saveContent() {
-		// TODO Auto-generated method stub
+		EditText et = (EditText) findViewById(R.id.edit_name);
+		String name = et.getText().toString();
+
+		if (TextUtils.isEmpty(name)) {
+			showToast(getString(R.string.empty_name_is_not_allowed));
+			return;
+		}
+
+		if (checkNameAndSave(name))
+			doSave();
+	}
+
+	private boolean checkNameAndSave(String name) {
+		Cursor c = getContentResolver().query(Profile.CONTENT_URI,
+				new String[] { Profile.COLUMN_ID }, Profile.COLUMN_NAME + "=?",
+				new String[] { name }, null);
+
+		try {
+			if (c.moveToNext()) {
+				final long id = c.getLong(0);
+
+				if (id != mId) {
+					new AlertDialog.Builder(this)
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.setTitle(R.string.note)
+							.setMessage(R.string.same_name_existing)
+							.setPositiveButton(R.string.update_exist,
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog,
+												int whichButton) {
+											mId = id;
+											doSave();
+										}
+									})
+							.setNegativeButton(android.R.string.cancel, null)
+							.setNeutralButton(R.string.save_current,
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog,
+												int whichButton) {
+											doSave();
+										}
+									}).show();
+
+					return false;
+				}
+			}
+
+			return true;
+		} finally {
+			c.close();
+		}
 	}
 
 	@Override
 	protected void deleteContent() {
-		// TODO Auto-generated method stub
+		if (mId < 0)
+			return;
 
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.note)
+				.setMessage(R.string.delete_confirm)
+				.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								Uri uri = ContentUris.withAppendedId(
+										Profile.CONTENT_URI, mId);
+								getContentResolver().delete(uri, null, null);
+							}
+						}).setNegativeButton(android.R.string.cancel, null)
+				.show();
 	}
 
 	private void editRingToneAndVolume(int id) {
@@ -216,7 +342,6 @@ public class ProfileEditActivity extends EditBaseActivity implements
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DIALOG_RING_TONE_VIBRATE_VOLUME:
-			// This example shows how to add a custom layout to an AlertDialog
 			LayoutInflater factory = LayoutInflater.from(this);
 			final View ringtoneAndVolumeView = factory.inflate(
 					R.layout.ringtone_and_volume, null);
@@ -242,20 +367,81 @@ public class ProfileEditActivity extends EditBaseActivity implements
 										int whichButton) {
 									updateProfileRingtonVolume(ringtoneAndVolumeView);
 								}
-							})
-					.setNegativeButton(android.R.string.cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-								}
-							}).create();
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 		}
 		return null;
 	}
 
 	private void updateProfileRingtonVolume(View v) {
-		// TODO Auto-generated method stub
+		if (mCurrentEditingId == -1)
+			return;
 
+		CheckBox cVolume = (CheckBox) v.findViewById(R.id.check_volume);
+		CheckBox cVibrate = (CheckBox) v.findViewById(R.id.check_vibrate);
+		CheckBox cRingtone = (CheckBox) v.findViewById(R.id.check_ringtone);
+
+		SeekBar vVolume = (SeekBar) v.findViewById(R.id.seekbar_volume);
+		ToggleButton vVibrate = (ToggleButton) v
+				.findViewById(R.id.toggle_vibrate);
+
+		switch (mCurrentEditingId) {
+		case R.id.img_btn_phone:
+			mProfile.setPhoneVolumeConfigured(cVolume.isChecked());
+
+			if (cVolume.isChecked())
+				mProfile.setPhoneVolume(vVolume.getProgress());
+
+			mProfile.setPhoneVibrateConfigured(cVibrate.isChecked());
+
+			if (cVibrate.isChecked())
+				mProfile.setPhoneVibrate(vVibrate.isChecked());
+
+			mProfile.setPhoneRingtoneConfigured(cRingtone.isChecked());
+
+			if (cRingtone.isChecked())
+				mProfile.setPhoneRingtone(getSelectedRingtone());
+			break;
+		case R.id.img_btn_alarm:
+			mProfile.setAlarmVolumeConfigured(cVolume.isChecked());
+			if (cVolume.isChecked())
+				mProfile.setAlarmVolume(vVolume.getProgress());
+
+			mProfile.setAlarmVibrateConfigured(cVibrate.isChecked());
+			if (cVibrate.isChecked())
+				mProfile.setAlarmVibrate(vVibrate.isChecked());
+
+			mProfile.setAlarmRingtoneConfigured(cRingtone.isChecked());
+			if (cRingtone.isChecked())
+				mProfile.setAlarmRingtone(getSelectedRingtone());
+			break;
+		case R.id.img_btn_email:
+			mProfile.setEmailVolumeConfigured(cVolume.isChecked());
+			if (cVolume.isChecked())
+				mProfile.setEmailVolume(vVolume.getProgress());
+
+			mProfile.setEmailVibrateConfigured(cVibrate.isChecked());
+			if (cVibrate.isChecked())
+				mProfile.setEmailVibrate(vVibrate.isChecked());
+
+			mProfile.setEmailRingtoneConfigured(cRingtone.isChecked());
+			if (cRingtone.isChecked())
+				mProfile.setEmailRingtone(getSelectedRingtone());
+			break;
+		case R.id.img_btn_notification:
+			mProfile.setNotificationVolumeConfigured(cVolume.isChecked());
+			if (cVolume.isChecked())
+				mProfile.setNotificationVolume(vVolume.getProgress());
+
+			mProfile.setNotificationVibrateConfigured(cVibrate.isChecked());
+			if (cVibrate.isChecked())
+				mProfile.setNotificationVibrate(vVibrate.isChecked());
+
+			mProfile.setNotificationRingtoneConfigured(cRingtone.isChecked());
+			if (cRingtone.isChecked())
+				mProfile.setNotificationRingtone(getSelectedRingtone());
+			break;
+		}
 	}
 
 	@Override
@@ -280,8 +466,10 @@ public class ProfileEditActivity extends EditBaseActivity implements
 
 			ImageView vRingtone = (ImageView) dialog
 					.findViewById(R.id.img_view_show_ringtones);
-			TextView vRingtoneText = (TextView) dialog
-					.findViewById(R.id.txt_ringtone_uri);
+			Button vRingtoneText = (Button) dialog
+					.findViewById(R.id.btn_ringtone_uri);
+
+			mRingtoneTextView = vRingtoneText;
 
 			vRingtone.setOnClickListener(this);
 
@@ -298,7 +486,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 				cRingtone.setChecked(mProfile.isPhoneRingtoneConfigured());
 				vRingtone.setEnabled(mProfile.isPhoneRingtoneConfigured());
 				vRingtoneText.setEnabled(mProfile.isPhoneRingtoneConfigured());
-				selectRingtone(vRingtone, mProfile.getPhoneRingtone());
+				selectRingtone(vRingtoneText, mProfile.getPhoneRingtone());
 				break;
 			case R.id.img_btn_alarm:
 				cVolume.setChecked(mProfile.isAlarmVolumeConfigured());
@@ -312,7 +500,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 				cRingtone.setChecked(mProfile.isAlarmRingtoneConfigured());
 				vRingtone.setEnabled(mProfile.isAlarmRingtoneConfigured());
 				vRingtoneText.setEnabled(mProfile.isAlarmRingtoneConfigured());
-				selectRingtone(vRingtone, mProfile.getAlarmRingtone());
+				selectRingtone(vRingtoneText, mProfile.getAlarmRingtone());
 				break;
 			case R.id.img_btn_email:
 				cVolume.setChecked(mProfile.isEmailVolumeConfigured());
@@ -326,7 +514,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 				cRingtone.setChecked(mProfile.isEmailRingtoneConfigured());
 				vRingtone.setEnabled(mProfile.isEmailRingtoneConfigured());
 				vRingtoneText.setEnabled(mProfile.isEmailRingtoneConfigured());
-				selectRingtone(vRingtone, mProfile.getEmailRingtone());
+				selectRingtone(vRingtoneText, mProfile.getEmailRingtone());
 				break;
 			case R.id.img_btn_notification:
 				cVolume.setChecked(mProfile.isNotificationVolumeConfigured());
@@ -343,23 +531,19 @@ public class ProfileEditActivity extends EditBaseActivity implements
 						.isNotificationRingtoneConfigured());
 				vRingtoneText.setEnabled(mProfile
 						.isNotificationRingtoneConfigured());
-				selectRingtone(vRingtone, mProfile.getNotificationRingtone());
+				selectRingtone(vRingtoneText,
+						mProfile.getNotificationRingtone());
 				break;
 			}
 			break;
 		}
 	}
 
-	private void selectRingtone(View vRingtone, String phoneRingtone) {
-		// TODO Auto-generated method stub
-
-	}
-
 	protected void showRingtones() {
 		// Launch the ringtone picker
 		Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
 		onPrepareRingtonePickerIntent(intent);
-		startActivityForResult(intent, 0);
+		startActivityForResult(intent, CHOOSE_RINGTONE);
 	}
 
 	protected void onPrepareRingtonePickerIntent(Intent ringtonePickerIntent) {
@@ -376,12 +560,140 @@ public class ProfileEditActivity extends EditBaseActivity implements
 				RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
 
 		ringtonePickerIntent.putExtra(
-				RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+				RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
 		ringtonePickerIntent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE,
 				RingtoneManager.TYPE_RINGTONE);
 	}
 
 	protected Uri onRestoreRingtone() {
-		return null;
+		if (mCurrentSelectedRingtoneUri == null)
+			return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+
+		return mCurrentSelectedRingtoneUri;
+	}
+
+	private String getSelectedRingtone() {
+		if (mCurrentSelectedRingtoneUri == null)
+			return "";
+
+		return mCurrentSelectedRingtoneUri.toString();
+	}
+
+	private void selectRingtone(TextView v, String phoneRingtone) {
+		v.setText("");
+
+		if (TextUtils.isEmpty(phoneRingtone))
+			mCurrentSelectedRingtoneUri = null;
+		else {
+			try {
+				mCurrentSelectedRingtoneUri = Uri.parse(phoneRingtone);
+				v.setText(getRingtoneName(mCurrentSelectedRingtoneUri));
+			} catch (Throwable t) {
+				mCurrentSelectedRingtoneUri = null;
+			}
+		}
+	}
+
+	private String getRingtoneName(Uri currentSelectedRingtoneUri) {
+		if (currentSelectedRingtoneUri == null) {
+			return getString(R.string.default_ringtone);
+		} else {
+			Ringtone ringtone = RingtoneManager.getRingtone(this,
+					currentSelectedRingtoneUri);
+			if (ringtone == null)
+				return getString(R.string.default_ringtone);
+
+			return ringtone.getTitle(this);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode != RESULT_OK)
+			return;
+
+		switch (requestCode) {
+		case CHOOSE_RINGTONE:
+			Uri pickedUri = data
+					.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+			if (pickedUri == null || RingtoneManager.isDefault(pickedUri)) {
+				mCurrentSelectedRingtoneUri = null;
+			} else {
+				mCurrentSelectedRingtoneUri = pickedUri;
+			}
+
+			if (mRingtoneTextView != null)
+				mRingtoneTextView
+						.setText(getRingtoneName(mCurrentSelectedRingtoneUri));
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void doSave() {
+		EditText et = (EditText) findViewById(R.id.edit_name);
+		String name = et.getText().toString();
+		mProfile.setName(name);
+
+		CheckBox cb = (CheckBox) findViewById(R.id.check_gps);
+		ToggleButton tb = (ToggleButton) findViewById(R.id.toggle_gps);
+		mProfile.setGpsEnable(tb.isChecked());
+		mProfile.setGpsConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_wifi);
+		tb = (ToggleButton) findViewById(R.id.toggle_wifi);
+		mProfile.setWifiEnable(tb.isChecked());
+		mProfile.setWifiConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_bluetooth);
+		tb = (ToggleButton) findViewById(R.id.toggle_bluetooth);
+		mProfile.setBlueToothEnable(tb.isChecked());
+		mProfile.setBlueToothConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_phone);
+		mProfile.setPhoneRingtoneConfigured(cb.isChecked());
+		mProfile.setPhoneVolumeConfigured(cb.isChecked());
+		mProfile.setPhoneVibrateConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_notification);
+		mProfile.setNotificationRingtoneConfigured(cb.isChecked());
+		mProfile.setNotificationVolumeConfigured(cb.isChecked());
+		mProfile.setNotificationVibrateConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_email);
+		mProfile.setEmailRingtoneConfigured(cb.isChecked());
+		mProfile.setEmailVolumeConfigured(cb.isChecked());
+		mProfile.setEmailVibrateConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_alarm);
+		mProfile.setAlarmRingtoneConfigured(cb.isChecked());
+		mProfile.setAlarmVolumeConfigured(cb.isChecked());
+		mProfile.setAlarmVibrateConfigured(cb.isChecked());
+
+		ContentValues values = new ContentValues();
+		values.put(Profile.COLUMN_NAME, mProfile.getName());
+		values.put(Profile.COLUMN_FLAGS, mProfile.getFlags());
+		values.put(Profile.COLUMN_DEVICES, mProfile.getDevices());
+		values.put(Profile.COLUMN_EMAIL_VOLUME, mProfile.getEmailVolume());
+		values.put(Profile.COLUMN_PHONE_VOLUME, mProfile.getPhoneVolume());
+		values.put(Profile.COLUMN_NOTIFY_VOLUME,
+				mProfile.getNotificationVolume());
+		values.put(Profile.COLUMN_ALARM_VOLUME, mProfile.getAlarmVolume());
+		values.put(Profile.COLUMN_PHONE_RING_TONE, mProfile.getPhoneRingtone());
+		values.put(Profile.COLUMN_NOTIFY_RING_TONE,
+				mProfile.getNotificationRingtone());
+		values.put(Profile.COLUMN_ALARM_RING_TONE, mProfile.getAlarmRingtone());
+		values.put(Profile.COLUMN_EMAIL_RING_TONE, mProfile.getEmailRingtone());
+
+		if (mId < 0) {
+			getContentResolver().insert(Profile.CONTENT_URI, values);
+		} else {
+			Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, mId);
+
+			getContentResolver().update(uri, values, null, null);
+		}
 	}
 }

@@ -1,9 +1,16 @@
 package com.angelstone.android.profileswitcher.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.angelstone.android.profileswitcher.R;
+import com.angelstone.android.ui.GenericActivity;
 
 public abstract class ContentListBaseActivity extends GenericActivity {
 	private static final int[][] OPTION_MENUS = new int[][] {
@@ -44,6 +51,62 @@ public abstract class ContentListBaseActivity extends GenericActivity {
 		return true;
 	}
 	
-	protected abstract void editContent(int id);
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		ContextMenuInfo menuInfo = item.getMenuInfo();
+		long childId = -1;
+
+		if (menuInfo instanceof AdapterContextMenuInfo) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+			childId = info.id;
+		} else {
+			return false;
+		}
+
+		if (childId <= 0)
+			return false;
+		
+		final long id = childId;
+		switch (item.getItemId()) {
+		case 1: {
+			editContent(id);
+			break;
+		}
+		case 2: {
+			AlertDialog ad = new AlertDialog.Builder(this)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle(R.string.delete_confirm)
+					.setPositiveButton(android.R.string.ok,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									deleteContent(id);
+								}
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
+			ad.show();
+			break;
+
+		}
+		default:
+			return super.onContextItemSelected(item);
+		}
+
+		return true;
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+
+		menu.add(0, 1, 1, R.string.edit);
+		menu.add(0, 2, 2, R.string.delete);
+
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+	}
+	
+	protected abstract void editContent(long id);
 	protected abstract void clearAllContent();
+	protected abstract void deleteContent(long id);
 }

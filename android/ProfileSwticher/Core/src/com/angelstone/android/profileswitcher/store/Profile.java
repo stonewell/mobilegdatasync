@@ -12,7 +12,7 @@ public class Profile implements DatabaseValues {
 
 	public static final String COLUMN_DEVICES = "devices";
 
-	public static final String COLUMN_MEDIA_VOLUME = "media_volume";
+	public static final String COLUMN_EMAIL_VOLUME = "media_volume";
 	public static final String COLUMN_PHONE_VOLUME = "phone_volume";
 	public static final String COLUMN_NOTIFY_VOLUME = "notify_volume";
 	public static final String COLUMN_ALARM_VOLUME = "alarm_volume";

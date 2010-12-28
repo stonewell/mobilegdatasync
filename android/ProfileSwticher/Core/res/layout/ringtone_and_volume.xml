@@ -18,12 +18,11 @@
 			<CheckBox android:text="@string/ringtone"
 				android:layout_width="wrap_content" android:id="@+id/check_ringtone"
 				android:layout_height="fill_parent" />
-			<TextView android:id="@+id/txt_ringtone_uri"
-				style="@style/Selector"
-				android:singleLine="true" 
+			<Button android:id="@+id/btn_ringtone_uri"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center_vertical"
+				android:clickable="false"
 				android:ellipsize="marquee" />
 			<ImageView android:layout_width="wrap_content"
 				android:id="@+id/img_view_show_ringtones" android:layout_height="wrap_content"

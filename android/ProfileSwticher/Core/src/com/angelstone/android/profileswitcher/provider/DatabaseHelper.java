@@ -24,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + Profile.TABLE_NAME + " ("
 				+ Profile.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				+ Profile.COLUMN_MEDIA_VOLUME + " INTEGER,"
+				+ Profile.COLUMN_EMAIL_VOLUME + " INTEGER,"
 				+ Profile.COLUMN_PHONE_VOLUME + " INTEGER,"
 				+ Profile.COLUMN_NOTIFY_VOLUME + " INTEGER,"
 				+ Profile.COLUMN_ALARM_VOLUME + " INTEGER,"

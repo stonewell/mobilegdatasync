@@ -4,6 +4,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.angelstone.android.profileswitcher.R;
+import com.angelstone.android.ui.GenericActivity;
 
 public abstract class EditBaseActivity extends GenericActivity {
 	private static final int[][] OPTION_MENUS = new int[][] {
