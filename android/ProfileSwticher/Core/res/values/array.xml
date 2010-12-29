@@ -1,0 +1,19 @@
+<resources>
+	<string-array name="expire_time_label_array">
+		<item>5 Minutes</item>
+		<item>10 Minutes</item>
+		<item>30 Minutes</item>
+		<item>1 Hour</item>
+		<item>2 Hours</item>
+		<item>4 Hours</item>
+		<item>Customize Time</item>
+	</string-array>
+	<integer-array name="expire_time_array">
+		<item>300</item>
+		<item>600</item>
+		<item>1800</item>
+		<item>3600</item>
+		<item>7200</item>
+		<item>14400</item>
+	</integer-array>
+</resources>

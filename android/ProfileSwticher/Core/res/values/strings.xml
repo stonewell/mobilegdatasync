@@ -82,4 +82,7 @@
 	<string name="disable_confirm">Disable the selected profile?</string>
 	<string name="enable_profile">Enable Profile</string>
 	<string name="enable_profile_time">Enable With Expire Time</string>
+	<string name="hour">Hour(s)</string>
+	<string name="minute">Minute(s)</string>
+	<string name="expire_time_is_not_valid">Inputed expire time is not valid</string>
 </resources>

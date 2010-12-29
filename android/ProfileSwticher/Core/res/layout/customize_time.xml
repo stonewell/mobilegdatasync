@@ -1,0 +1,25 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:orientation="horizontal" android:stretchColumns="0">
+
+	<TableRow>
+		<EditText android:id="@+id/hour" android:paddingLeft="10dip"
+			android:paddingRight="10dip" android:layout_marginLeft="10dip"
+			android:layout_marginRight="5dip" android:singleLine="true"
+			android:inputType="number" android:layout_height="wrap_content"
+			android:layout_width="fill_parent" />
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:layout_marginRight="5dip"
+			android:text="@string/hour" />
+	</TableRow>
+	<TableRow>
+		<EditText android:id="@+id/minute" android:paddingLeft="10dip"
+			android:paddingRight="10dip" android:layout_marginLeft="10dip"
+			android:layout_marginRight="5dip" android:singleLine="true"
+			android:inputType="number" android:layout_height="wrap_content"
+			android:layout_width="fill_parent" />
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:layout_marginRight="5dip"
+			android:text="@string/minute" />
+	</TableRow>
+</TableLayout>

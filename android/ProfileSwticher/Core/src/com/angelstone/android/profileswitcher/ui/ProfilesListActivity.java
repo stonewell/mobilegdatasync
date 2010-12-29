@@ -3,7 +3,6 @@ package com.angelstone.android.profileswitcher.ui;
 import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -13,16 +12,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
@@ -220,13 +217,13 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 		getContentResolver().update(uri, values, null, null);
 	}
 
-	private void chooseExpireTime(final  long id) {
+	private void chooseExpireTime(final long id) {
 		final String[] expireTimeLabels = getResources().getStringArray(
 				R.array.expire_time_label_array);
 
 		final int[] expireTimes = getResources().getIntArray(
 				R.array.expire_time_array);
- 
+
 		// Adapter that shows a list of string resources
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_dropdown_item, expireTimeLabels) {
@@ -241,6 +238,7 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 							expireTimes[which]);
 				} else {
 					// Customize
+					customizeExpireTime(id);
 				}
 			}
 		};
@@ -249,6 +247,40 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 				.setNegativeButton(android.R.string.cancel, null)
 				.setSingleChoiceItems(adapter, -1, clickListener).show();
 
+	}
+
+	protected void customizeExpireTime(final long id) {
+		LayoutInflater factory = LayoutInflater.from(this);
+		final View v = factory.inflate(R.layout.customize_time, null);
+		final EditText etHour = (EditText) v.findViewById(R.id.hour);
+		final EditText etMin = (EditText) v.findViewById(R.id.minute);
+
+		etHour.setText("4");
+		etMin.setText("0");
+
+		final DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				long seconds = 0;
+
+				try {
+					seconds = Long.parseLong(etHour.getText().toString())
+							* 3600 + Long.parseLong(etMin.getText().toString())
+							* 60;
+				} catch (Throwable t) {
+				}
+
+				if (seconds == 0) {
+					showToast(getString(R.string.expire_time_is_not_valid));
+				} else {
+					activateProfile(id, Profile.ACTIVE_MANUAL_TIME, seconds);
+				}
+			}
+		};
+
+		new AlertDialog.Builder(this).setTitle(R.string.enable_profile_time)
+				.setNegativeButton(android.R.string.cancel, null)
+				.setPositiveButton(android.R.string.ok, clickListener)
+				.setView(v).show();
 	}
 
 }
