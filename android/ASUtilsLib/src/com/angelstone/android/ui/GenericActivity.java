@@ -75,7 +75,13 @@ public abstract class GenericActivity extends Activity {
 
 		createMenus(menu, mOptionMenuStartPos, OPTION_MENUS, mMenuEnables);
 
+		updateOptionMenuItemState(menu);
+		
 		return super.onPrepareOptionsMenu(menu);
+	}
+
+	protected void updateOptionMenuItemState(Menu menu) {
+		
 	}
 
 	@Override

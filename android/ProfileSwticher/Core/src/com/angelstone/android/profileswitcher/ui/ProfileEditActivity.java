@@ -79,6 +79,22 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		tb.setChecked(mProfile.isBlueToothEnable());
 		tb.setEnabled(mProfile.isBlueToothConfigured());
 
+		cb = (CheckBox) findViewById(R.id.check_mute);
+		cb.setOnClickListener(this);
+		cb.setChecked(mProfile.isMuteConfigured());
+
+		tb = (ToggleButton) findViewById(R.id.toggle_mute);
+		tb.setChecked(mProfile.isMuteEnable());
+		tb.setEnabled(mProfile.isMuteConfigured());
+
+		cb = (CheckBox) findViewById(R.id.check_all_vibrate);
+		cb.setOnClickListener(this);
+		cb.setChecked(mProfile.isVibrateConfigured());
+
+		tb = (ToggleButton) findViewById(R.id.toggle_all_vibrate);
+		tb.setChecked(mProfile.isVibrateEnable());
+		tb.setEnabled(mProfile.isVibrateConfigured());
+
 		cb = (CheckBox) findViewById(R.id.check_phone);
 		cb.setOnClickListener(this);
 		cb.setChecked(mProfile.isPhoneConfigured());
@@ -184,6 +200,16 @@ public class ProfileEditActivity extends EditBaseActivity implements
 
 		case R.id.check_bluetooth: {
 			findViewById(R.id.toggle_bluetooth).setEnabled(
+					((CheckBox) v).isChecked());
+		}
+			break;
+		case R.id.check_mute: {
+			findViewById(R.id.toggle_mute).setEnabled(
+					((CheckBox) v).isChecked());
+		}
+			break;
+		case R.id.check_all_vibrate: {
+			findViewById(R.id.toggle_all_vibrate).setEnabled(
 					((CheckBox) v).isChecked());
 		}
 			break;
@@ -654,6 +680,16 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		mProfile.setBlueToothEnable(tb.isChecked());
 		mProfile.setBlueToothConfigured(cb.isChecked());
 
+		cb = (CheckBox) findViewById(R.id.check_mute);
+		tb = (ToggleButton) findViewById(R.id.toggle_mute);
+		mProfile.setMuteEnable(tb.isChecked());
+		mProfile.setMuteConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_all_vibrate);
+		tb = (ToggleButton) findViewById(R.id.toggle_all_vibrate);
+		mProfile.setVibrateEnable(tb.isChecked());
+		mProfile.setVibrateConfigured(cb.isChecked());
+
 		ContentValues values = new ContentValues();
 		values.put(Profile.COLUMN_NAME, mProfile.getName());
 		values.put(Profile.COLUMN_FLAGS, mProfile.getFlags());
@@ -670,7 +706,9 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		values.put(Profile.COLUMN_EMAIL_RING_TONE, mProfile.getEmailRingtone());
 
 		if (mId < 0) {
-			getContentResolver().insert(Profile.CONTENT_URI, values);
+			Uri uri = getContentResolver().insert(Profile.CONTENT_URI, values);
+			
+			mId = ContentUris.parseId(uri);
 		} else {
 			Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, mId);
 

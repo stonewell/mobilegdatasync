@@ -16,6 +16,8 @@
 	<string name="wifi">WIFI</string>
 	<string name="gps">GPS</string>
 	<string name="bluetooth">BlueTooth</string>
+	<string name="mute">Mute</string>
+	<string name="vibrate">Vibrate</string>
 	<string name="devices">Devices</string>
 	<string name="ringtone_and_volume">Ring Tone and Volume</string>
 	<string name="phone">Phone</string>
@@ -31,4 +33,53 @@
 	<string name="update_exist">Update</string>
 	<string name="save_current">Save</string>
 	<string name="same_name_existing">There an existing profile with same name. Please choose the next action</string>
+	<string name="empty_profiles_message">
+		"You don't have any profiles to display.\n\nTo add profile, press
+		<font fgcolor="#ffffffff">
+			<b>Menu</b>
+		</font>
+		and touch:\n
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>Add</b>
+			</font>
+			to create a new profile from scratch\n
+		</li>
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>Import/Export</b>
+			</font>
+			\n
+		</li>
+		"
+	</string>
+	<string name="empty_schedules_message">
+		"You don't have any schedules to display.\n\nTo add schedule, press
+		<font fgcolor="#ffffffff">
+			<b>Menu</b>
+		</font>
+		and touch:\n
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>Add</b>
+			</font>
+			to create a new schedule from scratch\n
+		</li>
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>Import/Export</b>
+			</font>
+			\n
+		</li>
+		"
+	</string>
+	<string name="enable">Enable</string>
+	<string name="disable">Disable</string>
+	<string name="disable_confirm">Disable the selected profile?</string>
+	<string name="enable_profile">Enable Profile</string>
+	<string name="enable_profile_time">Enable With Expire Time</string>
 </resources>

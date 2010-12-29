@@ -3,6 +3,11 @@ package com.angelstone.android.profileswitcher.store;
 import android.net.Uri;
 
 public class Profile implements DatabaseValues {
+	public static final int ACTIVE_NONE = 0;
+	public static final int ACTIVE_AUTO = 0x00000001;
+	public static final int ACTIVE_MANUAL = 0x00000001 << 1;
+	public static final int ACTIVE_MANUAL_TIME = 0x00000001 << 2;
+	
 	public static final String TABLE_NAME = "profiles";
 
 	public static final String COLUMN_ID = "_id";
@@ -53,9 +58,14 @@ public class Profile implements DatabaseValues {
 
 	public static final int FLAG_ALARM_VIBRATE = 0x00000001 << 14;
 
+	public static final int FLAG_VIBRATE = 0x00000001 << 15;
+	public static final int FLAG_MUTE = 0x00000001 << 16;
+
 	public static final int DEVICE_WIFI_ENABLE = 0x00000001;
 	public static final int DEVICE_GPS_ENABLE = 0x00000001 << 1;
 	public static final int DEVICE_BLUETOOTH_ENABLE = 0x00000001 << 2;
+	public static final int DEVICE_MUTE_ENABLE = 0x00000001 << 3;
+	public static final int DEVICE_VIBRATE_ENABLE = 0x00000001 << 4;
 
 	private int mPhoneVolume = 0;
 	private String mPhoneRingtone = null;
@@ -427,5 +437,55 @@ public class Profile implements DatabaseValues {
 
 	public void setName(String name) {
 		mName = name;
+	}
+
+	public boolean isMuteConfigured() {
+		return (mFlags & FLAG_MUTE) == FLAG_MUTE;
+	}
+
+	public void setMuteConfigured(boolean v) {
+		if (v)
+			mFlags |= FLAG_MUTE;
+		else
+			mFlags &= ~FLAG_MUTE;
+	}
+
+	public boolean isMuteEnable() {
+		return isMuteConfigured()
+				&& (mDevices & DEVICE_MUTE_ENABLE) == DEVICE_MUTE_ENABLE;
+	}
+
+	public void setMuteEnable(boolean enable) {
+		setMuteConfigured(true);
+
+		if (enable)
+			mDevices |= DEVICE_MUTE_ENABLE;
+		else
+			mDevices &= ~DEVICE_MUTE_ENABLE;
+	}
+	
+	public boolean isVibrateConfigured() {
+		return (mFlags & FLAG_VIBRATE) == FLAG_VIBRATE;
+	}
+
+	public void setVibrateConfigured(boolean v) {
+		if (v)
+			mFlags |= FLAG_VIBRATE;
+		else
+			mFlags &= ~FLAG_VIBRATE;
+	}
+
+	public boolean isVibrateEnable() {
+		return isVibrateConfigured()
+				&& (mDevices & DEVICE_VIBRATE_ENABLE) == DEVICE_VIBRATE_ENABLE;
+	}
+
+	public void setVibrateEnable(boolean enable) {
+		setVibrateConfigured(true);
+
+		if (enable)
+			mDevices |= DEVICE_VIBRATE_ENABLE;
+		else
+			mDevices &= ~DEVICE_VIBRATE_ENABLE;
 	}
 }
