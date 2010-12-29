@@ -71,6 +71,12 @@ public class YaCallerIdMainView extends GenericActivity implements
 		mCursor = mCallerIdManager.getCallerIds(this);
 		startManagingCursor(mCursor);
 
+		if (mCursor.getCount() == 0) {
+			findViewById(R.id.empty_message).setVisibility(View.VISIBLE);
+		} else {
+			findViewById(R.id.empty_message).setVisibility(View.GONE);
+		}
+
 		CallerListViewAdapter adapter = new CallerListViewAdapter(this,
 				mCursor, mPhotoLoader);
 		mListview.setAdapter(adapter);
@@ -82,6 +88,12 @@ public class YaCallerIdMainView extends GenericActivity implements
 				super.onChange(selfChange);
 
 				mCursor.requery();
+				
+				if (mCursor.getCount() == 0) {
+					findViewById(R.id.empty_message).setVisibility(View.VISIBLE);
+				} else {
+					findViewById(R.id.empty_message).setVisibility(View.GONE);
+				}
 			}
 		};
 
@@ -219,6 +231,8 @@ public class YaCallerIdMainView extends GenericActivity implements
 		super.onDestroy();
 
 		mPhotoLoader.stop();
+		
+		getContentResolver().unregisterContentObserver(mObserver);
 	}
 
 	@Override
