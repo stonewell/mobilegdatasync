@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -37,6 +39,8 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private long mId = 0;
 	private String mNumber = null;
 	private PowerManager.WakeLock mLock = null;
+	private HandlerThread mHandlerThread = null;
+	private Handler mHandler = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +63,9 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		mLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
 				| PowerManager.ACQUIRE_CAUSES_WAKEUP, "FullScreenCallerId");
-	    mLock.setReferenceCounted(false);
-	    mLock.acquire();
-	    
+		mLock.setReferenceCounted(false);
+		mLock.acquire();
+
 		mTelephony = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
 
@@ -69,6 +73,10 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		mHide = false;
 		mPhotoLoader = new PhotoLoader(this, R.drawable.ic_contact_list_picture);
+		mHandlerThread = new HandlerThread("YACallerId_ContactInfo_Loader",
+				android.os.Process.THREAD_PRIORITY_BACKGROUND);
+		mHandlerThread.start();
+		mHandler = new Handler(mHandlerThread.getLooper());
 
 		Button btn = (Button) findViewById(R.id.answerButton);
 		btn.setOnClickListener(this);
@@ -76,15 +84,19 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		btn = (Button) findViewById(R.id.endButton);
 		btn.setOnClickListener(this);
 
+		if (mId < 0)
+			mId = 0;
 		Intent intent = getIntent();
 
 		mId = intent.getLongExtra(CallerIdConstants.DATA_ID, -1);
 		mNumber = intent.getStringExtra(CallerIdConstants.DATA_INCOMING_NUMBER);
+		boolean hide = intent.getBooleanExtra(CallerIdConstants.DATA_HIDE, false);
 
-		if (mId < 0)
-			mId = 0;
-
-		updateView(intent, mId);
+		if (hide) {
+			finish();
+		} else {
+			updateView(intent, mId);
+		}
 	}
 
 	@Override
@@ -103,11 +115,19 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 					e.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when show call screen", e);
 		}
-		
+
+		try {
+			mHandler.getLooper().quit();
+		} catch (Throwable t) {
+			ActivityLog.logError(this, getString(R.string.app_name),
+					t.getLocalizedMessage());
+			Log.e(CallerIdConstants.TAG, "Fail when quit handler thread", t);
+		}
+
 		try {
 			if (mLock != null && mLock.isHeld())
 				mLock.release();
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			ActivityLog.logError(this, getString(R.string.app_name),
 					t.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when release lock", t);
@@ -123,7 +143,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		try {
 			if (mLock != null && !mLock.isHeld())
 				mLock.acquire();
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			ActivityLog.logError(this, getString(R.string.app_name),
 					t.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when acquire lock", t);
@@ -137,7 +157,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		try {
 			if (mLock != null && mLock.isHeld())
 				mLock.release();
-		}catch(Throwable t) {
+		} catch (Throwable t) {
 			ActivityLog.logError(this, getString(R.string.app_name),
 					t.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when release lock", t);
@@ -164,15 +184,13 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 			return;
 		}
 
-		boolean hide = intent.getBooleanExtra(CallerIdConstants.DATA_HIDE,
-				false);
+		boolean hide = intent.getBooleanExtra(CallerIdConstants.DATA_HIDE, false);
 
 		if (hide) {
 			mHide = true;
 			finish();
 		} else {
-			if (intent
-					.getBooleanExtra(CallerIdConstants.DATA_PAUSE_Call, false)) {
+			if (intent.getBooleanExtra(CallerIdConstants.DATA_PAUSE_Call, false)) {
 				return;
 			}
 
@@ -186,7 +204,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		}
 	}
 
-	private void updateView(Intent intent, long id) {
+	private void updateView(Intent intent, final long id) {
 		ImageView iv = (ImageView) findViewById(R.id.caller_img);
 
 		if (id > 0) {
@@ -200,50 +218,67 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		if (TextUtils.isEmpty(number))
 			number = getString(R.string.unknown);
+
 		tv.setText(number);
 
-		// Load Contacts Infomation
-		Cursor cur = getContentResolver()
-				.query(Uri.withAppendedPath(mSysCompat.PHONE_LOOKUP_FILTER_URI,
-						number),
+		final String fNumber = number;
+
+		mHandler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				// Load Contacts Infomation
+				Cursor cur = getContentResolver().query(
+						Uri.withAppendedPath(mSysCompat.PHONE_LOOKUP_FILTER_URI, fNumber),
 						new String[] { mSysCompat.PHONE_LOOKUP_NUMBER,
-								mSysCompat.PHONE_LOOKUP_NAME,
-								mSysCompat.PHONE_LOOKUP_TYPE,
-								mSysCompat.PHONE_LOOKUP_PHOTO_ID }, null, null,
-						null);
+								mSysCompat.PHONE_LOOKUP_NAME, mSysCompat.PHONE_LOOKUP_TYPE,
+								mSysCompat.PHONE_LOOKUP_PHOTO_ID }, null, null, null);
 
-		try {
-			String name = "";
-			String type = "";
+				try {
+					String name = "";
+					String type = "";
 
-			if (cur.moveToNext()) {
-				int idxName = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_NAME);
-				int idxType = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_TYPE);
-				int idxPhoto = cur
-						.getColumnIndex(mSysCompat.PHONE_LOOKUP_PHOTO_ID);
+					if (cur.moveToNext()) {
+						int idxName = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_NAME);
+						int idxType = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_TYPE);
+						int idxPhoto = cur.getColumnIndex(mSysCompat.PHONE_LOOKUP_PHOTO_ID);
 
-				name = cur.getString(idxName);
-				type = mSysCompat.getPhoneTypeLabel(cur.getInt(idxType))
-						.toString();
+						name = cur.getString(idxName);
+						type = mSysCompat.getPhoneTypeLabel(cur.getInt(idxType)).toString();
 
-				if (id <= 0) {
-					if (mContactPhoto != null)
-						mContactPhoto.recycle();
+						if (id <= 0) {
+							if (mContactPhoto != null)
+								mContactPhoto.recycle();
 
-					mContactPhoto = mSysCompat.getPhoto(cur.getInt(idxPhoto),
-							R.drawable.ic_contact_list_picture);
+							mContactPhoto = mSysCompat.getPhoto(cur.getInt(idxPhoto),
+									R.drawable.ic_contact_list_picture);
 
-					ImageView contactImage = (ImageView) findViewById(R.id.contact_img);
-					contactImage.setImageBitmap(mContactPhoto);
+							final ImageView contactImage = (ImageView) findViewById(R.id.contact_img);
+							runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									contactImage.setImageBitmap(mContactPhoto);
+								}
+							});
+						}
+					}
+
+					final TextView ci = (TextView) findViewById(R.id.contact_info);
+
+					final String txt = name + " " + type;
+					runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							ci.setText(txt);
+						}
+					});
+				} finally {
+					cur.close();
 				}
 			}
-
-			TextView ci = (TextView) findViewById(R.id.contact_info);
-
-			ci.setText(name + " " + type);
-		} finally {
-			cur.close();
-		}
+		});
 	}
 
 	@Override
@@ -257,11 +292,11 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 				mTelephony.endCall();
 				break;
 			}
+
 		} catch (Throwable e) {
 			ActivityLog.logError(this, getString(R.string.app_name),
 					e.getLocalizedMessage());
-			Log.e(CallerIdConstants.TAG, "Fail when do handling ringing call",
-					e);
+			Log.e(CallerIdConstants.TAG, "Fail when do handling ringing call", e);
 		}
 	}
 

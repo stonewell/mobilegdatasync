@@ -316,7 +316,7 @@ public class YaCallerIdMainView extends GenericActivity implements
 		StringBuilder sb = new StringBuilder(data.length * 2);
 
 		for (int i = 0; i < data.length; i++) {
-			String tmp = Integer.toHexString(data[i]);
+			String tmp = Integer.toHexString(data[i] & 0xFF);
 
 			if (tmp.length() < 2)
 				sb.append("0");
@@ -332,7 +332,7 @@ public class YaCallerIdMainView extends GenericActivity implements
 		try {
 			bmp = BitmapFactory.decodeByteArray(buf, 0, buf.length);
 
-			return true;
+			return bmp != null;
 		} catch (Throwable t) {
 			return false;
 		} finally {
