@@ -40,5 +40,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		if (oldVersion < 2) {
+			upgradeToVersion2(db);
+			oldVersion = 2;
+		}
+	}
+
+	private void upgradeToVersion2(SQLiteDatabase db) {
+		db.execSQL("ALTER TABLE " + Profile.TABLE_NAME + 
+				" ADD " + Profile.COLUMN_EXPIRE_TIME + " INTEGER DEFAULT 0");
+		db.execSQL("ALTER TABLE " + Profile.TABLE_NAME + 
+				" ADD " + Profile.COLUMN_ACTIVATE_TIME + " INTEGER DEFAULT 0");
 	}
 }

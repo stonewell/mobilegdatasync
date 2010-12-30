@@ -27,6 +27,9 @@ public class Profile implements DatabaseValues {
 	public static final String COLUMN_ALARM_RING_TONE = "alarm_ring_tone";
 	public static final String COLUMN_EMAIL_RING_TONE = "email_ring_tone";
 
+	public static final String COLUMN_EXPIRE_TIME = "expire_time";
+	public static final String COLUMN_ACTIVATE_TIME = "activate_time";
+	
 	public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.angelstone.android.profileswitch.profile";
 	public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.angelstone.android.profileswitch.profile";
 

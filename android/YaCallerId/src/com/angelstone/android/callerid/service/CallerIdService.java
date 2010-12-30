@@ -68,8 +68,7 @@ public class CallerIdService extends Service {
 					break;
 				}
 			} catch (Throwable t) {
-				Log.e(CallerIdConstants.TAG, "CallerId service get exception",
-						t);
+				Log.e(CallerIdConstants.TAG, "CallerId service get exception", t);
 			} finally {
 				try {
 					if (lock != null)
@@ -98,7 +97,7 @@ public class CallerIdService extends Service {
 					if (result instanceof Long)
 						id = (Long) result;
 
-					Intent intent = new Intent(
+					final Intent intent = new Intent(
 							CallerIdService.this.getApplicationContext(),
 							FullScreenCallerIdView.class);
 					intent.putExtra(CallerIdConstants.DATA_ID, id);
@@ -108,8 +107,14 @@ public class CallerIdService extends Service {
 							| Intent.FLAG_FROM_BACKGROUND
 							| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 
-					startActivity(intent);
-					mFullScreenCallerIdViewVisible = true;
+					handler_.postDelayed(new Runnable() {
+
+						@Override
+						public void run() {
+							startActivity(intent);
+							mFullScreenCallerIdViewVisible = true;
+						}
+					}, 1000);
 				}
 					break;
 				default: {
@@ -131,8 +136,7 @@ public class CallerIdService extends Service {
 			} catch (Throwable e) {
 				ActivityLog.logError(CallerIdService.this, "CallerId",
 						e.getLocalizedMessage());
-				Log.e(CallerIdConstants.TAG,
-						"Fail when do caller id operation", e);
+				Log.e(CallerIdConstants.TAG, "Fail when do caller id operation", e);
 			}
 		}
 	}
@@ -206,8 +210,7 @@ public class CallerIdService extends Service {
 
 	private void regContentObserver() {
 		getContentResolver().registerContentObserver(
-				mCallerIdManager.getContentUri(), true,
-				new ContentObserver(handler_) {
+				mCallerIdManager.getContentUri(), true, new ContentObserver(handler_) {
 
 					@Override
 					public void onChange(boolean selfChange) {
@@ -239,8 +242,7 @@ public class CallerIdService extends Service {
 
 	private void updateNumberMatcher(PhoneNumberMatcher matcher,
 			HashMap<String, Long> newNumbers) {
-		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers()
-				.keySet());
+		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers().keySet());
 
 		for (String n : oldNumbers) {
 			if (!newNumbers.containsKey(n))
@@ -259,8 +261,7 @@ public class CallerIdService extends Service {
 		if (TextUtils.isEmpty(n))
 			return false;
 
-		if (!(n.charAt(0) == '+')
-				&& !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
+		if (!(n.charAt(0) == '+') && !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
 			return false;
 		}
 

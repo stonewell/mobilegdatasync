@@ -213,6 +213,8 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 
 		ContentValues values = new ContentValues();
 		values.put(Profile.COLUMN_ACTIVE, active);
+		values.put(Profile.COLUMN_ACTIVATE_TIME, System.currentTimeMillis());
+		values.put(Profile.COLUMN_EXPIRE_TIME, seconds);
 
 		getContentResolver().update(uri, values, null, null);
 	}

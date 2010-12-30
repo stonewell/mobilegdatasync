@@ -1,5 +1,7 @@
 package com.angelstone.android.profileswitcher.ui;
 
+import java.text.MessageFormat;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
@@ -16,6 +18,9 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 	private int mIndexFlags;
 	private int mIndexDevices;
 	private int mIndexActive;
+	private int mIndexExpireTime;
+	private int mIndexActiveTime;
+	private MessageFormat mMessageFormat;
 
 	public ProfileAdapter(Context context, Cursor c) {
 		super(context, R.layout.profile_list_item, c, true);
@@ -25,6 +30,10 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 		mIndexFlags = c.getColumnIndex(Profile.COLUMN_FLAGS);
 		mIndexDevices = c.getColumnIndex(Profile.COLUMN_DEVICES);
 		mIndexActive = c.getColumnIndex(Profile.COLUMN_ACTIVE);
+		mIndexActiveTime = c.getColumnIndex(Profile.COLUMN_ACTIVATE_TIME);
+		mIndexExpireTime = c.getColumnIndex(Profile.COLUMN_EXPIRE_TIME);
+		mMessageFormat = new MessageFormat(
+				context.getString(R.string.profile_expire_template));
 	}
 
 	@Override
@@ -45,15 +54,14 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 		iv[4] = (ImageView) view.findViewById(R.id.status_5_img);
 
 		for (int i = 0; i < iv.length; i++)
-			iv[i].setImageResource(-1);
+			iv[i].setImageResource(R.drawable.transparent);
 
 		int index = 0;
 
 		if (profile.isWifiEnable())
 			iv[index++].setImageResource(R.drawable.stat_sys_wifi_signal_4);
 		else if (profile.isWifiConfigured())
-			iv[index++]
-					.setImageResource(R.drawable.stat_sys_wifi_signal_4_disable);
+			iv[index++].setImageResource(R.drawable.stat_sys_wifi_signal_4_disable);
 
 		if (profile.isGpsEnable())
 			iv[index++].setImageResource(R.drawable.stat_sys_gps_on);
@@ -63,8 +71,7 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 		if (profile.isBlueToothEnable())
 			iv[index++].setImageResource(R.drawable.stat_sys_data_bluetooth);
 		else if (profile.isBlueToothConfigured())
-			iv[index++]
-					.setImageResource(R.drawable.stat_sys_data_bluetooth_disable);
+			iv[index++].setImageResource(R.drawable.stat_sys_data_bluetooth_disable);
 
 		if (profile.isMuteEnable())
 			iv[index++].setImageResource(R.drawable.stat_sys_ringer_silent);
@@ -83,8 +90,43 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 		case Profile.ACTIVE_MANUAL:
 			statusIv.setImageResource(R.drawable.active_manual);
 			break;
-		case Profile.ACTIVE_MANUAL_TIME:
-			statusIv.setImageResource(R.drawable.active_manual_time);
+		case Profile.ACTIVE_MANUAL_TIME: {
+			long expireTime = cursor.getLong(mIndexExpireTime);
+			long activeTime = cursor.getLong(mIndexActiveTime);
+			long duration = ((activeTime + expireTime * 1000) - System
+					.currentTimeMillis()) / 1000;
+
+			if (duration <= 0)
+				statusIv.setImageResource(R.drawable.active_none);
+			else {
+				statusIv.setImageResource(R.drawable.active_manual_time);
+				tv = (TextView) view.findViewById(R.id.profile_active_time);
+
+				long hour = duration / 3600;
+				long minute = (duration % 3600) / 60;
+				long second = duration % 60;
+
+				StringBuilder sb = new StringBuilder();
+
+				if (hour > 0)
+					sb.append(hour).append(" ")
+							.append(
+									hour > 1 ? context.getString(R.string.multi_hour) : context
+											.getString(R.string.single_hour)).append(" ");
+				if (minute > 0)
+					sb.append(minute).append(" ")
+							.append(
+									minute > 1 ? context.getString(R.string.multi_minute)
+											: context.getString(R.string.single_minute)).append(" ");
+				if (second > 0)
+					sb.append(second).append(" ")
+							.append(
+									second > 1 ? context.getString(R.string.multi_second)
+											: context.getString(R.string.single_second)).append(" ");
+
+				tv.setText(mMessageFormat.format(new Object[] {sb.toString()}));
+			}
+		}
 			break;
 		case Profile.ACTIVE_NONE:
 		default:
@@ -92,5 +134,4 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 			break;
 		}
 	}
-
 }
