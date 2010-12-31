@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name"></string>
-    <string name="activity_log_title">Activity Log</string>
+	<string name="app_name"></string>
+	<string name="activity_log_title">Activity Log</string>
 	<string name="app_descrip">Override Me</string>
 	<string name="app_credits">Override Me</string>
-	
+
 	<string name="view_logs">Log</string>
 	<string name="about">About</string>
 	<string name="preference">Preferences</string>
@@ -16,7 +16,7 @@
 	<string name="can_not_write_template">Can not write to file {1}</string>
 	<string name="can_not_create_template">Can not create file {1}</string>
 	<string name="no_record_template">{0} no records found</string>
-	
+
 	<!--common used value -->
 	<string name="confirm">Confirm</string>
 	<string name="help">Help</string>
@@ -41,4 +41,18 @@
 
 	<string name="clear_all_confirm">OK to clear all?</string>
 	<string name="delete_confirm">OK to delete?</string>
+	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
+		to identify repetition schedule: special case for when the alarm is set to 
+		repeat every day -->
+	<string name="every_day">every day</string>
+
+	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
+		to identify repetition schedule: special case for when the alarm is set to 
+		never repeat -->
+	<string name="never">Never</string>
+
+	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
+		to identify repetition schedule: concatenate days with this character, i.e. 
+		"Mon, Tue, Wed" -->
+	<string name="day_concat">", "</string>
 </resources>

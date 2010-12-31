@@ -4,7 +4,9 @@ import java.text.MessageFormat;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
@@ -22,6 +24,8 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 	private int mIndexActiveTime;
 	private MessageFormat mMessageFormat;
 
+	private boolean mShowInDialog = false;
+
 	public ProfileAdapter(Context context, Cursor c) {
 		super(context, R.layout.profile_list_item, c, true);
 
@@ -34,6 +38,12 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 		mIndexExpireTime = c.getColumnIndex(Profile.COLUMN_EXPIRE_TIME);
 		mMessageFormat = new MessageFormat(
 				context.getString(R.string.profile_expire_template));
+		mShowInDialog = false;
+	}
+
+	public ProfileAdapter(Context context, Cursor c, boolean showInDialog) {
+		this(context, c);
+		mShowInDialog= showInDialog;
 	}
 
 	@Override
@@ -109,22 +119,25 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 				StringBuilder sb = new StringBuilder();
 
 				if (hour > 0)
-					sb.append(hour).append(" ")
+					sb.append(hour)
+							.append(" ")
 							.append(
 									hour > 1 ? context.getString(R.string.multi_hour) : context
 											.getString(R.string.single_hour)).append(" ");
 				if (minute > 0)
-					sb.append(minute).append(" ")
+					sb.append(minute)
+							.append(" ")
 							.append(
 									minute > 1 ? context.getString(R.string.multi_minute)
 											: context.getString(R.string.single_minute)).append(" ");
 				if (second > 0)
-					sb.append(second).append(" ")
+					sb.append(second)
+							.append(" ")
 							.append(
 									second > 1 ? context.getString(R.string.multi_second)
 											: context.getString(R.string.single_second)).append(" ");
 
-				tv.setText(mMessageFormat.format(new Object[] {sb.toString()}));
+				tv.setText(mMessageFormat.format(new Object[] { sb.toString() }));
 			}
 		}
 			break;
@@ -134,4 +147,15 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 			break;
 		}
 	}
+
+	@Override
+	public View newView(Context context, Cursor cursor, ViewGroup parent) {
+		View view = super.newView(context, cursor, parent);
+
+		if (mShowInDialog)
+			view.setBackgroundColor(Color.argb(190, 0, 0, 0));
+		
+		return view;
+	}
+
 }
