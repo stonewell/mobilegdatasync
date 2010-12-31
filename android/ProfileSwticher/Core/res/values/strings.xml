@@ -92,4 +92,9 @@
 	<string name="multi_hour">Hours</string>
 	<string name="multi_minute">Minutes</string>
 	<string name="multi_second">Seconds</string>
+	<string name="label_time">Time</string>
+	<string name="label_profile">Profile</string>
+	<string name="label_repeat">Repeat</string>
+	<string name="label_schedule_label">Label</string>
+	<string name="label_location">Location</string>
 </resources>

@@ -70,7 +70,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		mTelephony = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
-		mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
 		mSysCompat = SysCompat.register(this);
 
@@ -111,12 +111,14 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		if (mContactPhoto != null)
 			mContactPhoto.recycle();
 
-		try {
-			mTelephony.showCallScreen();
-		} catch (RemoteException e) {
-			ActivityLog.logError(this, getString(R.string.app_name),
-					e.getLocalizedMessage());
-			Log.e(CallerIdConstants.TAG, "Fail when show call screen", e);
+		if (isAnswered()) {
+			try {
+				mTelephony.showCallScreen();
+			} catch (RemoteException e) {
+				ActivityLog.logError(this, getString(R.string.app_name),
+						e.getLocalizedMessage());
+				Log.e(CallerIdConstants.TAG, "Fail when show call screen", e);
+			}
 		}
 
 		try {
@@ -151,7 +153,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 					t.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when acquire lock", t);
 		}
-		
+
 		if (mHide || !isRing())
 			finish();
 	}
@@ -312,4 +314,9 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private boolean isRing() {
 		return mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_RINGING;
 	}
+
+	private boolean isAnswered() {
+		return mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK;
+	}
+
 }

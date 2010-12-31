@@ -23,7 +23,15 @@
 				<category android:name="android.intent.category.PROFILE_SWITCHER" />
 			</intent-filter>
 		</activity>
+
 		<activity android:name=".ui.ProfileEditActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.PROFILE_SWITCHER" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".ui.ScheduleEditActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.PROFILE_SWITCHER" />
