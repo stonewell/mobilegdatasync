@@ -15,7 +15,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -52,18 +51,26 @@ public class CallerIdService extends Service {
 
 				switch (msg.what) {
 				case MSG_INTENT: {
-					break;
+					Intent intent = (Intent) msg.obj;
+
+					if (intent != null
+							&& TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(intent
+									.getAction())) {
+						processPhoneStateIntent(intent);
+					}
 				}
 				case MSG_INIT: {
 					if (!mInitialized) {
 						initialize();
 						initCallerIdMatcher();
 						regContentObserver();
-						hookPhoneStateChange(true);
 						mInitialized = true;
 					}
 				}
 					break;
+				case MSG_UPDATE_NUMBERS: {
+					updateCallerIdNumbers();
+				}
 				default:
 					break;
 				}
@@ -81,66 +88,6 @@ public class CallerIdService extends Service {
 
 	}
 
-	private final class CallStateChangeListener extends PhoneStateListener {
-
-		public void onCallStateChanged(int state, String incomingNumber) {
-			super.onCallStateChanged(state, incomingNumber);
-
-			try {
-				switch (state) {
-				case TelephonyManager.CALL_STATE_RINGING: {
-
-					Object result = mCallerIdMatcher.match(incomingNumber);
-
-					long id = -1;
-
-					if (result instanceof Long)
-						id = (Long) result;
-
-					final Intent intent = new Intent(
-							CallerIdService.this.getApplicationContext(),
-							FullScreenCallerIdView.class);
-					intent.putExtra(CallerIdConstants.DATA_ID, id);
-					intent.putExtra(CallerIdConstants.DATA_INCOMING_NUMBER,
-							incomingNumber);
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-							| Intent.FLAG_FROM_BACKGROUND
-							| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-
-					handler_.postDelayed(new Runnable() {
-
-						@Override
-						public void run() {
-							startActivity(intent);
-							mFullScreenCallerIdViewVisible = true;
-						}
-					}, 1000);
-				}
-					break;
-				default: {
-					if (mFullScreenCallerIdViewVisible) {
-						Intent intent = new Intent(
-								CallerIdService.this.getApplicationContext(),
-								FullScreenCallerIdView.class);
-						intent.putExtra(CallerIdConstants.DATA_HIDE, true);
-						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-								| Intent.FLAG_FROM_BACKGROUND
-								| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-
-						startActivity(intent);
-						mFullScreenCallerIdViewVisible = false;
-					}
-				}
-					break;
-				}
-			} catch (Throwable e) {
-				ActivityLog.logError(CallerIdService.this, "CallerId",
-						e.getLocalizedMessage());
-				Log.e(CallerIdConstants.TAG, "Fail when do caller id operation", e);
-			}
-		}
-	}
-
 	private static final int MSG_INIT = 0;
 	private static final int MSG_INTENT = 1;
 	private static final int MSG_UPDATE_NUMBERS = 2;
@@ -152,8 +99,6 @@ public class CallerIdService extends Service {
 
 	private boolean mInitialized = false;
 
-	private CallStateChangeListener mPhoneStateListener = new CallStateChangeListener();
-	private TelephonyManager mTelephonyMgr = null;
 	private CallerIdManager mCallerIdManager = null;
 	private boolean mFullScreenCallerIdViewVisible = false;
 
@@ -197,15 +142,8 @@ public class CallerIdService extends Service {
 		updateCallerIdNumbers();
 	}
 
-	private void hookPhoneStateChange(boolean register) {
-		mTelephonyMgr.listen(mPhoneStateListener,
-				register ? PhoneStateListener.LISTEN_CALL_STATE
-						: PhoneStateListener.LISTEN_NONE);
-	}
-
 	private void initialize() {
 		mCallerIdManager = new CallerIdManager(CallerIdConstants.AUTHORITY);
-		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 	}
 
 	private void regContentObserver() {
@@ -272,5 +210,48 @@ public class CallerIdService extends Service {
 		}
 
 		return true;
+	}
+
+	public void processPhoneStateIntent(Intent intent) {
+		try {
+			String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+
+			if (TelephonyManager.EXTRA_STATE_RINGING.equals(state)) {
+				String number = intent
+						.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+
+				Object result = mCallerIdMatcher.match(number);
+
+				long id = -1;
+
+				if (result instanceof Long)
+					id = (Long) result;
+
+				final Intent newIntent = new Intent(getApplicationContext(),
+						FullScreenCallerIdView.class);
+				newIntent.putExtra(CallerIdConstants.DATA_ID, id);
+				newIntent.putExtra(CallerIdConstants.DATA_INCOMING_NUMBER, number);
+				newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+						| Intent.FLAG_FROM_BACKGROUND
+						| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+
+				startActivity(newIntent);
+				mFullScreenCallerIdViewVisible = true;
+			} else if (mFullScreenCallerIdViewVisible) {
+				mFullScreenCallerIdViewVisible = false;
+				final Intent newIntent = new Intent(getApplicationContext(),
+						FullScreenCallerIdView.class);
+				newIntent.putExtra(CallerIdConstants.DATA_HIDE, true);
+				newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+						| Intent.FLAG_FROM_BACKGROUND
+						| Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+
+				startActivity(newIntent);
+			}
+		} catch (Throwable e) {
+			ActivityLog.logError(CallerIdService.this, "CallerId",
+					e.getLocalizedMessage());
+			Log.e(CallerIdConstants.TAG, "Fail when do caller id operation", e);
+		}
 	}
 }

@@ -12,6 +12,7 @@ import android.os.HandlerThread;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private PowerManager.WakeLock mLock = null;
 	private HandlerThread mHandlerThread = null;
 	private Handler mHandler = null;
+	private TelephonyManager mTelephonyManager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		mTelephony = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
+		mTelephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 
 		mSysCompat = SysCompat.register(this);
 
@@ -92,7 +95,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		mNumber = intent.getStringExtra(CallerIdConstants.DATA_INCOMING_NUMBER);
 		boolean hide = intent.getBooleanExtra(CallerIdConstants.DATA_HIDE, false);
 
-		if (hide) {
+		if (hide || !isRing()) {
 			finish();
 		} else {
 			updateView(intent, mId);
@@ -148,6 +151,9 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 					t.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when acquire lock", t);
 		}
+		
+		if (mHide || !isRing())
+			finish();
 	}
 
 	@Override
@@ -163,7 +169,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 			Log.e(CallerIdConstants.TAG, "Fail when release lock", t);
 		}
 
-		if (!mHide) {
+		if (!mHide && isRing()) {
 			Intent intent = new Intent(getApplicationContext(),
 					FullScreenCallerIdView.class);
 
@@ -293,6 +299,9 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 				break;
 			}
 
+			if (mHide || !isRing())
+				finish();
+
 		} catch (Throwable e) {
 			ActivityLog.logError(this, getString(R.string.app_name),
 					e.getLocalizedMessage());
@@ -300,4 +309,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		}
 	}
 
+	private boolean isRing() {
+		return mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_RINGING;
+	}
 }
