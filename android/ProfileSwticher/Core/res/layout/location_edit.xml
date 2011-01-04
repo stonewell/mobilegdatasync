@@ -1,0 +1,50 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:layout_marginRight="10dip" android:orientation="vertical">
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="vertical">
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="horizontal" android:layout_height="wrap_content">
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:layout_marginRight="5dip"
+				android:layout_marginLeft="5dip"
+				android:layout_gravity="right|center_vertical" android:text="@string/label_longitude" />
+			<EditText android:id="@+id/longitude"
+				android:layout_marginRight="5dip" android:singleLine="true"
+				android:inputType="numberSigned|numberDecimal" android:layout_height="wrap_content"
+				android:layout_width="fill_parent" />
+		</LinearLayout>
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="horizontal" android:layout_height="wrap_content">
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:layout_marginRight="5dip"
+				android:layout_marginLeft="5dip"
+				android:layout_gravity="right|center_vertical" android:text="@string/label_latitude" />
+			<EditText android:id="@+id/latitude"
+				android:layout_marginRight="5dip" android:singleLine="true"
+				android:inputType="numberSigned|numberDecimal" android:layout_height="wrap_content"
+				android:layout_width="fill_parent" />
+		</LinearLayout>
+		<LinearLayout android:layout_width="fill_parent"
+			android:orientation="horizontal" android:layout_height="wrap_content">
+			<CheckBox android:layout_height="wrap_content" android:id="@+id/chk_use_altitude"
+				android:layout_width="wrap_content" android:layout_marginRight="5dip"
+				android:layout_gravity="right|center_vertical" android:text="@string/label_use_altitude" />
+			<Button android:layout_height="wrap_content" android:id="@+id/btn_use_current"
+				android:layout_width="fill_parent" android:layout_gravity="left|center_vertical"
+				android:layout_marginRight="5dip" android:text="@string/label_use_current_loc" />
+		</LinearLayout>
+		<LinearLayout android:id="@+id/row_altitude"
+			android:layout_width="fill_parent" android:orientation="horizontal"
+			android:layout_height="wrap_content">
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:layout_marginRight="5dip"
+				android:layout_marginLeft="5dip"
+				android:layout_gravity="right|center_vertical" android:text="@string/label_altitude" />
+			<EditText android:id="@+id/altitude"
+				android:layout_marginRight="20dip" android:singleLine="true"
+				android:inputType="numberSigned|numberDecimal" android:layout_height="wrap_content"
+				android:layout_width="fill_parent" />
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>
