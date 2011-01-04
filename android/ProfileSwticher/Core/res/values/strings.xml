@@ -97,4 +97,15 @@
 	<string name="label_repeat">Repeat</string>
 	<string name="label_schedule_label">Label</string>
 	<string name="label_location">Location</string>
+	<string name="label_latitude">Latitude</string>
+	<string name="label_longitude">Longitude</string>
+	<string name="label_altitude">Altitude</string>
+	<string name="label_use_altitude">Use Altitude</string>
+	<string name="label_use_current_loc">Use Current Location</string>
+	<string name="invalid_location_template">Invalid {0} or {1}</string>
+	<string name="invalid_location_template_2">Invalid {0} , {1} or {2}</string>
+	<string name="east_longitude">E</string>
+	<string name="west_longitude">W</string>
+	<string name="north_latitude">N</string>
+	<string name="south_latitude">S</string>
 </resources>
