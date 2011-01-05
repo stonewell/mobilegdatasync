@@ -20,6 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 				+ Schedule.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 				+ Schedule.COLUMN_PROFILE_ID + " INTEGER, "
 				+ Schedule.COLUMN_START_TIME + " LONG, "
+				+ Schedule.COLUMN_LABEL + " VARCHAR, "
+				+ Schedule.COLUMN_LOCATION + " VARCHAR, "
 				+ Schedule.COLUMN_REPEAT_WEEKDAYS + " INTEGER);");
 
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + Profile.TABLE_NAME + " ("
@@ -32,9 +34,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 				+ Profile.COLUMN_NOTIFY_RING_TONE + " VARCHAR,"
 				+ Profile.COLUMN_ALARM_RING_TONE + " VARCHAR,"
 				+ Profile.COLUMN_EMAIL_RING_TONE + " VARCHAR,"
-				+ Profile.COLUMN_ACTIVE + " INTEGER,"
-				+ Profile.COLUMN_DEVICES + " INTEGER,"
-				+ Profile.COLUMN_NAME + " VARCHAR, " 
+				+ Profile.COLUMN_ACTIVE + " INTEGER," + Profile.COLUMN_DEVICES
+				+ " INTEGER," + Profile.COLUMN_NAME + " VARCHAR, "
 				+ Profile.COLUMN_FLAGS + " INTEGER);");
 	}
 
@@ -44,12 +45,32 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 			upgradeToVersion2(db);
 			oldVersion = 2;
 		}
+
+		if (oldVersion < 3) {
+			upgradeToVersion3(db);
+			oldVersion = 3;
+		}
+		
+		if (oldVersion < 4) {
+			upgradeToVersion4(db);
+			oldVersion = 4;
+		}
+	}
+
+	private void upgradeToVersion4(SQLiteDatabase db) {
+		db.execSQL("ALTER TABLE " + Schedule.TABLE_NAME + " ADD "
+				+ Schedule.COLUMN_LABEL + " VARCHAR DEFAULT NULL");
+	}
+
+	private void upgradeToVersion3(SQLiteDatabase db) {
+		db.execSQL("ALTER TABLE " + Schedule.TABLE_NAME + " ADD "
+				+ Schedule.COLUMN_LOCATION + " VARCHAR DEFAULT NULL");
 	}
 
 	private void upgradeToVersion2(SQLiteDatabase db) {
-		db.execSQL("ALTER TABLE " + Profile.TABLE_NAME + 
-				" ADD " + Profile.COLUMN_EXPIRE_TIME + " INTEGER DEFAULT 0");
-		db.execSQL("ALTER TABLE " + Profile.TABLE_NAME + 
-				" ADD " + Profile.COLUMN_ACTIVATE_TIME + " INTEGER DEFAULT 0");
+		db.execSQL("ALTER TABLE " + Profile.TABLE_NAME + " ADD "
+				+ Profile.COLUMN_EXPIRE_TIME + " INTEGER DEFAULT 0");
+		db.execSQL("ALTER TABLE " + Profile.TABLE_NAME + " ADD "
+				+ Profile.COLUMN_ACTIVATE_TIME + " INTEGER DEFAULT 0");
 	}
 }

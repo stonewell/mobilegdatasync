@@ -165,6 +165,10 @@ public abstract class GenericActivity extends Activity {
 	}
 
 	protected void showToast(final String msg) {
+		showToast(msg, Toast.LENGTH_SHORT);
+	}
+	
+	protected void showToast(final String msg, int length) {
 		runOnUiThread(new Runnable() {
 
 			@Override

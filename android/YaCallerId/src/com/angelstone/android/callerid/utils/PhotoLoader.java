@@ -38,6 +38,7 @@ import android.widget.ImageView;
 import com.angelstone.android.callerid.CallerIdConstants;
 import com.angelstone.android.callerid.store.CallerId;
 import com.angelstone.android.callerid.store.CallerIdManager;
+import com.angelstone.android.utils.HandlerThreadQuiter;
 
 /**
  * Asynchronously loads contact photos and maintains cache of photos. The class
@@ -232,7 +233,7 @@ public class PhotoLoader implements Callback {
 			try {
 				HandlerThreadQuiter.quit(mLoaderThread);
 			} catch (VerifyError ex) {
-
+				mLoaderThread.getLooper().quit();
 			}
 			mLoaderThread = null;
 		}
