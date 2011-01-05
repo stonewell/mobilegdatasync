@@ -1,4 +1,4 @@
-package com.angelstone.android.callerid.utils;
+package com.angelstone.android.utils;
 
 import android.os.HandlerThread;
 

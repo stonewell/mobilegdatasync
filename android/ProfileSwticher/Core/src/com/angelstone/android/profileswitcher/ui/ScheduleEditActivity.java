@@ -1,6 +1,5 @@
 package com.angelstone.android.profileswitcher.ui;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.MessageFormat;
@@ -10,6 +9,8 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +20,10 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +35,14 @@ import android.widget.ImageButton;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
+import com.angelstone.android.profileswitcher.store.Schedule;
+import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.DaysOfWeek;
+import com.angelstone.android.utils.HandlerThreadQuiter;
 import com.angelstone.android.utils.PhoneToolsUtil;
 
 public class ScheduleEditActivity extends EditBaseActivity implements
@@ -43,14 +51,23 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 	private static final int PROFILE_CHOOSER_DIALOG_ID = 1002;
 	private static final int REPEAT_CHOOSER_DIALOG_ID = 1003;
 	private static final int LOCATION_CHOOSER_DIALOG_ID = 1004;
+	private static final int LABEL_CHOOSER_DIALOG_ID = 1005;
+	private static final String DATA_ID = "_data_id";
+	private static final String DATA_TIME = "_data_time";
+	private static final String DATA_SAVED_LOC = "_data_saved_loc";
+	private static final String DATA_PROFILE_ID = "_data_profile_id";
+	private static final String DATA_PROFILE_POS = "_data_profile_pos";
+	private static final String DATA_DAYS_OF_WEEK = "_data_days_of_week";
+	private static final String DATA_LABEL = "_data_label";
+	private static final String DATA_SAVED_LOC_DESC = "_data_saved_loc_desc";
+
+	private TextView mTextTimeDesc;
+	private TextView mTextProfileDesc;
+	private TextView mTextRepeatDesc;
+	private TextView mTextLocationDesc;
+	private TextView mTextLabel;
 
 	private long mId;
-	private TextView mTimeDesc;
-	private TextView mProfileDesc;
-	private TextView mRepeatDesc;
-	private TextView mLocationDesc;
-
-	private TextView mLabel;
 
 	private Calendar mTime = null;
 	private long mProfileId = -1;
@@ -67,17 +84,26 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 	private DaysOfWeek mDaysOfWeek;
 	private String[] mWeekDays;
 
+	private LocationManager mLocationManager;
 	private Location mCurrentLoc;
+	private Location mSavedLoc;
+	private String mSavedLocDesc;
+	private long mSavedLocUpdateTime;
+
 	private boolean mLocDlgShown;
 	private boolean mUseCurrentLoc;
-	private Location mSavedLoc;
-	private LocationManager mLocationManager;
 	private EditText mEditLatitude;
 	private EditText mEditLongitude;
 	private EditText mEditAltitude;
 	private CheckBox mChkUseAltitude;
 
-	private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+	private String mLabel = null;
+	private EditText mEditLabel;
+
+	private Handler mBackgroundHandler = null;
+	private HandlerThread mBackgroundHandlerThread = null;
+
+	private final TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 
 		@Override
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -91,7 +117,7 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 	};
 
-	private DialogInterface.OnClickListener mProfileListener = new DialogInterface.OnClickListener() {
+	private final DialogInterface.OnClickListener mProfileListener = new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int which) {
 			dialog.dismiss();
 
@@ -104,13 +130,13 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 	};
 
-	private DialogInterface.OnMultiChoiceClickListener mRepeatListener = new DialogInterface.OnMultiChoiceClickListener() {
+	private final DialogInterface.OnMultiChoiceClickListener mRepeatListener = new DialogInterface.OnMultiChoiceClickListener() {
 		public void onClick(DialogInterface dialog, int which, boolean check) {
 			mDaysOfWeek.set(which, check);
 		}
 	};
 
-	private LocationListener mLocationListener = new LocationListener() {
+	private final LocationListener mLocationListener = new LocationListener() {
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -141,14 +167,76 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 	};
 
-	private DialogInterface.OnClickListener mLocationSetListener = new DialogInterface.OnClickListener() {
+	private final DialogInterface.OnClickListener mLocationSetListener = new DialogInterface.OnClickListener() {
 
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
-			mSavedLoc = getLocationFromUI();
 
-			mLocDlgShown = false;
-			mUseCurrentLoc = false;
+			updateSavedLoc(getLocationFromUI());
+
+			updateView();
+		}
+	};
+
+	private final class UpdateLocDesRunnable implements Runnable {
+		private long mCreateTime;
+		private int mLoopCount;
+		private static final int RETRY_TIMES = 5;
+
+		public UpdateLocDesRunnable(long createTime) {
+			mCreateTime = createTime;
+			mLoopCount = 0;
+		}
+
+		@Override
+		public void run() {
+			if (mSavedLocUpdateTime > mCreateTime || mSavedLoc == null
+					|| mLoopCount > RETRY_TIMES)
+				return;
+
+			try {
+				Geocoder gc = new Geocoder(ScheduleEditActivity.this);
+
+				List<Address> results = null;
+
+				results = gc.getFromLocation(mSavedLoc.getLatitude(),
+						mSavedLoc.getLongitude(), 1);
+
+				if (results != null && results.size() > 0) {
+					Address address = results.get(0);
+					StringBuilder sb1 = new StringBuilder();
+
+					for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+						sb1.append(address.getAddressLine(i)).append("");
+					}
+
+					mSavedLocDesc = sb1.toString();
+
+					ScheduleEditActivity.this.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							mTextLocationDesc.setText(mSavedLocDesc);
+						}
+					});
+				} else if (mLoopCount <= RETRY_TIMES) {
+					mLoopCount++;
+					mBackgroundHandler.postDelayed(this, 1000);
+				}
+			} catch (Throwable t) {
+				ActivityLog.logWarning(ScheduleEditActivity.this,
+						ProfileSwitcherConstants.TAG,
+						"Update Geo Location Fail:" + t.getLocalizedMessage());
+			}
+		}
+	};
+
+	private final DialogInterface.OnClickListener mLabelSetListener = new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+
+			mLabel = mEditLabel.getText().toString();
 
 			updateView();
 		}
@@ -163,11 +251,11 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		Intent intent = getIntent();
 		mId = intent.getLongExtra(ProfileSwitcherConstants.EXTRA_ID, -1);
 
-		mTimeDesc = (TextView) findViewById(R.id.time_desc);
-		mProfileDesc = (TextView) findViewById(R.id.profile_desc);
-		mRepeatDesc = (TextView) findViewById(R.id.repeat_desc);
-		mLocationDesc = (TextView) findViewById(R.id.location_desc);
-		mLabel = (TextView) findViewById(R.id.schedule_label);
+		mTextTimeDesc = (TextView) findViewById(R.id.time_desc);
+		mTextProfileDesc = (TextView) findViewById(R.id.profile_desc);
+		mTextRepeatDesc = (TextView) findViewById(R.id.repeat_desc);
+		mTextLocationDesc = (TextView) findViewById(R.id.location_desc);
+		mTextLabel = (TextView) findViewById(R.id.schedule_label);
 
 		int[] tr_ids = new int[] { R.id.tr_location, R.id.tr_profile,
 				R.id.tr_repeat, R.id.tr_schedule_label, R.id.tr_time };
@@ -194,63 +282,57 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		mIndexProfileId = mProfileCursor.getColumnIndex(Profile.COLUMN_ID);
 		mIndexProfileName = mProfileCursor.getColumnIndex(Profile.COLUMN_NAME);
 
+		startBackgroundHandler();
+
 		updateData();
 		updateView();
 	}
 
 	private void updateView() {
 		if (mTime != null)
-			mTimeDesc.setText(mTimeFormat.format(mTime.getTime()));
+			mTextTimeDesc.setText(mTimeFormat.format(mTime.getTime()));
 		else
-			mTimeDesc.setText("");
+			mTextTimeDesc.setText("");
 
 		if (mProfileId != -1 && mProfilePosition != -1) {
 			mProfileCursor.moveToPosition(mProfilePosition);
-			mProfileDesc.setText(mProfileCursor.getString(mIndexProfileName));
+			mTextProfileDesc.setText(mProfileCursor
+					.getString(mIndexProfileName));
 		}
 
-		mRepeatDesc.setText(mDaysOfWeek.toString(this, true));
+		mTextRepeatDesc.setText(mDaysOfWeek.toString(this, true));
 
-		if (mSavedLoc != null) {
-			StringBuilder sb = new StringBuilder();
+		mTextLocationDesc.setText(getSavedLocDesc());
 
-			Geocoder gc = new Geocoder(this);
-			List<Address> results = null;
+		mTextLabel.setText(mLabel == null ? "" : mLabel);
+	}
 
-			try {
-				results = gc.getFromLocation(mSavedLoc.getLatitude(),
-						mSavedLoc.getLongitude(), 1);
-			} catch (IOException e) {
-			}
-
-			if (results != null && results.size() > 0) {
-				Address address = results.get(0);
-
-				for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-					sb.append(address.getAddressLine(i)).append("");
-				}
-			} else {
-				sb.append(mSavedLoc.getLongitude() > 0 ?
-						getString(R.string.east_longitude) :
-							getString(R.string.west_longitude));
-				sb.append(Location.convert(mSavedLoc.getLongitude(),
-						Location.FORMAT_DEGREES));
-				sb.append(",");
-				sb.append(mSavedLoc.getLatitude() > 0 ?
-						getString(R.string.north_latitude) :
-							getString(R.string.south_latitude));
-				sb.append(Location.convert(mSavedLoc.getLatitude(),
-						Location.FORMAT_DEGREES));
-
-				if (mSavedLoc.hasAltitude()) {
-					sb.append(",");
-					sb.append(Location.convert(mSavedLoc.getAltitude(),
-							Location.FORMAT_DEGREES));
-				}
-			}
-
-			mLocationDesc.setText(sb.toString());
+	private String getSavedLocDesc() {
+		if (!TextUtils.isEmpty(mSavedLocDesc)) {
+			return mSavedLocDesc;
 		}
+
+		if (mSavedLoc == null)
+			return "";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(mSavedLoc.getLongitude() > 0 ? getString(R.string.east_longitude)
+				: getString(R.string.west_longitude));
+		sb.append(Location.convert(mSavedLoc.getLongitude(),
+				Location.FORMAT_DEGREES));
+		sb.append(",");
+		sb.append(mSavedLoc.getLatitude() > 0 ? getString(R.string.north_latitude)
+				: getString(R.string.south_latitude));
+		sb.append(Location.convert(mSavedLoc.getLatitude(),
+				Location.FORMAT_DEGREES));
+
+		if (mSavedLoc.hasAltitude()) {
+			sb.append(",");
+			sb.append(Location.convert(mSavedLoc.getAltitude(),
+					Location.FORMAT_DEGREES));
+		}
+
+		return sb.toString();
 	}
 
 	@Override
@@ -261,18 +343,34 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			break;
 		case R.id.tr_profile:
 		case R.id.img_btn_profile:
-			showDialog(PROFILE_CHOOSER_DIALOG_ID);
+			if (mProfileCursor == null || mProfileCursor.getCount() == 0) {
+				new AlertDialog.Builder(this).setTitle(R.string.label_profile)
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.setNegativeButton(android.R.string.cancel, null)
+						.setMessage(R.string.warn_no_profile).show();
+			} else {
+				showDialog(PROFILE_CHOOSER_DIALOG_ID);
+			}
 			break;
 		case R.id.tr_repeat:
 		case R.id.img_btn_repeat:
 			showDialog(REPEAT_CHOOSER_DIALOG_ID);
 			break;
 		case R.id.tr_location:
-		case R.id.img_btn_location:
-			showDialog(LOCATION_CHOOSER_DIALOG_ID);
+		case R.id.img_btn_location: {
+			if (!hasLocProviders()) {
+				new AlertDialog.Builder(this).setTitle(R.string.label_location)
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.setNegativeButton(android.R.string.cancel, null)
+						.setMessage(R.string.warn_no_loc_providers).show();
+			} else {
+				showDialog(LOCATION_CHOOSER_DIALOG_ID);
+			}
+		}
 			break;
 		case R.id.tr_schedule_label:
 		case R.id.img_btn_schedule_label:
+			showDialog(LABEL_CHOOSER_DIALOG_ID);
 			break;
 		case R.id.chk_use_altitude: {
 			View vRoot = v.getRootView();
@@ -346,6 +444,16 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 					.setPositiveButton(android.R.string.ok,
 							mLocationSetListener).setView(v).create();
 		}
+		case LABEL_CHOOSER_DIALOG_ID: {
+			LayoutInflater factory = LayoutInflater.from(this);
+			final View v = factory.inflate(R.layout.label_edit, null);
+
+			return new AlertDialog.Builder(this)
+					.setTitle(R.string.label_schedule_label)
+					.setNegativeButton(android.R.string.cancel, null)
+					.setPositiveButton(android.R.string.ok, mLabelSetListener)
+					.setView(v).create();
+		}
 		default:
 			break;
 		}
@@ -381,6 +489,12 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			}
 		}
 			break;
+		case LABEL_CHOOSER_DIALOG_ID: {
+			mEditLabel = (EditText) dialog.findViewById(R.id.label);
+
+			mEditLabel.setText(mLabel == null ? "" : mLabel);
+		}
+			break;
 		}
 	}
 
@@ -396,25 +510,166 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 		mCurrentLoc = mLocationManager.getLastKnownLocation(getLocProvider());
-		mLocDlgShown = false;
-		mUseCurrentLoc = false;
 		mLocationManager.requestLocationUpdates(getLocProvider(), 0, 0,
 				mLocationListener);
 
-		// TODO load mRepeat;
+		updateSavedLoc(null);
+
+		if (mId < 0)
+			return;
+
+		Uri uri = ContentUris.withAppendedId(Schedule.CONTENT_URI, mId);
+
+		Cursor c = getContentResolver().query(uri, null, null, null, null);
+
+		try {
+			if (!c.moveToNext())
+				return;
+
+			mLabel = c.getString(c.getColumnIndex(Schedule.COLUMN_LABEL));
+			mDaysOfWeek.setCoded(c.getInt(c
+					.getColumnIndex(Schedule.COLUMN_REPEAT_WEEKDAYS)));
+			long time = c.getLong(c.getColumnIndex(Schedule.COLUMN_START_TIME));
+			if (time > 0) {
+				mTime = Calendar.getInstance();
+				mTime.setTimeInMillis(time);
+			}
+
+			mProfileId = c
+					.getLong(c.getColumnIndex(Schedule.COLUMN_PROFILE_ID));
+			updateProfilePosition();
+
+			String loc = c
+					.getString(c.getColumnIndex(Schedule.COLUMN_LOCATION));
+
+			if (!TextUtils.isEmpty(loc)) {
+				String[] parts = loc.split(",");
+
+				if (parts.length >= 2) {
+					double longitude = Location.convert(parts[0]);
+					double latitude = Location.convert(parts[1]);
+
+					Location location = new Location(
+							LocationManager.NETWORK_PROVIDER);
+					location.setLatitude(latitude);
+					location.setLongitude(longitude);
+
+					if (parts.length > 2) {
+						location.setAltitude(Location.convert(parts[2]));
+					} else {
+						location.removeAltitude();
+					}
+
+					updateSavedLoc(location);
+				}
+			}
+
+		} finally {
+			c.close();
+		}
+	}
+
+	private void updateProfilePosition() {
+		if (mProfileId < 0) {
+			mProfilePosition = -1;
+			return;
+		}
+
+		if (mProfileCursor.moveToFirst()) {
+			do {
+
+				if (mProfileCursor.getLong(mIndexProfileId) == mProfileId) {
+					mProfilePosition = mProfileCursor.getPosition();
+					return;
+				}
+			} while (mProfileCursor.moveToNext());
+		}
+
+		mProfileId = -1;
 	}
 
 	private String getLocProvider() {
+		List<String> providers = mLocationManager.getProviders(true);
+
+		if (providers != null && providers.size() > 0) {
+			for (String p : providers) {
+				if (LocationManager.NETWORK_PROVIDER.equals(p))
+					return LocationManager.NETWORK_PROVIDER;
+			}
+
+			return providers.get(0);
+		}
+
 		return LocationManager.NETWORK_PROVIDER;
+	}
+
+	private boolean hasLocProviders() {
+		List<String> providers = mLocationManager.getProviders(true);
+
+		return (providers != null && providers.size() > 0);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+
 		mLocationManager.removeUpdates(mLocationListener);
+
+		stopBackgroundHandler();
+	}
+
+	private void stopBackgroundHandler() {
+		if (mBackgroundHandlerThread == null)
+			return;
+
+		try {
+			HandlerThreadQuiter.quit(mBackgroundHandlerThread);
+		} catch (VerifyError ex) {
+			mBackgroundHandlerThread.getLooper().quit();
+		}
+
+		mBackgroundHandlerThread = null;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mLocationManager.removeUpdates(mLocationListener);
+
+		stopBackgroundHandler();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		startBackgroundHandler();
+
+		mLocationManager.requestLocationUpdates(getLocProvider(), 0, 0,
+				mLocationListener);
+
+		updateSavedLoc(mSavedLoc, mSavedLocDesc);
+	}
+
+	private void startBackgroundHandler() {
+		if (mBackgroundHandlerThread == null
+				|| !mBackgroundHandlerThread.isAlive()) {
+			mBackgroundHandlerThread = new HandlerThread(
+					"ScheduleEditActivity_Update_Thread",
+					android.os.Process.THREAD_PRIORITY_BACKGROUND);
+		}
+
+		if (!mBackgroundHandlerThread.isAlive()) {
+			mBackgroundHandlerThread.start();
+		}
+
+		mBackgroundHandler = new Handler(mBackgroundHandlerThread.getLooper());
 	}
 
 	protected boolean isSameLocationAsUI(Location oldLoc) {
+		if (oldLoc == null)
+			return false;
+
 		return oldLoc.equals(getLocationFromUI());
 	}
 
@@ -499,16 +754,174 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		return loc;
 	}
 
+	protected void updateSavedLoc(Location location) {
+		updateSavedLoc(location, null);
+	}
+
+	protected void updateSavedLoc(Location location, String defaultDesc) {
+		mSavedLoc = location;
+
+		mLocDlgShown = false;
+		mUseCurrentLoc = false;
+		mSavedLocDesc = defaultDesc;
+		mSavedLocUpdateTime = System.currentTimeMillis();
+
+		mBackgroundHandler.postAtFrontOfQueue(new UpdateLocDesRunnable(System
+				.currentTimeMillis() + 1));
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		if (savedInstanceState != null) {
+			mId = savedInstanceState.getLong(DATA_ID, mId);
+
+			long time = savedInstanceState.getLong(DATA_TIME, -1);
+
+			if (time > 0) {
+				mTime = Calendar.getInstance();
+				mTime.setTimeInMillis(time);
+			}
+
+			mProfileId = savedInstanceState
+					.getLong(DATA_PROFILE_ID, mProfileId);
+			mProfilePosition = savedInstanceState.getInt(DATA_PROFILE_POS,
+					mProfilePosition);
+
+			int code = savedInstanceState.getInt(DATA_DAYS_OF_WEEK, -1);
+
+			if (code >= 0) {
+				mDaysOfWeek.setCoded(code);
+			}
+
+			String label = savedInstanceState.getString(DATA_LABEL);
+
+			if (!TextUtils.isEmpty(label))
+				mLabel = label;
+
+			Location loc = savedInstanceState.getParcelable(DATA_SAVED_LOC);
+			if (loc != null)
+				mSavedLoc = loc;
+
+			label = savedInstanceState.getString(DATA_SAVED_LOC_DESC);
+			if (!TextUtils.isEmpty(label))
+				mSavedLocDesc = label;
+
+			updateView();
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putLong(DATA_ID, mId);
+
+		if (mTime != null)
+			outState.putLong(DATA_TIME, mTime.getTimeInMillis());
+
+		outState.putLong(DATA_PROFILE_ID, mProfileId);
+		outState.putInt(DATA_PROFILE_POS, mProfilePosition);
+
+		outState.putInt(DATA_DAYS_OF_WEEK, mDaysOfWeek.getCoded());
+
+		if (mSavedLoc != null)
+			outState.putParcelable(DATA_SAVED_LOC, mSavedLoc);
+
+		if (!TextUtils.isEmpty(mLabel))
+			outState.putString(DATA_LABEL, mLabel);
+
+		if (!TextUtils.isEmpty(mSavedLocDesc)) {
+			outState.putString(DATA_SAVED_LOC_DESC, mSavedLocDesc);
+		}
+	}
+
 	@Override
 	protected void saveContent() {
-		// TODO Auto-generated method stub
+		ContentValues values = new ContentValues();
 
+		if (!validateAndCreateValues(values)) {
+			return;
+		}
+
+		if (mId < 0) {
+			getContentResolver().insert(Schedule.CONTENT_URI, values);
+		} else {
+			Uri uri = ContentUris.withAppendedId(Schedule.CONTENT_URI, mId);
+			getContentResolver().update(uri, values, null, null);
+		}
+	}
+
+	private boolean validateAndCreateValues(ContentValues values) {
+		if (mTime == null && mSavedLoc == null) {
+			showToast(getString(R.string.no_time_and_loc_set),
+					Toast.LENGTH_LONG);
+
+			return false;
+		}
+
+		if (mTime != null
+				&& mTime.getTimeInMillis() < Calendar.getInstance()
+						.getTimeInMillis() && mDaysOfWeek.getCoded() == 0) {
+			showToast(getString(R.string.no_repeat_and_time_in_past),
+					Toast.LENGTH_LONG);
+
+			return false;
+		}
+
+		if (mProfileId < 0) {
+			showToast(getString(R.string.no_profile_select), Toast.LENGTH_LONG);
+
+			return false;
+		}
+
+		values.put(Schedule.COLUMN_REPEAT_WEEKDAYS, mDaysOfWeek.getCoded());
+		if (mTime != null) {
+			values.put(Schedule.COLUMN_START_TIME, mTime.getTimeInMillis());
+		} else {
+			values.put(Schedule.COLUMN_START_TIME, 0);
+		}
+		values.put(Schedule.COLUMN_PROFILE_ID, mProfileId);
+
+		if (mSavedLoc != null) {
+			StringBuilder sb = new StringBuilder(1024);
+			sb.append(String.valueOf(mSavedLoc.getLongitude())).append(",");
+			sb.append(String.valueOf(mSavedLoc.getLatitude()));
+
+			if (mSavedLoc.hasAltitude())
+				sb.append(",").append(String.valueOf(mSavedLoc.getAltitude()));
+			values.put(Schedule.COLUMN_LOCATION, sb.toString());
+		}
+
+		if (!TextUtils.isEmpty(mLabel)) {
+			values.put(Schedule.COLUMN_LABEL, mLabel);
+		}
+
+		return true;
 	}
 
 	@Override
 	protected void deleteContent() {
-		// TODO Auto-generated method stub
+		if (mId < 0)
+			return;
 
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.note)
+				.setMessage(R.string.delete_confirm)
+				.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								Uri uri = ContentUris.withAppendedId(
+										Schedule.CONTENT_URI, mId);
+								getContentResolver().delete(uri, null, null);
+
+								finish();
+							}
+						}).setNegativeButton(android.R.string.cancel, null)
+				.show();
 	}
 
 }

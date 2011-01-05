@@ -19,4 +19,7 @@ public class Schedule implements DatabaseValues {
 
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
 			+ "/" + URI_STRING);
+
+	public static final String COLUMN_LOCATION = "location";
+	public static final String COLUMN_LABEL = "label";
 }
