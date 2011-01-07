@@ -104,13 +104,10 @@
 	<string name="label_use_current_loc">Use Current Location</string>
 	<string name="invalid_location_template">Invalid {0} or {1}</string>
 	<string name="invalid_location_template_2">Invalid {0} , {1} or {2}</string>
-	<string name="east_longitude">E</string>
-	<string name="west_longitude">W</string>
-	<string name="north_latitude">N</string>
-	<string name="south_latitude">S</string>
 	<string name="warn_no_loc_providers">No location providers found, enable at least one to use location function!</string>
 	<string name="warn_no_profile">No profile defined,create one to use with schedule!</string>
 	<string name="no_time_and_loc_set">Configure one of Time and Location or both to schedule the profile enabling</string>
 	<string name="no_repeat_and_time_in_past">The time is in the past and no repeat is configured!</string>
 	<string name="no_profile_select">No profile selected for schedule</string>
+	<string name="label_use">Using</string>
 </resources>

@@ -22,6 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 				+ Schedule.COLUMN_START_TIME + " LONG, "
 				+ Schedule.COLUMN_LABEL + " VARCHAR, "
 				+ Schedule.COLUMN_LOCATION + " VARCHAR, "
+				+ Schedule.COLUMN_ENABLE + " INTEGER DEFAULT 1, "
 				+ Schedule.COLUMN_REPEAT_WEEKDAYS + " INTEGER);");
 
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + Profile.TABLE_NAME + " ("
@@ -55,6 +56,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 			upgradeToVersion4(db);
 			oldVersion = 4;
 		}
+		
+		if (oldVersion < 5) {
+			upgradeToVersion5(db);
+			oldVersion = 5;
+		}
+	}
+
+	private void upgradeToVersion5(SQLiteDatabase db) {
+		db.execSQL("ALTER TABLE " + Schedule.TABLE_NAME + " ADD "
+				+ Schedule.COLUMN_ENABLE + " INTEGER DEFAULT 1");
 	}
 
 	private void upgradeToVersion4(SQLiteDatabase db) {

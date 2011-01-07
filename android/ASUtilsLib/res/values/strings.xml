@@ -44,7 +44,7 @@
 	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
 		to identify repetition schedule: special case for when the alarm is set to 
 		repeat every day -->
-	<string name="every_day">every day</string>
+	<string name="every_day">Every Day</string>
 
 	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
 		to identify repetition schedule: special case for when the alarm is set to 
@@ -55,4 +55,9 @@
 		to identify repetition schedule: concatenate days with this character, i.e. 
 		"Mon, Tue, Wed" -->
 	<string name="day_concat">", "</string>
+	
+	<string name="east_longitude">E</string>
+	<string name="west_longitude">W</string>
+	<string name="north_latitude">N</string>
+	<string name="south_latitude">S</string>
 </resources>

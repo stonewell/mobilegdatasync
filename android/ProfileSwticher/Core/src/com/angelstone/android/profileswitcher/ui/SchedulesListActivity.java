@@ -15,10 +15,16 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.angelstone.android.profileswitcher.R;
+import com.angelstone.android.profileswitcher.store.Profile;
 import com.angelstone.android.profileswitcher.store.Schedule;
+import com.angelstone.android.profileswitcher.utils.ProfileCache;
+import com.angelstone.android.utils.GeoCodeLoader;
 
 public class SchedulesListActivity extends ContentListBaseActivity {
 	private Cursor mCursor;
+	private Cursor mProfileCursor;
+	private ProfileCache mProfileCache;
+	private GeoCodeLoader mGeoCodeLoader;
 
 	private ContentObserver mObserver = new ContentObserver(new Handler()) {
 
@@ -38,8 +44,11 @@ public class SchedulesListActivity extends ContentListBaseActivity {
 		ListView v = (ListView) findViewById(R.id.schedule_list);
 
 		mCursor = managedQuery(Schedule.CONTENT_URI, null, null, null, null);
+		mProfileCursor = managedQuery(Profile.CONTENT_URI, null, null, null, null);
+		mProfileCache = new ProfileCache(this, mProfileCursor);
+		mGeoCodeLoader = new GeoCodeLoader(this);
 
-		v.setAdapter(new ScheduleAdapter(this, mCursor));
+		v.setAdapter(new ScheduleAdapter(this, mCursor, mProfileCache, mGeoCodeLoader));
 
 		registerForContextMenu(v);
 
@@ -108,5 +117,20 @@ public class SchedulesListActivity extends ContentListBaseActivity {
 		super.onDestroy();
 
 		getContentResolver().unregisterContentObserver(mObserver);
+		mProfileCache.clear();
+		mGeoCodeLoader.stop();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		mGeoCodeLoader.pause();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mGeoCodeLoader.resume();
 	}
 }

@@ -3,8 +3,5 @@
 	<string name="label_longitude">经度</string>
 	<string name="label_altitude">海拔</string>
 	<string name="label_use_altitude">使用海拔</string>
-	<string name="east_longitude">东经</string>
-	<string name="west_longitude">西经</string>
-	<string name="north_latitude">北纬</string>
-	<string name="south_latitude">南纬</string>
+	<string name="label_use">使用</string>
 </resources>
