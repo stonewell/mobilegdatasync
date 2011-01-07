@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="east_longitude">东经</string>
+	<string name="west_longitude">西经</string>
+	<string name="north_latitude">北纬</string>
+	<string name="south_latitude">南纬</string>
+</resources>

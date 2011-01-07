@@ -1,14 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="50dip"
-	android:orientation="horizontal" android:gravity="center_vertical">
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:paddingLeft="5dip" android:orientation="horizontal"
+	android:gravity="center_vertical" android:background="@drawable/list_item_bg">
 
-	<ImageView android:id="@+id/status_img" android:layout_width="32dip"
-		android:layout_height="32dip" android:layout_gravity="right|center_vertical"
-		android:paddingLeft="5dip" />
+	<ImageView android:id="@+id/item_schedule_enable"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" 
+		android:src="@drawable/img_check"/>
 
-	<TextView android:id="@+id/schedule_desc" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:textColor="@color/white"
-		android:lines="1" android:layout_marginLeft="20dip" />
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="vertical"
+		android:gravity="center_vertical">
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:orientation="horizontal"
+			android:gravity="center_vertical">
+			<TextView android:id="@+id/item_schedule_label"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:textStyle="bold" android:textAppearance="?android:attr/textAppearanceLarge"
+				android:singleLine="true" android:color="@color/lightgray" />
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium"
+				android:singleLine="true" android:color="@color/lightgray"
+				android:layout_marginLeft="2dip" android:text="@string/label_use" />
+			<TextView android:id="@+id/item_schedule_profile"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:textStyle="bold|italic" android:textAppearance="?android:attr/textAppearanceLarge"
+				android:singleLine="true" android:layout_marginLeft="2dip"
+				android:color="@color/lightgray" />
+		</LinearLayout>
+
+		<LinearLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:orientation="horizontal"
+			android:gravity="center_vertical">
+			<TextView android:id="@+id/item_schedule_time"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:textColor="@color/white" android:singleLine="true"
+				android:textSize="14sp" />
+			<TextView android:id="@+id/item_schedule_location"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:layout_marginLeft="5dip" android:textColor="@color/white"
+				android:singleLine="true" android:textSize="14sp" />
+		</LinearLayout>
+
+		<TextView android:id="@+id/item_schedule_daysofweek"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:singleLine="true" android:color="@color/lightgray" />
+	</LinearLayout>
 
 </LinearLayout>
