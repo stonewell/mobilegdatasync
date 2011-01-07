@@ -17,48 +17,8 @@ import com.angelstone.android.utils.DaysOfWeek;
 
 public class Alarms {
 
-	// This action triggers the AlarmReceiver as well as the AlarmKlaxon. It
-	// is a public action used in the manifest for receiving Alarm broadcasts
-	// from the alarm manager.
-	public static final String ALARM_ALERT_ACTION = "com.angelstone.android.alarm.ALARM_ALERT";
-
-	// A public action sent by AlarmKlaxon when the alarm has stopped sounding
-	// for any reason (e.g. because it has been dismissed from
-	// AlarmAlertFullScreen,
-	// or killed due to an incoming phone call, etc).
-	public static final String ALARM_DONE_ACTION = "com.angelstone.android.alarm.ALARM_DONE";
-
-	// AlarmAlertFullScreen listens for this broadcast intent, so that other
-	// applications
-	// can snooze the alarm (after ALARM_ALERT_ACTION and before
-	// ALARM_DONE_ACTION).
-	public static final String ALARM_SNOOZE_ACTION = "com.angelstone.android.alarm.ALARM_SNOOZE";
-
-	// AlarmAlertFullScreen listens for this broadcast intent, so that other
-	// applications
-	// can dismiss the alarm (after ALARM_ALERT_ACTION and before
-	// ALARM_DONE_ACTION).
-	public static final String ALARM_DISMISS_ACTION = "com.angelstone.android.alarm.ALARM_DISMISS";
-
-	// This is a private action used by the AlarmKlaxon to update the UI to
-	// show the alarm has been killed.
-	public static final String ALARM_KILLED = "alarm_killed";
-
-	// Extra in the ALARM_KILLED intent to indicate to the user how long the
-	// alarm played before being killed.
-	public static final String ALARM_KILLED_TIMEOUT = "alarm_killed_timeout";
-
-	// This string is used when passing an Alarm object through an intent.
-	public static final String ALARM_INTENT_EXTRA = "intent.extra.alarm";
-
-	// This extra is the raw Alarm object data. It is used in the
-	// AlarmManagerService to avoid a ClassNotFoundException when filling in
-	// the Intent extras.
+	public static final String ALARM_ALERT_ACTION = "com.angelstone.android.alarm.SCHEDULE";
 	public static final String ALARM_RAW_DATA = "intent.extra.alarm_raw";
-
-	// This string is used to identify the alarm id passed to SetAlarm from the
-	// list of alarms.
-	public static final String ALARM_ID = "alarm_id";
 
 	// Private method to get a more limited set of alarms from the database.
 	private static Cursor getFilteredAlarmsCursor(

@@ -35,6 +35,7 @@ public final class Alarm implements Parcelable {
 		p.writeInt(minutes);
 		p.writeInt(daysOfWeek.getCoded());
 		p.writeLong(time);
+		p.writeLong(profileId);
 	}
 
 	// ////////////////////////////
@@ -48,9 +49,11 @@ public final class Alarm implements Parcelable {
 	public int minutes;
 	public DaysOfWeek daysOfWeek;
 	public long time;
+	public long profileId;
 
 	public Alarm(Cursor c) {
 		id = c.getInt(c.getColumnIndex(Schedule.COLUMN_ID));
+		profileId = c.getLong(c.getColumnIndex(Schedule.COLUMN_PROFILE_ID));
 		enabled = c.getInt(c.getColumnIndex(Schedule.COLUMN_ENABLE)) == 1;
 
 		time = c.getLong(c.getColumnIndex(Schedule.COLUMN_START_TIME));
@@ -76,6 +79,7 @@ public final class Alarm implements Parcelable {
 		minutes = p.readInt();
 		daysOfWeek = new DaysOfWeek(p.readInt());
 		time = p.readLong();
+		profileId = p.readLong();
 	}
 
 	// Creates a default alarm at the current time.
