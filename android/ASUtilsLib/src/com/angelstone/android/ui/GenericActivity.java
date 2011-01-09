@@ -171,7 +171,6 @@ public abstract class GenericActivity extends Activity {
 	protected void showToast(final String msg, int length) {
 		runOnUiThread(new Runnable() {
 
-			@Override
 			public void run() {
 				if (mToast != null)
 					mToast.cancel();
