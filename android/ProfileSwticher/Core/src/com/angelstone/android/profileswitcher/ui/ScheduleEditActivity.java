@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.MessageFormat;
 import java.util.Calendar;
-import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -34,9 +33,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
 import com.angelstone.android.profileswitcher.store.Schedule;
+import com.angelstone.android.profileswitcher.utils.Alarms;
 import com.angelstone.android.profileswitcher.utils.ProfileCache;
 import com.angelstone.android.utils.DaysOfWeek;
 import com.angelstone.android.utils.GeoCodeLoader;
@@ -269,7 +270,7 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			break;
 		case R.id.tr_location:
 		case R.id.img_btn_location: {
-			if (!hasLocProviders()) {
+			if (!PhoneToolsUtil.hasLocProviders(mLocationManager)) {
 				new AlertDialog.Builder(this).setTitle(R.string.label_location)
 						.setIcon(android.R.drawable.ic_dialog_alert)
 						.setNegativeButton(android.R.string.cancel, null)
@@ -421,8 +422,8 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		mCurrentLoc = mLocationManager.getLastKnownLocation(getLocProvider());
-		mLocationManager.requestLocationUpdates(getLocProvider(), 0, 0,
+		mCurrentLoc = mLocationManager.getLastKnownLocation(PhoneToolsUtil.getLocProvider(mLocationManager));
+		mLocationManager.requestLocationUpdates(PhoneToolsUtil.getLocProvider(mLocationManager), 0, 0,
 				mLocationListener);
 
 		updateSavedLoc(null);
@@ -461,27 +462,6 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 	}
 
-	private String getLocProvider() {
-		List<String> providers = mLocationManager.getProviders(true);
-
-		if (providers != null && providers.size() > 0) {
-			for (String p : providers) {
-				if (LocationManager.NETWORK_PROVIDER.equals(p))
-					return LocationManager.NETWORK_PROVIDER;
-			}
-
-			return providers.get(0);
-		}
-
-		return LocationManager.NETWORK_PROVIDER;
-	}
-
-	private boolean hasLocProviders() {
-		List<String> providers = mLocationManager.getProviders(true);
-
-		return (providers != null && providers.size() > 0);
-	}
-
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -501,7 +481,7 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 	protected void onResume() {
 		super.onResume();
 
-		mLocationManager.requestLocationUpdates(getLocProvider(), 0, 0,
+		mLocationManager.requestLocationUpdates(PhoneToolsUtil.getLocProvider(mLocationManager), 0, 0,
 				mLocationListener);
 
 		mGeoCodeLoader.resume();
@@ -696,6 +676,8 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			Uri uri = ContentUris.withAppendedId(Schedule.CONTENT_URI, mId);
 			getContentResolver().update(uri, values, null, null);
 		}
+		
+		Alarms.setNextAlert(this);
 	}
 
 	private boolean validateAndCreateValues(ContentValues values) {

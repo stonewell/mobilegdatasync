@@ -1,7 +1,10 @@
 package com.angelstone.android.utils;
 
+import java.util.List;
+
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -77,5 +80,26 @@ public class PhoneToolsUtil {
 			return provider2 == null;
 		}
 		return provider1.equals(provider2);
+	}
+	
+	public static String getLocProvider(LocationManager lm) {
+		List<String> providers = lm.getProviders(true);
+
+		if (providers != null && providers.size() > 0) {
+			for (String p : providers) {
+				if (LocationManager.NETWORK_PROVIDER.equals(p))
+					return LocationManager.NETWORK_PROVIDER;
+			}
+
+			return providers.get(0);
+		}
+
+		return LocationManager.NETWORK_PROVIDER;
+	}
+
+	public static boolean hasLocProviders(LocationManager lm) {
+		List<String> providers = lm.getProviders(true);
+
+		return (providers != null && providers.size() > 0);
 	}
 }
