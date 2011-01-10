@@ -40,6 +40,17 @@
 			</intent-filter>
 		</activity>
 
+		<receiver android:enabled="true" android:exported="true"
+			android:name=".receiver.ProfileSwitcherReceiver">
+			<intent-filter>
+				<action android:name="com.angelstone.android.alarm.SCHEDULE" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</receiver>
+
+		<service android:label="@string/app_name" android:enabled="true"
+			android:name=".service.ProfileSwitcherService" android:exported="false" />
+
 		<!-- Library Activity -->
 		<activity android:name="com.angelstone.android.ui.ActivityLogActivity"
 			android:label="@string/activity_log_title" />

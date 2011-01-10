@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
 

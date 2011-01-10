@@ -12,14 +12,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Parcel;
 
+import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.store.Schedule;
 import com.angelstone.android.utils.DaysOfWeek;
 
 public class Alarms {
-
-	public static final String ALARM_ALERT_ACTION = "com.angelstone.android.alarm.SCHEDULE";
-	public static final String ALARM_RAW_DATA = "intent.extra.alarm_raw";
-
 	// Private method to get a more limited set of alarms from the database.
 	private static Cursor getFilteredAlarmsCursor(
 			ContentResolver contentResolver) {
@@ -122,7 +119,7 @@ public class Alarms {
 		AlarmManager am = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 
-		Intent intent = new Intent(ALARM_ALERT_ACTION);
+		Intent intent = new Intent(ProfileSwitcherConstants.ACTION_ALARM_ALERT);
 
 		// XXX: This is a slight hack to avoid an exception in the remote
 		// AlarmManagerService process. The AlarmManager adds extra data to
@@ -136,7 +133,7 @@ public class Alarms {
 		Parcel out = Parcel.obtain();
 		alarm.writeToParcel(out, 0);
 		out.setDataPosition(0);
-		intent.putExtra(ALARM_RAW_DATA, out.marshall());
+		intent.putExtra(ProfileSwitcherConstants.ALARM_RAW_DATA, out.marshall());
 
 		PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
@@ -154,7 +151,7 @@ public class Alarms {
 		AlarmManager am = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		PendingIntent sender = PendingIntent.getBroadcast(context, 0,
-				new Intent(ALARM_ALERT_ACTION),
+				new Intent(ProfileSwitcherConstants.ACTION_ALARM_ALERT),
 				PendingIntent.FLAG_CANCEL_CURRENT);
 		am.cancel(sender);
 	}

@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
 
