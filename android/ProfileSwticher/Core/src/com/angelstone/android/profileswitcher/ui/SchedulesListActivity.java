@@ -21,6 +21,7 @@ import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
 import com.angelstone.android.profileswitcher.store.Schedule;
+import com.angelstone.android.profileswitcher.utils.Alarms;
 import com.angelstone.android.profileswitcher.utils.ProfileCache;
 import com.angelstone.android.utils.GeoCodeLoader;
 
@@ -160,5 +161,7 @@ public class SchedulesListActivity extends ContentListBaseActivity implements
 		values.put(Schedule.COLUMN_ENABLE, enable);
 		
 		getContentResolver().update(uri, values, null, null);
+		
+		Alarms.setNextAlert(this);
 	}
 }

@@ -101,7 +101,8 @@ public class AddBlackListNumberView extends Activity implements
 		case R.id.add_bl_number_from_contact_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, AddFromContactView.class);
-			intent.putExtra(UIConstants.EXTRA_SELECTED_NUMBERS,
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
 					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
 			startActivityForResult(intent, CALL_ADD_FROM_LIST);
 			break;
@@ -109,7 +110,8 @@ public class AddBlackListNumberView extends Activity implements
 		case R.id.add_bl_number_from_call_record_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, AddFromCallLogView.class);
-			intent.putExtra(UIConstants.EXTRA_SELECTED_NUMBERS,
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
 					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
 			startActivityForResult(intent, CALL_ADD_FROM_LIST);
 			break;
@@ -117,7 +119,8 @@ public class AddBlackListNumberView extends Activity implements
 		case R.id.add_bl_number_from_sms_record_btn: {
 			Intent intent = new Intent();
 			intent.setClass(this, AddFromSmsRecordView.class);
-			intent.putExtra(UIConstants.EXTRA_SELECTED_NUMBERS,
+			intent.putExtra(
+					UIConstants.EXTRA_SELECTED_NUMBERS,
 					mSelectedNumbers.toArray(new String[mSelectedNumbers.size()]));
 			startActivityForResult(intent, CALL_ADD_FROM_LIST);
 			break;
@@ -132,11 +135,13 @@ public class AddBlackListNumberView extends Activity implements
 						.setIcon(R.drawable.alert_dialog_icon)
 						.setTitle(R.string.note)
 						.setMessage(R.string.remove_from_contacts_confirm)
-						.setPositiveButton(android.R.string.yes,
+						.setPositiveButton(
+								android.R.string.yes,
 								new RemoveContactsAlertDialogClickListener(true))
-						.setNegativeButton(android.R.string.no,
-								new RemoveContactsAlertDialogClickListener(false)).create()
-						.show();
+						.setNegativeButton(
+								android.R.string.no,
+								new RemoveContactsAlertDialogClickListener(
+										false)).create().show();
 			} else {
 				doneAddBlackNumber(false);
 			}
@@ -157,6 +162,9 @@ public class AddBlackListNumberView extends Activity implements
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode != RESULT_OK)
+			return;
+
 		switch (requestCode) {
 		case CALL_ADD_FROM_LIST: {
 			ArrayList<String> addedNumbers = data
@@ -196,7 +204,8 @@ public class AddBlackListNumberView extends Activity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 0, 0, R.string.showSelectedNumbers).setIcon(
-				this.getResources().getDrawable(android.R.drawable.ic_menu_more));
+				this.getResources()
+						.getDrawable(android.R.drawable.ic_menu_more));
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -250,8 +259,8 @@ public class AddBlackListNumberView extends Activity implements
 				.setNegativeButton(android.R.string.cancel, null)
 				.setMultiChoiceItems(numbers, checked,
 						new DialogInterface.OnMultiChoiceClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton,
-									boolean isChecked) {
+							public void onClick(DialogInterface dialog,
+									int whichButton, boolean isChecked) {
 								checked[whichButton] = isChecked;
 							}
 						})
@@ -259,12 +268,13 @@ public class AddBlackListNumberView extends Activity implements
 						new DialogInterface.OnClickListener() {
 
 							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							public void onClick(DialogInterface dialog,
+									int which) {
 								for (int i = 0; i < checked.length; i++) {
 									if (checked[i])
 										mSelectedNumbers.remove(numbers[i]);
 								}
-								
+
 								updateView();
 							}
 						}).show();
@@ -273,23 +283,25 @@ public class AddBlackListNumberView extends Activity implements
 	private void doInputNumber() {
 		// This example shows how to add a custom layout to an AlertDialog
 		LayoutInflater factory = LayoutInflater.from(this);
-		final View textEntryView = factory
-				.inflate(R.layout.input_number_view, null);
+		final View textEntryView = factory.inflate(R.layout.input_number_view,
+				null);
 
 		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				EditText et = (EditText) textEntryView.findViewById(R.id.edt_number);
-				String number = PhoneNumberHelpers.removeNonNumbericChar(et.getText()
-						.toString());
+				EditText et = (EditText) textEntryView
+						.findViewById(R.id.edt_number);
+				String number = PhoneNumberHelpers.removeNonNumbericChar(et
+						.getText().toString());
 
 				if (TextUtils.isEmpty(number))
 					return;
 
-				if (!PhoneNumberHelpers.containsNumber(mSelectedNumbers, number)) {
+				if (!PhoneNumberHelpers
+						.containsNumber(mSelectedNumbers, number)) {
 					mSelectedNumbers.add(number);
-					
+
 					updateView();
 				}
 			}

@@ -32,7 +32,7 @@ public class GeoCodeLoader implements Callback {
 		int retry_count = 0;
 	}
 
-	private final ConcurrentHashMap<Location, GeoCodeHolder> mCache = new ConcurrentHashMap<Location, GeoCodeHolder>();
+	private final ConcurrentHashMap<String, GeoCodeHolder> mCache = new ConcurrentHashMap<String, GeoCodeHolder>();
 
 	private final ConcurrentHashMap<TextView, Location> mPendingRequests = new ConcurrentHashMap<TextView, Location>();
 
@@ -70,10 +70,12 @@ public class GeoCodeLoader implements Callback {
 	}
 
 	private boolean loadCached(TextView view, Location loc) {
-		GeoCodeHolder holder = mCache.get(loc);
+		String locString = LocationUtils.locationToString(loc);
+		
+		GeoCodeHolder holder = mCache.get(locString);
 		if (holder == null) {
 			holder = new GeoCodeHolder();
-			mCache.put(loc, holder);
+			mCache.put(locString, holder);
 		} else if (holder.state == GeoCodeHolder.LOADED) {
 			if (holder.GeoCodeString != null) {
 				view.setText(holder.GeoCodeString);
@@ -174,12 +176,14 @@ public class GeoCodeLoader implements Callback {
 			return;
 		}
 
-		GeoCodeHolder holder = mCache.get(loc);
+		String locString = LocationUtils.locationToString(loc);
+		
+		GeoCodeHolder holder = mCache.get(locString);
 
 		if (holder == null) {
 			holder = new GeoCodeHolder();
 			holder.state = GeoCodeHolder.NEEDED;
-			mCache.put(loc, holder);
+			mCache.put(locString, holder);
 		}
 
 		holder.GeoCodeString = code;
@@ -196,12 +200,12 @@ public class GeoCodeLoader implements Callback {
 
 		Iterator<Location> iterator = mPendingRequests.values().iterator();
 		while (iterator.hasNext()) {
-			Location id = iterator.next();
-			GeoCodeHolder holder = mCache.get(id);
+			Location loc = iterator.next();
+			GeoCodeHolder holder = mCache.get(LocationUtils.locationToString(loc));
 			if (holder != null && holder.state == GeoCodeHolder.NEEDED) {
 				// Assuming atomic behavior
 				holder.state = GeoCodeHolder.LOADING;
-				locations.add(id);
+				locations.add(loc);
 			}
 		}
 	}
@@ -223,12 +227,12 @@ public class GeoCodeLoader implements Callback {
 		}
 
 		public boolean handleMessage(Message msg) {
-			loadPhotosFromDatabase();
+			loadLocationsFromDatabase();
 			mMainThreadHandler.sendEmptyMessage(MESSAGE_GEO_CODE_LOADED);
 			return true;
 		}
 
-		private void loadPhotosFromDatabase() {
+		private void loadLocationsFromDatabase() {
 			obtainLocationsToLoad(mLocations);
 
 			int count = mLocations.size();

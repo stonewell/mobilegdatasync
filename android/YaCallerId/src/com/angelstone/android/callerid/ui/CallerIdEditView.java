@@ -225,6 +225,9 @@ public class CallerIdEditView extends GenericActivity implements
 		if (data == null)
 			return;
 
+		if (resultCode != RESULT_OK)
+			return;
+
 		switch (requestCode) {
 		case CHOOSE_NUMBER_FROM_LIST: {
 			ArrayList<String> addedNumbers = data
