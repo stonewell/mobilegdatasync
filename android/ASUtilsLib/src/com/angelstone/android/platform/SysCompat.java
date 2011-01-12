@@ -6,7 +6,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.net.Uri;
 
 public abstract class SysCompat {
@@ -64,9 +63,6 @@ public abstract class SysCompat {
 
 	public abstract void setServiceForeground(Service service);
 
-	public abstract boolean SetRingerSilence(AudioManager audioManager,
-			boolean beforeQueryAction);
-	
 	public abstract CharSequence getPhoneTypeLabel(int type);
 	
 	public abstract Bitmap getPhoto(int photoId, int defaultResource);
