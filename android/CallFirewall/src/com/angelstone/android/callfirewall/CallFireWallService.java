@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -81,8 +80,8 @@ public class CallFireWallService extends Service {
 					Intent intent = (Intent) msg.obj;
 
 					if (intent != null
-							&& intent.getBooleanExtra(CallFireWallConstants.DATA_NOTIFY,
-									false)) {
+							&& intent.getBooleanExtra(
+									CallFireWallConstants.DATA_NOTIFY, false)) {
 						cancelNotification();
 					}
 				}
@@ -98,7 +97,8 @@ public class CallFireWallService extends Service {
 				}
 					break;
 				case MSG_CALL_BLOCKED: {
-					String incomingNumber = msg.getData().getString(BLOCK_NUMBER);
+					String incomingNumber = msg.getData().getString(
+							BLOCK_NUMBER);
 					long date = msg.getData().getLong(BLOCK_DATE);
 					// write call reject log
 					WriteToCallRejectLog(incomingNumber, date);
@@ -118,7 +118,8 @@ public class CallFireWallService extends Service {
 					break;
 				}
 			} catch (Throwable t) {
-				Log.e(CallFireWallConstants.TAG, "CallFirewall get exception", t);
+				Log.e(CallFireWallConstants.TAG, "CallFirewall get exception",
+						t);
 			} finally {
 				try {
 					if (lock != null)
@@ -135,18 +136,14 @@ public class CallFireWallService extends Service {
 			PhoneStateListener {
 
 		public void onCallStateChanged(int state, String incomingNumber) {
-			super.onCallStateChanged(state, incomingNumber);
-
 			switch (state) {
 			case TelephonyManager.CALL_STATE_RINGING: {
-
 				try {
-					mSysCompat.SetRingerSilence(audioManager, true);
-
 					Object result = mWhiteListMatcher.match(incomingNumber);
 
 					if (!ONE.equals(result)
-							&& ONE.equals(mBlackListMatcher.match(incomingNumber))) {
+							&& ONE.equals(mBlackListMatcher
+									.match(incomingNumber))) {
 
 						tpCallModule.endCall();
 
@@ -161,23 +158,17 @@ public class CallFireWallService extends Service {
 
 					break;
 				} catch (Throwable e) {
-					ActivityLog.logError(CallFireWallService.this, "CallFirewall",
-							e.getLocalizedMessage());
+					ActivityLog.logError(CallFireWallService.this,
+							"CallFirewall", e.getLocalizedMessage());
 					Log.e("CallFirewall", "Fail when do firewall operation", e);
-					mSysCompat.SetRingerSilence(audioManager, false);
-				} finally {
-					audioManager.setRingerMode(mRingerMode);
-					audioManager.setStreamVolume(AudioManager.STREAM_RING, mRingerVolume,
-							AudioManager.FLAG_ALLOW_RINGER_MODES
-									| AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_VIBRATE);
 				}
 			}
 				break;
 			default:
-				mRingerMode = audioManager.getRingerMode();
-				mRingerVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 				break;
 			}
+
+			super.onCallStateChanged(state, incomingNumber);
 		}
 	}
 
@@ -195,15 +186,11 @@ public class CallFireWallService extends Service {
 
 	private ITelephony tpCallModule = null;
 
-	private AudioManager audioManager = null;
-
 	private SysCompat mSysCompat = null;
 
 	private PhoneNumberMatcher mWhiteListMatcher = null;
 	private PhoneNumberMatcher mBlackListMatcher = null;
 
-	private int mRingerMode = 0;
-	private int mRingerVolume = 0;
 	private int mNumberMissedCalls = 0;
 
 	private HandlerThread handler_thread_ = null;
@@ -248,8 +235,8 @@ public class CallFireWallService extends Service {
 	}
 
 	private void WriteToCallRejectLog(String incomeNumber, long date) {
-		EventLog evt = new EventLog(PhoneNumberUtils.formatNumber(incomeNumber),
-				date);
+		EventLog evt = new EventLog(
+				PhoneNumberUtils.formatNumber(incomeNumber), date);
 
 		PhoneToolsDBManager.getEventLogManager().writeLog(this, evt);
 	}
@@ -283,10 +270,6 @@ public class CallFireWallService extends Service {
 		mSysCompat.setServiceForeground(this);
 
 		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
-		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-		mRingerMode = audioManager.getRingerMode();
 
 		tpCallModule = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
@@ -328,8 +311,8 @@ public class CallFireWallService extends Service {
 				getString(R.string.notification_blockedCallTicker, number), // tickerText
 				date);
 
-		notification.setLatestEventInfo(this, getText(titleResId), expandedText,
-				intent);
+		notification.setLatestEventInfo(this, getText(titleResId),
+				expandedText, intent);
 
 		// make the notification
 		mNotificationMgr.notify(BLOCKED_CALL_NOTIFICATION, notification);
@@ -349,8 +332,8 @@ public class CallFireWallService extends Service {
 				});
 
 		getContentResolver().registerContentObserver(
-				PhoneToolsDBManager.getBlackListManager().getContentUri(), true,
-				new ContentObserver(handler_) {
+				PhoneToolsDBManager.getBlackListManager().getContentUri(),
+				true, new ContentObserver(handler_) {
 
 					@Override
 					public void onChange(boolean selfChange) {
@@ -359,8 +342,8 @@ public class CallFireWallService extends Service {
 					}
 				});
 
-		getContentResolver().registerContentObserver(mSysCompat.PHONE_URI, true,
-				new ContentObserver(handler_) {
+		getContentResolver().registerContentObserver(mSysCompat.PHONE_URI,
+				true, new ContentObserver(handler_) {
 
 					@Override
 					public void onChange(boolean selfChange) {
@@ -374,8 +357,8 @@ public class CallFireWallService extends Service {
 	private void updateBlacklistNumbers() {
 		Set<String> newNumbers = new HashSet<String>();
 
-		Cursor c = PhoneToolsDBManager.getBlackListManager().getBlacklistNumbers(
-				this);
+		Cursor c = PhoneToolsDBManager.getBlackListManager()
+				.getBlacklistNumbers(this);
 
 		try {
 			int idxNumber = c.getColumnIndex(BlackList.COL_NUMBER);
@@ -404,7 +387,8 @@ public class CallFireWallService extends Service {
 					mSysCompat.COLUMN_PHONE_NUMBER + " is not null", null,
 					"UPPER(" + mSysCompat.COLUMN_PHONE_NAME + ") ASC");
 			try {
-				int idxNumber = cur.getColumnIndex(mSysCompat.COLUMN_PHONE_NUMBER);
+				int idxNumber = cur
+						.getColumnIndex(mSysCompat.COLUMN_PHONE_NUMBER);
 
 				while (cur.moveToNext()) {
 					newNumbers.add(cur.getString(idxNumber));
@@ -414,8 +398,8 @@ public class CallFireWallService extends Service {
 			}
 		}
 
-		Cursor c = PhoneToolsDBManager.getBlackListManager().getBlacklistNumbers(
-				this);
+		Cursor c = PhoneToolsDBManager.getBlackListManager()
+				.getBlacklistNumbers(this);
 
 		try {
 			int idxNumber = c.getColumnIndex(BlackList.COL_NUMBER);
@@ -437,7 +421,8 @@ public class CallFireWallService extends Service {
 
 	private void updateNumberMatcher(PhoneNumberMatcher matcher,
 			Set<String> newNumbers) {
-		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers().keySet());
+		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers()
+				.keySet());
 
 		for (String n : oldNumbers) {
 			if (!newNumbers.contains(n))
@@ -472,7 +457,8 @@ public class CallFireWallService extends Service {
 		if (TextUtils.isEmpty(n))
 			return false;
 
-		if (!(n.charAt(0) == '+') && !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
+		if (!(n.charAt(0) == '+')
+				&& !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
 			return false;
 		}
 

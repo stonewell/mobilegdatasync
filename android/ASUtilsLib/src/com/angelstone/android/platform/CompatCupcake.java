@@ -7,7 +7,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.provider.Contacts;
 import android.telephony.gsm.SmsMessage;
@@ -56,17 +55,6 @@ public class CompatCupcake extends SysCompat {
 	}
 
 	public void setServiceForeground(Service service) {
-	}
-
-	public boolean SetRingerSilence(AudioManager audioManager,
-			boolean beforeQueryAction) {
-		if (beforeQueryAction) {
-			audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-
-			return true;
-		}
-
-		return false;
 	}
 
 	public CharSequence getPhoneTypeLabel(int type) {
