@@ -55,11 +55,11 @@ public class ProfileSwitcherUtils {
 		try {
 			if (c == null || c.getCount() == 0)
 				return;
-			
+
 			c.moveToNext();
 			int idxName = c.getColumnIndex(Profile.COLUMN_NAME);
 			profileName = c.getString(idxName);
-			
+
 			notifyProfileEnabled(context, profileName, true);
 		} catch (Throwable t) {
 			Log.e(ProfileSwitcherConstants.TAG, "enable profile fail", t);
@@ -75,17 +75,19 @@ public class ProfileSwitcherUtils {
 		}
 	}
 
-	private static void notifyProfileEnabled(Context context, String profileName, boolean success) {
+	public static void notifyProfileEnabled(Context context,
+			String profileName, boolean success) {
 		String expandedText = context.getString(
-				success ? R.string.notification_enable_profile : 
-					R.string.notification_enable_profile_fail, profileName);
+				success ? R.string.notification_enable_profile
+						: R.string.notification_enable_profile_fail,
+				profileName);
 
 		// create the target call log intent
 		final PendingIntent intent = getNotificationIntent(context);
 
 		Notification notification = new Notification(
-				success ? android.R.drawable.stat_notify_more :
-					android.R.drawable.stat_notify_error, // icon
+				success ? android.R.drawable.stat_notify_more
+						: android.R.drawable.stat_notify_error, // icon
 				expandedText, // tickerText
 				System.currentTimeMillis());
 
@@ -104,8 +106,15 @@ public class ProfileSwitcherUtils {
 		Intent intent = new Intent(context, ProfileSwitcherMainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 				| Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra(ProfileSwitcherConstants.DATA_NOTIFY, true);
 
 		return PendingIntent.getActivity(context.getApplicationContext(), 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+	}
+
+	public static void cancelNotification(Context context) {
+		NotificationManager nm = (NotificationManager) context
+				.getSystemService(Context.NOTIFICATION_SERVICE);
+		nm.cancel(ProfileSwitcherConstants.PROFILE_ENABLE_NOTIFICATION);
 	}
 }
