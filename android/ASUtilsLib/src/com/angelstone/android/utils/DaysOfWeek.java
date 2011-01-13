@@ -76,7 +76,7 @@ public final class DaysOfWeek {
         return ret.toString();
     }
 
-    private boolean isSet(int day) {
+    public boolean isSet(int day) {
         return ((mDays & (1 << day)) > 0);
     }
 

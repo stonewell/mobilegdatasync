@@ -39,8 +39,22 @@
 				<action android:name="com.angelstone.android.alarm.SCHEDULE" />
 				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.TIME_SET" />
+			</intent-filter>
 		</receiver>
 		<service android:label="@string/app_name" android:enabled="true"
 			android:name=".service.ProfileSwitcherService" android:exported="false" />
 	</application>
+
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
+	<uses-permission android:name="android.permission.READ_SETTINGS"></uses-permission>
+	<uses-permission android:name="android.permission.WRITE_SETTINGS"></uses-permission>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
 </manifest> 

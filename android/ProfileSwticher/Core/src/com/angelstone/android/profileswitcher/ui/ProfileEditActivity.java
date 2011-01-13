@@ -96,37 +96,53 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		tb.setChecked(mProfile.isVibrateEnable());
 		tb.setEnabled(mProfile.isVibrateConfigured());
 
-		cb = (CheckBox) findViewById(R.id.check_phone);
+		cb = (CheckBox) findViewById(R.id.check_enable_phone);
 		cb.setOnClickListener(this);
 		cb.setChecked(mProfile.isPhoneConfigured());
 
+		tb = (ToggleButton) findViewById(R.id.toggle_enable_phone);
+		tb.setChecked(mProfile.isPhoneEnable());
+		tb.setEnabled(mProfile.isPhoneConfigured());
+
+		cb = (CheckBox) findViewById(R.id.check_enable_phone_data_conn);
+		cb.setOnClickListener(this);
+		cb.setChecked(mProfile.isPhoneDataConnConfigured());
+
+		tb = (ToggleButton) findViewById(R.id.toggle_enable_phone_data_conn);
+		tb.setChecked(mProfile.isPhoneDataConnEnable());
+		tb.setEnabled(mProfile.isPhoneDataConnConfigured());
+
+		cb = (CheckBox) findViewById(R.id.check_phone);
+		cb.setOnClickListener(this);
+		cb.setChecked(mProfile.isPhoneRingtoneAndVolumeConfigured());
+
 		ImageButton ib = (ImageButton) findViewById(R.id.img_btn_phone);
 		ib.setOnClickListener(this);
-		ib.setEnabled(mProfile.isPhoneConfigured());
+		ib.setEnabled(mProfile.isPhoneRingtoneAndVolumeConfigured());
 
 		cb = (CheckBox) findViewById(R.id.check_notification);
 		cb.setOnClickListener(this);
-		cb.setChecked(mProfile.isNotificationConfigured());
+		cb.setChecked(mProfile.isNotificationRingtoneAndVolumeConfigured());
 
 		ib = (ImageButton) findViewById(R.id.img_btn_notification);
 		ib.setOnClickListener(this);
-		ib.setEnabled(mProfile.isNotificationConfigured());
+		ib.setEnabled(mProfile.isNotificationRingtoneAndVolumeConfigured());
 
 		cb = (CheckBox) findViewById(R.id.check_email);
 		cb.setOnClickListener(this);
-		cb.setChecked(mProfile.isEmailConfigured());
+		cb.setChecked(mProfile.isEmailRingtoneAndVolumeConfigured());
 
 		ib = (ImageButton) findViewById(R.id.img_btn_email);
 		ib.setOnClickListener(this);
-		ib.setEnabled(mProfile.isEmailConfigured());
+		ib.setEnabled(mProfile.isEmailRingtoneAndVolumeConfigured());
 
 		cb = (CheckBox) findViewById(R.id.check_alarm);
 		cb.setOnClickListener(this);
-		cb.setChecked(mProfile.isAlarmConfigured());
+		cb.setChecked(mProfile.isAlarmRingtoneAndVolumeConfigured());
 
 		ib = (ImageButton) findViewById(R.id.img_btn_alarm);
 		ib.setOnClickListener(this);
-		ib.setEnabled(mProfile.isAlarmConfigured());
+		ib.setEnabled(mProfile.isAlarmRingtoneAndVolumeConfigured());
 	}
 
 	private Profile loadProfile(long id) {
@@ -211,6 +227,16 @@ public class ProfileEditActivity extends EditBaseActivity implements
 			break;
 		case R.id.check_all_vibrate: {
 			findViewById(R.id.toggle_all_vibrate).setEnabled(
+					((CheckBox) v).isChecked());
+		}
+			break;
+		case R.id.check_enable_phone: {
+			findViewById(R.id.toggle_enable_phone).setEnabled(
+					((CheckBox) v).isChecked());
+		}
+			break;
+		case R.id.check_enable_phone_data_conn: {
+			findViewById(R.id.toggle_enable_phone_data_conn).setEnabled(
 					((CheckBox) v).isChecked());
 		}
 			break;
@@ -690,6 +716,16 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		tb = (ToggleButton) findViewById(R.id.toggle_all_vibrate);
 		mProfile.setVibrateEnable(tb.isChecked());
 		mProfile.setVibrateConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_enable_phone);
+		tb = (ToggleButton) findViewById(R.id.toggle_enable_phone);
+		mProfile.setPhoneEnable(tb.isChecked());
+		mProfile.setPhoneConfigured(cb.isChecked());
+
+		cb = (CheckBox) findViewById(R.id.check_enable_phone_data_conn);
+		tb = (ToggleButton) findViewById(R.id.toggle_enable_phone_data_conn);
+		mProfile.setPhoneDataConnEnable(tb.isChecked());
+		mProfile.setPhoneDataConnConfigured(cb.isChecked());
 
 		ContentValues values = new ContentValues();
 		values.put(Profile.COLUMN_NAME, mProfile.getName());

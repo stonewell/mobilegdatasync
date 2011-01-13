@@ -56,12 +56,14 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 		profile.setFlags(cursor.getInt(mIndexFlags));
 		profile.setDevices(cursor.getInt(mIndexDevices));
 
-		ImageView[] iv = new ImageView[5];
+		ImageView[] iv = new ImageView[7];
 		iv[0] = (ImageView) view.findViewById(R.id.status_1_img);
 		iv[1] = (ImageView) view.findViewById(R.id.status_2_img);
 		iv[2] = (ImageView) view.findViewById(R.id.status_3_img);
 		iv[3] = (ImageView) view.findViewById(R.id.status_4_img);
 		iv[4] = (ImageView) view.findViewById(R.id.status_5_img);
+		iv[5] = (ImageView) view.findViewById(R.id.status_6_img);
+		iv[6] = (ImageView) view.findViewById(R.id.status_7_img);
 
 		for (int i = 0; i < iv.length; i++)
 			iv[i].setImageResource(R.drawable.transparent);
@@ -82,6 +84,16 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 			iv[index++].setImageResource(R.drawable.stat_sys_data_bluetooth);
 		else if (profile.isBlueToothConfigured())
 			iv[index++].setImageResource(R.drawable.stat_sys_data_bluetooth_disable);
+
+		if (profile.isPhoneEnable())
+			iv[index++].setImageResource(R.drawable.stat_sys_signal_4);
+		else if (profile.isPhoneConfigured())
+			iv[index++].setImageResource(R.drawable.stat_sys_signal_4_disable);
+
+		if (profile.isPhoneDataConnEnable())
+			iv[index++].setImageResource(R.drawable.stat_sys_data_inandout_g);
+		else if (profile.isPhoneDataConnConfigured())
+			iv[index++].setImageResource(R.drawable.stat_sys_data_inandout_g_disable);
 
 		if (profile.isMuteEnable())
 			iv[index++].setImageResource(R.drawable.stat_sys_ringer_silent);

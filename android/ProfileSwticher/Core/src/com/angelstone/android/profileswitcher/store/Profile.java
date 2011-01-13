@@ -7,7 +7,7 @@ public class Profile implements DatabaseValues {
 	public static final int ACTIVE_AUTO = 0x00000001;
 	public static final int ACTIVE_MANUAL = 0x00000001 << 1;
 	public static final int ACTIVE_MANUAL_TIME = 0x00000001 << 2;
-	
+
 	public static final String TABLE_NAME = "profiles";
 
 	public static final String COLUMN_ID = "_id";
@@ -29,7 +29,7 @@ public class Profile implements DatabaseValues {
 
 	public static final String COLUMN_EXPIRE_TIME = "expire_time";
 	public static final String COLUMN_ACTIVATE_TIME = "activate_time";
-	
+
 	public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.angelstone.android.profileswitch.profile";
 	public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.angelstone.android.profileswitch.profile";
 
@@ -63,12 +63,16 @@ public class Profile implements DatabaseValues {
 
 	public static final int FLAG_VIBRATE = 0x00000001 << 15;
 	public static final int FLAG_MUTE = 0x00000001 << 16;
+	public static final int FLAG_PHONE = 0x00000001 << 17;
+	public static final int FLAG_PHONE_DATA_CONN = 0x00000001 << 18;
 
 	public static final int DEVICE_WIFI_ENABLE = 0x00000001;
 	public static final int DEVICE_GPS_ENABLE = 0x00000001 << 1;
 	public static final int DEVICE_BLUETOOTH_ENABLE = 0x00000001 << 2;
 	public static final int DEVICE_MUTE_ENABLE = 0x00000001 << 3;
 	public static final int DEVICE_VIBRATE_ENABLE = 0x00000001 << 4;
+	public static final int DEVICE_PHONE = 0x00000001 << 5;
+	public static final int DEVICE_PHONE_DATA_CONN_ENABLE = 0x00000001 << 6;
 
 	private int mPhoneVolume = 0;
 	private String mPhoneRingtone = null;
@@ -417,19 +421,23 @@ public class Profile implements DatabaseValues {
 			mFlags &= ~FLAG_ALARM_VIBRATE;
 	}
 
-	public boolean isPhoneConfigured() {
+	public boolean isPhoneRingtoneAndVolumeConfigured() {
 		return isPhoneRingtoneConfigured() || isPhoneVibrateConfigured()
 				|| isPhoneVolumeConfigured();
 	}
-	public boolean isEmailConfigured() {
+
+	public boolean isEmailRingtoneAndVolumeConfigured() {
 		return isEmailRingtoneConfigured() || isEmailVibrateConfigured()
 				|| isEmailVolumeConfigured();
 	}
-	public boolean isNotificationConfigured() {
-		return isNotificationRingtoneConfigured() || isNotificationVibrateConfigured()
+
+	public boolean isNotificationRingtoneAndVolumeConfigured() {
+		return isNotificationRingtoneConfigured()
+				|| isNotificationVibrateConfigured()
 				|| isNotificationVolumeConfigured();
 	}
-	public boolean isAlarmConfigured() {
+
+	public boolean isAlarmRingtoneAndVolumeConfigured() {
 		return isAlarmRingtoneConfigured() || isAlarmVibrateConfigured()
 				|| isAlarmVolumeConfigured();
 	}
@@ -466,7 +474,7 @@ public class Profile implements DatabaseValues {
 		else
 			mDevices &= ~DEVICE_MUTE_ENABLE;
 	}
-	
+
 	public boolean isVibrateConfigured() {
 		return (mFlags & FLAG_VIBRATE) == FLAG_VIBRATE;
 	}
@@ -490,5 +498,55 @@ public class Profile implements DatabaseValues {
 			mDevices |= DEVICE_VIBRATE_ENABLE;
 		else
 			mDevices &= ~DEVICE_VIBRATE_ENABLE;
+	}
+
+	public boolean isPhoneConfigured() {
+		return (mFlags & FLAG_PHONE) == FLAG_PHONE;
+	}
+
+	public void setPhoneConfigured(boolean v) {
+		if (v)
+			mFlags |= FLAG_PHONE;
+		else
+			mFlags &= ~FLAG_PHONE;
+	}
+
+	public boolean isPhoneEnable() {
+		return isPhoneConfigured()
+				&& (mDevices & DEVICE_PHONE) == DEVICE_PHONE;
+	}
+
+	public void setPhoneEnable(boolean enable) {
+		setPhoneConfigured(true);
+
+		if (enable)
+			mDevices |= DEVICE_PHONE;
+		else
+			mDevices &= ~DEVICE_PHONE;
+	}
+
+	public boolean isPhoneDataConnConfigured() {
+		return (mFlags & FLAG_PHONE_DATA_CONN) == FLAG_PHONE_DATA_CONN;
+	}
+
+	public void setPhoneDataConnConfigured(boolean v) {
+		if (v)
+			mFlags |= FLAG_PHONE_DATA_CONN;
+		else
+			mFlags &= ~FLAG_PHONE_DATA_CONN;
+	}
+
+	public boolean isPhoneDataConnEnable() {
+		return isPhoneDataConnConfigured()
+				&& (mDevices & DEVICE_PHONE_DATA_CONN_ENABLE) == DEVICE_PHONE_DATA_CONN_ENABLE;
+	}
+
+	public void setPhoneDataConnEnable(boolean enable) {
+		setPhoneDataConnConfigured(true);
+
+		if (enable)
+			mDevices |= DEVICE_PHONE_DATA_CONN_ENABLE;
+		else
+			mDevices &= ~DEVICE_PHONE_DATA_CONN_ENABLE;
 	}
 }

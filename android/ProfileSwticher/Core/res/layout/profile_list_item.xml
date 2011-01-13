@@ -40,6 +40,12 @@
 			<ImageView android:id="@+id/status_5_img"
 				android:layout_width="24dip" android:layout_height="24dip"
 				android:layout_gravity="right" android:paddingLeft="5dip" />
+			<ImageView android:id="@+id/status_6_img"
+				android:layout_width="24dip" android:layout_height="24dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
+			<ImageView android:id="@+id/status_7_img"
+				android:layout_width="24dip" android:layout_height="24dip"
+				android:layout_gravity="right" android:paddingLeft="5dip" />
 		</LinearLayout>
 	</LinearLayout>
 

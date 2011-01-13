@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 
 import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
+import com.angelstone.android.profileswitcher.store.Profile;
 import com.angelstone.android.profileswitcher.store.Schedule;
 import com.angelstone.android.utils.DaysOfWeek;
 
@@ -25,14 +26,14 @@ public class Alarms {
 						+ ">0", null, null);
 	}
 
-	public static void enableAlarm(final Context context, final int id,
+	public static void enableAlarm(final Context context, final long id,
 			boolean enabled) {
 		enableAlarmInternal(context, id, enabled);
 		setNextAlert(context);
 	}
 
 	private static void enableAlarmInternal(final Context context,
-			final int id, boolean enabled) {
+			final long id, boolean enabled) {
 		ContentResolver resolver = context.getContentResolver();
 
 		ContentValues values = new ContentValues(2);
@@ -97,11 +98,57 @@ public class Alarms {
 	 * alarms, activates next alert.
 	 */
 	public static void setNextAlert(final Context context) {
-		Alarm alarm = calculateNextAlert(context);
+		Alarm alarm = getManualWithTimeAlarm(context);
+
+		if (alarm == null)
+			alarm = calculateNextAlert(context);
+
 		if (alarm != null) {
 			enableAlert(context, alarm, alarm.time);
 		} else {
 			disableAlert(context);
+		}
+	}
+
+	private static Alarm getManualWithTimeAlarm(Context context) {
+		Cursor c = context.getContentResolver().query(Profile.CONTENT_URI,
+				null, Profile.COLUMN_ACTIVE + "=?",
+				new String[] { String.valueOf(Profile.ACTIVE_MANUAL_TIME) },
+				null);
+
+		Alarm alarm = null;
+
+		try {
+			if (c == null || c.getCount() == 0)
+				return alarm;
+
+			int idxProfileId = c.getColumnIndex(Profile.COLUMN_ID);
+			int idxActTime = c.getColumnIndex(Profile.COLUMN_ACTIVATE_TIME);
+			int idxExpireTime = c.getColumnIndex(Profile.COLUMN_EXPIRE_TIME);
+
+			while (c.moveToNext()) {
+				long actTime = c.getLong(idxActTime);
+				long expireTime = c.getLong(idxExpireTime);
+
+				if (actTime <= System.currentTimeMillis()
+						&& actTime + expireTime > System.currentTimeMillis()) {
+					if (alarm == null) {
+						alarm = new Alarm();
+						alarm.time = actTime + expireTime;
+						alarm.profileId = c.getLong(idxProfileId);
+						alarm.id = -1;
+					} else if (alarm.time > (actTime + expireTime)) {
+						alarm.time = actTime + expireTime;
+						alarm.profileId = c.getLong(idxProfileId);
+						alarm.id = -1;
+					}
+				}
+			}
+
+			return alarm;
+		} finally {
+			if (c != null)
+				c.close();
 		}
 	}
 
@@ -165,7 +212,8 @@ public class Alarms {
 	 * Given an alarm in hours and minutes, return a time suitable for setting
 	 * in AlarmManager.
 	 */
-	private static Calendar calculateAlarm(int hour, int minute, DaysOfWeek daysOfWeek) {
+	private static Calendar calculateAlarm(int hour, int minute,
+			DaysOfWeek daysOfWeek) {
 
 		// start with now
 		Calendar c = Calendar.getInstance();
