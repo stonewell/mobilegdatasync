@@ -10,4 +10,5 @@ public interface ProfileSwitcherConstants {
 	public static final int MSG_WHAT_LOAD_LOCATION_ONLY_SCHEDULES = 1000;
 	public static final int MSG_WHAT_LOCATION_CHANGED = 1001;
 	public static final int MSG_WHAT_LOAD_LAST_KNOWN_PROFILE = 1002;
+	public static final int PROFILE_ENABLE_NOTIFICATION = 1;
 }
