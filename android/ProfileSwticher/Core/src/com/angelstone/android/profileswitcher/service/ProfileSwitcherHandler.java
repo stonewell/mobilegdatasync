@@ -1,10 +1,12 @@
 package com.angelstone.android.profileswitcher.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -34,7 +36,7 @@ class ProfileSwitcherHandler extends Handler {
 
 	private final Context mContext;
 	private Location mCurrentLoc;
-	private ConcurrentHashMap<Location, Long> mLocationProfileMap = new ConcurrentHashMap<Location, Long>();
+	private ConcurrentHashMap<Location, Alarm> mLocationProfileMap = new ConcurrentHashMap<Location, Alarm>();
 	private ConcurrentHashMap<Location, Long> mLocationProfileTempMap = new ConcurrentHashMap<Location, Long>();
 
 	public ProfileSwitcherHandler(Context context, Looper looper) {
@@ -96,6 +98,8 @@ class ProfileSwitcherHandler extends Handler {
 			} else if (ProfileSwitcherConstants.ACTION_SET_PROFILE
 					.equals(action)) {
 				doChangeProfile(intent);
+			} else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+				Alarms.disableExpiredAlarms(mContext);
 			} else {
 				Log.w(ProfileSwitcherConstants.TAG,
 						"Handler receive unknown action:" + action);
@@ -106,6 +110,7 @@ class ProfileSwitcherHandler extends Handler {
 			ActivityLog.logError(mContext, ProfileSwitcherConstants.TAG,
 					t.getLocalizedMessage());
 		} finally {
+			Alarms.setNextAlert(mContext);
 			try {
 				if (lock != null)
 					lock.release();
@@ -124,14 +129,14 @@ class ProfileSwitcherHandler extends Handler {
 			doLocationChanged((Location) msg.obj);
 			break;
 		case ProfileSwitcherConstants.MSG_WHAT_LOAD_LAST_KNOWN_PROFILE:
-			doActivateLastKnownProfile();
+			doActivateLastKnownProfile(true);
 		default:
 			break;
 		}
 
 	}
 
-	public void processAlarm(Alarm alarm) {
+	private void processAlarm(Alarm alarm) {
 		Cursor c = null;
 
 		try {
@@ -177,56 +182,35 @@ class ProfileSwitcherHandler extends Handler {
 		} finally {
 			if (c != null)
 				c.close();
-
-			Alarms.setNextAlert(mContext);
 		}
 	}
 
-	void processTempProfileExpire(Alarm a) {
-		Cursor c = null;
-
-		try {
-			ProfileSwitcherUtils.activateProfile(mContext, a.profileId,
-					Profile.ACTIVE_NONE, 0);
-
-			c = mContext.getContentResolver().query(Profile.CONTENT_URI,
-					new String[] { Profile.COLUMN_ID },
-					Profile.COLUMN_ACTIVE + "=?",
-					new String[] { String.valueOf(Profile.ACTIVE_AUTO) }, null);
-
-			if (c != null && c.moveToNext()) {
-				ProfileSwitcherUtils.activateProfile(mContext, c.getLong(0),
-						Profile.ACTIVE_AUTO, 0);
-			}
-		} finally {
-			Alarms.setNextAlert(mContext);
-
-			if (c != null)
-				c.close();
-		}
+	private void processTempProfileExpire(Alarm a) {
+		ProfileSwitcherUtils.activateProfile(mContext, a.profileId,
+				Profile.ACTIVE_NONE, 0);
 	}
 
 	private void loadLocationOnlySchedules() {
 		Cursor c = mContext.getContentResolver().query(
 				Schedule.CONTENT_URI,
-				new String[] { Schedule.COLUMN_LOCATION,
-						Schedule.COLUMN_PROFILE_ID },
+				null,
 				Schedule.COLUMN_ENABLE + "=1 AND " + Schedule.COLUMN_START_TIME
 						+ "=0", null, null);
 
 		try {
 			mLocationProfileMap.clear();
 
-			if (c == null)
+			if (c == null || c.getCount() == 0)
 				return;
 
+			int idxLoc = c.getColumnIndex(Schedule.COLUMN_LOCATION);
+
 			while (c.moveToNext()) {
-				String locStr = c.getString(0);
-				long profileId = c.getLong(1);
+				String locStr = c.getString(idxLoc);
 
 				Location loc = LocationUtils.locationFromString(locStr);
 
-				mLocationProfileMap.put(loc, profileId);
+				mLocationProfileMap.put(loc, new Alarm(c));
 			}
 
 		} finally {
@@ -266,10 +250,17 @@ class ProfileSwitcherHandler extends Handler {
 
 			if (activeProfile) {
 				if (mLocationProfileMap.containsKey(loc)) {
-					ProfileSwitcherUtils.activateProfile(mContext,
-							mLocationProfileMap.get(loc), Profile.ACTIVE_AUTO,
-							0);
-					clearTempLocationQueue();
+					Alarm alarm = mLocationProfileMap.get(loc);
+
+					activeProfile = !alarm.daysOfWeek.isRepeatSet()
+							|| (alarm.daysOfWeek.isRepeatSet() && alarm.daysOfWeek
+									.getNextAlarm(Calendar.getInstance()) == 0);
+
+					if (activeProfile) {
+						ProfileSwitcherUtils.activateProfile(mContext,
+								alarm.profileId, Profile.ACTIVE_AUTO, 0);
+						clearTempLocationQueue();
+					}
 				} else if (mLocationProfileTempMap.containsKey(loc)) {
 					ProfileSwitcherUtils.activateProfile(mContext,
 							mLocationProfileTempMap.get(loc),
@@ -280,13 +271,251 @@ class ProfileSwitcherHandler extends Handler {
 		}
 	}
 
+	private void doActivateLastKnownProfile(boolean activeLatestSchedule) {
+		Cursor c = mContext.getContentResolver().query(
+				Profile.CONTENT_URI,
+				null,
+				Profile.COLUMN_ACTIVE + "!=?",
+				new String[] { String.valueOf(Profile.ACTIVE_NONE) },
+				Profile.COLUMN_ACTIVATE_TIME + " desc," + Profile.COLUMN_ACTIVE
+						+ " asc");
+
+		try {
+			if (c == null || c.getCount() == 0) {
+				// No current alarm active,
+				// try to active the latest schedule
+				if (activeLatestSchedule)
+					doActivateLatestSchedule();
+
+				return;
+			}
+
+			int idxActive = c.getColumnIndex(Profile.COLUMN_ACTIVE);
+			int idxProfileId = c.getColumnIndex(Profile.COLUMN_ID);
+			int idxExpireTime = c.getColumnIndex(Profile.COLUMN_EXPIRE_TIME);
+			int idxActivateTime = c
+					.getColumnIndex(Profile.COLUMN_ACTIVATE_TIME);
+			long expireTime = 0;
+			long activeTime = 0;
+			long profileId = -1;
+			int active = Profile.ACTIVE_NONE;
+
+			while (c.moveToNext()) {
+				int tmpActive = c.getInt(idxActive);
+
+				long tmpExpireTime = c.getLong(idxExpireTime);
+				long tmpActiveTime = c.getLong(idxActivateTime);
+
+				switch (tmpActive) {
+				case Profile.ACTIVE_MANUAL_TIME: {
+					if (tmpActiveTime <= System.currentTimeMillis()
+							&& (tmpActiveTime + tmpExpireTime > System
+									.currentTimeMillis())) {
+						expireTime = tmpActiveTime + tmpExpireTime
+								- System.currentTimeMillis();
+						activeTime = tmpActiveTime;
+						profileId = c.getLong(idxProfileId);
+						active = tmpActive;
+					} else {
+						// Expired
+						Uri uri = ContentUris.withAppendedId(
+								Profile.CONTENT_URI, c.getLong(idxProfileId));
+						ContentValues values = new ContentValues();
+						values.put(Profile.COLUMN_ACTIVE, Profile.ACTIVE_NONE);
+
+						mContext.getContentResolver().update(uri, values, null,
+								null);
+					}
+				}
+					break;
+				case Profile.ACTIVE_MANUAL: {
+					profileId = c.getLong(idxProfileId);
+					active = tmpActive;
+				}
+					break;
+				case Profile.ACTIVE_AUTO:
+					if (activeTime < tmpActiveTime) {
+						profileId = c.getLong(idxProfileId);
+						active = tmpActive;
+					}
+
+				default:
+					break;
+				}
+
+				if (active != Profile.ACTIVE_AUTO
+						&& active != Profile.ACTIVE_NONE && profileId > 0) {
+					break;
+				}
+			}
+
+			if (profileId > 0) {
+				ProfileSwitcherUtils.activateProfile(mContext, profileId,
+						active, expireTime);
+			} else if (activeLatestSchedule) {
+				doActivateLatestSchedule();
+			}
+
+		} finally {
+			if (c != null)
+				c.close();
+		}
+
+	}
+
+	private void doActivateLatestSchedule() {
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+
+		long scheduleBegin = c.getTimeInMillis();
+		long scheduleEnd = System.currentTimeMillis();
+
+		Cursor cursor = mContext.getContentResolver().query(
+				Schedule.CONTENT_URI,
+				null,
+				Schedule.COLUMN_ENABLE + "=1 AND " + Schedule.COLUMN_START_TIME
+						+ ">0", null, null);
+
+		try {
+			if (cursor == null || cursor.getCount() == 0) {
+				return;
+			}
+
+			long profileId = -1;
+
+			long scheduleTime = 0;
+
+			while (cursor.moveToNext()) {
+				Alarm alarm = new Alarm(cursor);
+
+				if (alarm.time == 0) {
+					c.set(Calendar.HOUR_OF_DAY, alarm.hour);
+					c.set(Calendar.MINUTE, alarm.minutes);
+				} else {
+					c.setTimeInMillis(alarm.time);
+				}
+
+				if (c.getTimeInMillis() >= scheduleBegin
+						&& c.getTimeInMillis() <= scheduleEnd) {
+					if (c.getTimeInMillis() > scheduleTime) {
+
+						if (alarm.time == 0
+								&& alarm.daysOfWeek.getNextAlarm(c) == 0) {
+							profileId = alarm.profileId;
+							scheduleTime = c.getTimeInMillis();
+						} else if (alarm.time > 0) {
+							profileId = alarm.profileId;
+							scheduleTime = c.getTimeInMillis();
+						}
+					}
+				}
+			}
+
+			if (profileId > 0) {
+				ProfileSwitcherUtils.activateProfile(mContext, profileId,
+						Profile.ACTIVE_AUTO, 0);
+			}
+		} finally {
+			if (cursor != null)
+				cursor.close();
+		}
+
+	}
+
 	private void doChangeProfile(Intent intent) {
-		// TODO Auto-generated method stub
+		long profileId = intent.getLongExtra(Profile.COLUMN_ID, -1);
 
+		if (profileId < 0) {
+			ActivityLog.logError(mContext, ProfileSwitcherConstants.TAG,
+					"activate profile id < 0");
+			return;
+		}
+
+		int active = intent.getIntExtra(Profile.COLUMN_ACTIVE, -1);
+
+		switch (active) {
+		case Profile.ACTIVE_AUTO:
+		case Profile.ACTIVE_MANUAL:
+		case Profile.ACTIVE_MANUAL_TIME:
+		case Profile.ACTIVE_NONE:
+			break;
+		default:
+			ActivityLog.logError(mContext, ProfileSwitcherConstants.TAG,
+					"activate profile id:" + profileId
+							+ " with invalid active:" + active);
+			return;
+		}
+
+		long activeTime = intent.getLongExtra(Profile.COLUMN_ACTIVATE_TIME,
+				System.currentTimeMillis());
+		long seconds = intent.getLongExtra(Profile.COLUMN_EXPIRE_TIME, 0);
+
+		ContentValues values = new ContentValues();
+		values.put(Profile.COLUMN_ACTIVE, active);
+		values.put(Profile.COLUMN_ACTIVATE_TIME, activeTime);
+		values.put(Profile.COLUMN_EXPIRE_TIME, seconds);
+
+		Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, profileId);
+
+		if (mContext.getContentResolver().update(uri, values, null, null) == 0) {
+			ActivityLog.logError(mContext, ProfileSwitcherConstants.TAG,
+					"activate profile id:" + profileId + " not found");
+
+			return;
+		}
+
+		switch (active) {
+		case Profile.ACTIVE_AUTO:
+			if (isManualActiveProfileExists())
+				return;
+			break;
+		case Profile.ACTIVE_MANUAL:
+			clearOtherManualActiveProfile(profileId);
+			break;
+		case Profile.ACTIVE_MANUAL_TIME:
+			clearOtherManualActiveProfile(profileId);
+			break;
+		case Profile.ACTIVE_NONE:
+			doActivateLastKnownProfile(false);
+			break;
+		default:
+			return;
+		}
+
+		ProfileSwitcherUtils.enableProfile(mContext, profileId);
 	}
 
-	private void doActivateLastKnownProfile() {
-		// TODO Auto-generated method stub
-		
+	private boolean isManualActiveProfileExists() {
+		Cursor c = mContext.getContentResolver()
+				.query(Profile.CONTENT_URI,
+						new String[] { Profile.COLUMN_ID },
+						Profile.COLUMN_ACTIVE + "=? OR "
+								+ Profile.COLUMN_ACTIVE + "=?",
+						new String[] { String.valueOf(Profile.ACTIVE_MANUAL),
+								String.valueOf(Profile.ACTIVE_MANUAL_TIME) },
+						null);
+
+		try {
+			return c != null && c.getCount() > 0;
+		} finally {
+			if (c != null)
+				c.close();
+		}
 	}
+
+	private void clearOtherManualActiveProfile(long profileId) {
+		ContentValues values = new ContentValues();
+		values.put(Profile.COLUMN_ACTIVE, Profile.ACTIVE_NONE);
+
+		mContext.getContentResolver().update(
+				Profile.CONTENT_URI,
+				values,
+				Profile.COLUMN_ACTIVE + "!=? AND " + Profile.COLUMN_ID + "!=?",
+				new String[] { String.valueOf(Profile.ACTIVE_AUTO),
+						String.valueOf(profileId) });
+	}
+
 }

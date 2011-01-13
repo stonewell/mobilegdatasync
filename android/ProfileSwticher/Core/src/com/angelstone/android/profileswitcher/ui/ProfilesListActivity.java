@@ -2,7 +2,6 @@ package com.angelstone.android.profileswitcher.ui;
 
 import android.app.AlertDialog;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -24,6 +23,7 @@ import android.widget.ListView;
 import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.R;
 import com.angelstone.android.profileswitcher.store.Profile;
+import com.angelstone.android.profileswitcher.utils.ProfileSwitcherUtils;
 
 public class ProfilesListActivity extends ContentListBaseActivity {
 	private Cursor mCursor;
@@ -149,15 +149,21 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 											public void onClick(
 													DialogInterface dialog,
 													int whichButton) {
-												activateProfile(id,
-														Profile.ACTIVE_NONE, 0);
+												ProfileSwitcherUtils
+														.activateProfile(
+																ProfilesListActivity.this,
+																id,
+																Profile.ACTIVE_NONE,
+																0);
 											}
 										})
 								.setNegativeButton(android.R.string.cancel,
 										null).create();
 						ad.show();
 					} else {
-						activateProfile(id, Profile.ACTIVE_MANUAL, 0);
+						ProfileSwitcherUtils.activateProfile(
+								ProfilesListActivity.this, id,
+								Profile.ACTIVE_MANUAL, 0);
 					}
 				} finally {
 					c.close();
@@ -209,17 +215,6 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 		}
 	}
 
-	protected void activateProfile(long id, int active, long seconds) {
-		Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, id);
-
-		ContentValues values = new ContentValues();
-		values.put(Profile.COLUMN_ACTIVE, active);
-		values.put(Profile.COLUMN_ACTIVATE_TIME, System.currentTimeMillis());
-		values.put(Profile.COLUMN_EXPIRE_TIME, seconds);
-
-		getContentResolver().update(uri, values, null, null);
-	}
-
 	private void chooseExpireTime(final long id) {
 		final String[] expireTimeLabels = getResources().getStringArray(
 				R.array.expire_time_label_array);
@@ -237,8 +232,9 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 				dialog.dismiss();
 
 				if (which < expireTimes.length) {
-					activateProfile(id, Profile.ACTIVE_MANUAL_TIME,
-							expireTimes[which]);
+					ProfileSwitcherUtils.activateProfile(
+							ProfilesListActivity.this, id,
+							Profile.ACTIVE_MANUAL_TIME, expireTimes[which]);
 				} else {
 					// Customize
 					customizeExpireTime(id);
@@ -275,7 +271,9 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 				if (seconds == 0) {
 					showToast(getString(R.string.expire_time_is_not_valid));
 				} else {
-					activateProfile(id, Profile.ACTIVE_MANUAL_TIME, seconds);
+					ProfileSwitcherUtils.activateProfile(
+							ProfilesListActivity.this, id,
+							Profile.ACTIVE_MANUAL_TIME, seconds);
 				}
 			}
 		};

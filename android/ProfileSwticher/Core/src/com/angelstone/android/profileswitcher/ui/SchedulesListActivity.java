@@ -2,7 +2,6 @@ package com.angelstone.android.profileswitcher.ui;
 
 import android.app.AlertDialog;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -152,16 +151,10 @@ public class SchedulesListActivity extends ContentListBaseActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		Uri uri = ContentUris.withAppendedId(Schedule.CONTENT_URI, id);
-		
 		mCursor.moveToPosition(position);
+
 		int enable = (mCursor.getInt(mIndexEnableSchedule) + 1) % 2;
 		
-		ContentValues values = new ContentValues();
-		values.put(Schedule.COLUMN_ENABLE, enable);
-		
-		getContentResolver().update(uri, values, null, null);
-		
-		Alarms.setNextAlert(this);
+		Alarms.enableAlarm(this, id, enable == 1);
 	}
 }

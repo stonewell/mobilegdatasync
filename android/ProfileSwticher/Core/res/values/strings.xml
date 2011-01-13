@@ -110,4 +110,5 @@
 	<string name="no_repeat_and_time_in_past">The time is in the past and no repeat is configured!</string>
 	<string name="no_profile_select">No profile selected for schedule</string>
 	<string name="label_use">Using</string>
+	<string name="phone_data_conn">Mobile Data Network</string>
 </resources>

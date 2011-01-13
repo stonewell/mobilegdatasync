@@ -34,4 +34,9 @@ public class ProfileSwitcherUtils {
 		return 500;
 	}
 
+	public static void enableProfile(Context context, long profileId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
