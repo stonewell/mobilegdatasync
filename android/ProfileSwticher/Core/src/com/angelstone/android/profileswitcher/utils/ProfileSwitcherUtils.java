@@ -26,7 +26,7 @@ public class ProfileSwitcherUtils {
 				System.currentTimeMillis());
 		intent.putExtra(Profile.COLUMN_EXPIRE_TIME, seconds);
 
-		context.startService(intent);
+		context.sendBroadcast(intent);
 	}
 
 	public static float getLocationDistancePreference() {
