@@ -20,8 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 				+ Schedule.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 				+ Schedule.COLUMN_PROFILE_ID + " INTEGER, "
 				+ Schedule.COLUMN_START_TIME + " LONG, "
-				+ Schedule.COLUMN_LABEL + " VARCHAR, "
-				+ Schedule.COLUMN_LOCATION + " VARCHAR, "
+				+ Schedule.COLUMN_LABEL + " VARCHAR DEFAULT NULL, "
+				+ Schedule.COLUMN_LOCATION + " VARCHAR DEFAULT NULL, "
 				+ Schedule.COLUMN_ENABLE + " INTEGER DEFAULT 1, "
 				+ Schedule.COLUMN_REPEAT_WEEKDAYS + " INTEGER);");
 
@@ -35,6 +35,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 				+ Profile.COLUMN_NOTIFY_RING_TONE + " VARCHAR,"
 				+ Profile.COLUMN_ALARM_RING_TONE + " VARCHAR,"
 				+ Profile.COLUMN_EMAIL_RING_TONE + " VARCHAR,"
+				+ Profile.COLUMN_EXPIRE_TIME + " INTEGER DEFAULT 0,"
+				+ Profile.COLUMN_ACTIVATE_TIME + " INTEGER DEFAULT 0,"
 				+ Profile.COLUMN_ACTIVE + " INTEGER," + Profile.COLUMN_DEVICES
 				+ " INTEGER," + Profile.COLUMN_NAME + " VARCHAR, "
 				+ Profile.COLUMN_FLAGS + " INTEGER);");
@@ -51,15 +53,24 @@ public class DatabaseHelper extends SQLiteOpenHelper implements DatabaseValues {
 			upgradeToVersion3(db);
 			oldVersion = 3;
 		}
-		
+
 		if (oldVersion < 4) {
 			upgradeToVersion4(db);
 			oldVersion = 4;
 		}
-		
+
 		if (oldVersion < 5) {
 			upgradeToVersion5(db);
 			oldVersion = 5;
+		}
+
+		if (oldVersion < 6) {
+			try {
+				upgradeToVersion2(db);
+			} catch (Throwable t) {
+
+			}
+			oldVersion = 6;
 		}
 	}
 
