@@ -11,4 +11,5 @@ public interface ProfileSwitcherConstants {
 	public static final int MSG_WHAT_LOCATION_CHANGED = 1001;
 	public static final int MSG_WHAT_LOAD_LAST_KNOWN_PROFILE = 1002;
 	public static final int PROFILE_ENABLE_NOTIFICATION = 1;
+	public static final String DATA_NOTIFY = "exta_data_notify";
 }

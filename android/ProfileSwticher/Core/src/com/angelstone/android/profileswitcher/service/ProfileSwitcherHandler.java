@@ -100,6 +100,8 @@ class ProfileSwitcherHandler extends Handler {
 				doChangeProfile(intent);
 			} else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
 				Alarms.disableExpiredAlarms(mContext);
+			} else if (intent.getBooleanExtra(ProfileSwitcherConstants.DATA_NOTIFY, false)){
+				ProfileSwitcherUtils.cancelNotification(mContext);
 			} else {
 				Log.w(ProfileSwitcherConstants.TAG,
 						"Handler receive unknown action:" + action);
