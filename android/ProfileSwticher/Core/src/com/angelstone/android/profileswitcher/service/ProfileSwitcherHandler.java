@@ -70,10 +70,12 @@ class ProfileSwitcherHandler extends Handler {
 			}
 
 			if (intent == null) {
-				Log.w(ProfileSwitcherConstants.TAG,
-						"Handler receive null intent");
-
-				processOtherMessages(msg);
+				if (!processOtherMessages(msg)) {
+					ActivityLog.logWarning(mContext,
+							ProfileSwitcherConstants.TAG,
+							"Handler receive null intent and the msg has unknown what:"
+									+ msg.what);
+				}
 				return;
 			}
 
@@ -84,7 +86,7 @@ class ProfileSwitcherHandler extends Handler {
 						ProfileSwitcherConstants.ALARM_RAW_DATA);
 
 				Parcel out = Parcel.obtain();
-				out.unmarshall(buf,0,buf.length);
+				out.unmarshall(buf, 0, buf.length);
 				out.setDataPosition(0);
 
 				Alarm a = Alarm.CREATOR.createFromParcel(out);
@@ -122,7 +124,7 @@ class ProfileSwitcherHandler extends Handler {
 		}
 	}
 
-	private void processOtherMessages(Message msg) {
+	private boolean processOtherMessages(Message msg) {
 		switch (msg.what) {
 		case ProfileSwitcherConstants.MSG_WHAT_LOAD_LOCATION_ONLY_SCHEDULES:
 			loadLocationOnlySchedules();
@@ -133,9 +135,10 @@ class ProfileSwitcherHandler extends Handler {
 		case ProfileSwitcherConstants.MSG_WHAT_LOAD_LAST_KNOWN_PROFILE:
 			doActivateLastKnownProfile(true);
 		default:
-			break;
+			return false;
 		}
 
+		return true;
 	}
 
 	private void processAlarm(Alarm alarm) {
@@ -155,9 +158,10 @@ class ProfileSwitcherHandler extends Handler {
 
 			boolean enable = c.getInt(c.getColumnIndex(Schedule.COLUMN_ENABLE)) == 1;
 
-			//if a repeat alarm is not enable, do not active profile
-			//if a non-repeat alarm comes but database says it is not enable, 
-			//set the profile anyway, since the enable state changed by Alarms.setNextAlarm()
+			// if a repeat alarm is not enable, do not active profile
+			// if a non-repeat alarm comes but database says it is not enable,
+			// set the profile anyway, since the enable state changed by
+			// Alarms.setNextAlarm()
 			if (!enable && alarm.time == 0)
 				return;
 
