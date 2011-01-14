@@ -720,6 +720,8 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			values.put(Schedule.COLUMN_LABEL, mLabel);
 		}
 
+		values.put(Schedule.COLUMN_ENABLE, 1);
+		
 		return true;
 	}
 

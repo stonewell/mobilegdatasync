@@ -17,7 +17,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,7 +36,7 @@ class ProfileSwitcherHandler extends Handler {
 	private final Context mContext;
 	private Location mCurrentLoc;
 	private ConcurrentHashMap<Location, Alarm> mLocationProfileMap = new ConcurrentHashMap<Location, Alarm>();
-	private ConcurrentHashMap<Location, Long> mLocationProfileTempMap = new ConcurrentHashMap<Location, Long>();
+	private ConcurrentHashMap<Location, Alarm> mLocationProfileTempMap = new ConcurrentHashMap<Location, Alarm>();
 
 	public ProfileSwitcherHandler(Context context, Looper looper) {
 		super(looper);
@@ -81,11 +80,11 @@ class ProfileSwitcherHandler extends Handler {
 			String action = intent.getAction();
 
 			if (ProfileSwitcherConstants.ACTION_ALARM_ALERT.equals(action)) {
-				Parcelable p = intent.getExtras().getParcelable(
+				byte[] buf = intent.getExtras().getByteArray(
 						ProfileSwitcherConstants.ALARM_RAW_DATA);
 
 				Parcel out = Parcel.obtain();
-				p.writeToParcel(out, 0);
+				out.unmarshall(buf,0,buf.length);
 				out.setDataPosition(0);
 
 				Alarm a = Alarm.CREATOR.createFromParcel(out);
@@ -100,7 +99,8 @@ class ProfileSwitcherHandler extends Handler {
 				doChangeProfile(intent);
 			} else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
 				Alarms.disableExpiredAlarms(mContext);
-			} else if (intent.getBooleanExtra(ProfileSwitcherConstants.DATA_NOTIFY, false)){
+			} else if (intent.getBooleanExtra(
+					ProfileSwitcherConstants.DATA_NOTIFY, false)) {
 				ProfileSwitcherUtils.cancelNotification(mContext);
 			} else {
 				Log.w(ProfileSwitcherConstants.TAG,
@@ -155,7 +155,10 @@ class ProfileSwitcherHandler extends Handler {
 
 			boolean enable = c.getInt(c.getColumnIndex(Schedule.COLUMN_ENABLE)) == 1;
 
-			if (!enable)
+			//if a repeat alarm is not enable, do not active profile
+			//if a non-repeat alarm comes but database says it is not enable, 
+			//set the profile anyway, since the enable state changed by Alarms.setNextAlarm()
+			if (!enable && alarm.time == 0)
 				return;
 
 			String locStr = c.getString(c
@@ -172,14 +175,16 @@ class ProfileSwitcherHandler extends Handler {
 
 				if (!activeProfile)
 					queueForTempLocation(loc, c.getLong(c
-							.getColumnIndex(Schedule.COLUMN_PROFILE_ID)));
+							.getColumnIndex(Schedule.COLUMN_PROFILE_ID)),
+							c.getLong(c.getColumnIndex(Schedule.COLUMN_ID)));
 			}
 
 			if (activeProfile) {
 				ProfileSwitcherUtils
 						.activateProfile(mContext, c.getLong(c
 								.getColumnIndex(Schedule.COLUMN_PROFILE_ID)),
-								Profile.ACTIVE_AUTO, 0);
+								Profile.ACTIVE_AUTO, 0, c.getLong(c
+										.getColumnIndex(Schedule.COLUMN_ID)));
 			}
 		} finally {
 			if (c != null)
@@ -222,8 +227,13 @@ class ProfileSwitcherHandler extends Handler {
 
 	}
 
-	private void queueForTempLocation(Location loc, long profileId) {
-		mLocationProfileTempMap.put(loc, profileId);
+	private void queueForTempLocation(Location loc, long profileId,
+			long scheduleId) {
+		Alarm alarm = new Alarm();
+		alarm.profileId = profileId;
+		alarm.id = (int) scheduleId;
+
+		mLocationProfileTempMap.put(loc, alarm);
 	}
 
 	private void clearTempLocationQueue() {
@@ -260,13 +270,15 @@ class ProfileSwitcherHandler extends Handler {
 
 					if (activeProfile) {
 						ProfileSwitcherUtils.activateProfile(mContext,
-								alarm.profileId, Profile.ACTIVE_AUTO, 0);
+								alarm.profileId, Profile.ACTIVE_AUTO, 0,
+								alarm.id);
 						clearTempLocationQueue();
 					}
 				} else if (mLocationProfileTempMap.containsKey(loc)) {
+					Alarm alarm = mLocationProfileTempMap.get(loc);
+
 					ProfileSwitcherUtils.activateProfile(mContext,
-							mLocationProfileTempMap.get(loc),
-							Profile.ACTIVE_AUTO, 0);
+							alarm.profileId, Profile.ACTIVE_AUTO, 0, alarm.id);
 					clearTempLocationQueue();
 				}
 			}
@@ -305,7 +317,7 @@ class ProfileSwitcherHandler extends Handler {
 			while (c.moveToNext()) {
 				int tmpActive = c.getInt(idxActive);
 
-				long tmpExpireTime = c.getLong(idxExpireTime);
+				long tmpExpireTime = c.getLong(idxExpireTime) * 1000;
 				long tmpActiveTime = c.getLong(idxActivateTime);
 
 				switch (tmpActive) {
@@ -387,7 +399,7 @@ class ProfileSwitcherHandler extends Handler {
 			}
 
 			long profileId = -1;
-
+			long scheduleId = -1;
 			long scheduleTime = 0;
 
 			while (cursor.moveToNext()) {
@@ -408,9 +420,11 @@ class ProfileSwitcherHandler extends Handler {
 								&& alarm.daysOfWeek.getNextAlarm(c) == 0) {
 							profileId = alarm.profileId;
 							scheduleTime = c.getTimeInMillis();
+							scheduleId = alarm.id;
 						} else if (alarm.time > 0) {
 							profileId = alarm.profileId;
 							scheduleTime = c.getTimeInMillis();
+							scheduleId = alarm.id;
 						}
 					}
 				}
@@ -418,7 +432,7 @@ class ProfileSwitcherHandler extends Handler {
 
 			if (profileId > 0) {
 				ProfileSwitcherUtils.activateProfile(mContext, profileId,
-						Profile.ACTIVE_AUTO, 0);
+						Profile.ACTIVE_AUTO, 0, scheduleId);
 			}
 		} finally {
 			if (cursor != null)
@@ -454,6 +468,8 @@ class ProfileSwitcherHandler extends Handler {
 		long activeTime = intent.getLongExtra(Profile.COLUMN_ACTIVATE_TIME,
 				System.currentTimeMillis());
 		long seconds = intent.getLongExtra(Profile.COLUMN_EXPIRE_TIME, 0);
+		long scheduleId = intent.getLongExtra(
+				ProfileSwitcherConstants.EXTRA_SCHEDULE_ID, -1);
 
 		ContentValues values = new ContentValues();
 		values.put(Profile.COLUMN_ACTIVE, active);
@@ -487,7 +503,7 @@ class ProfileSwitcherHandler extends Handler {
 			return;
 		}
 
-		ProfileSwitcherUtils.enableProfile(mContext, profileId);
+		ProfileSwitcherUtils.enableProfile(mContext, profileId, scheduleId);
 	}
 
 	private boolean isManualActiveProfileExists() {

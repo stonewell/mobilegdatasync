@@ -111,7 +111,11 @@
 	<string name="no_profile_select">No profile selected for schedule</string>
 	<string name="label_use">Using</string>
 	<string name="phone_data_conn">Mobile Data Network</string>
-	<string name="notification_enable_profile">Profile {0} is enabled!</string>
-	<string name="notification_enable_profile_title">Profile enable</string>
-	<string name="notification_enable_profile_fail">Profile {0} enable fail!</string>
+	<string name="notification_enable_profile_title">Profile</string>
+	<string name="notification_enable_profile">{1} {2} enable profile {0}!</string>
+	<string name="notification_enable_profile_title"></string>
+	<string name="notification_enable_profile_fail">{1} failed to {2} enable profile {0}!</string>
+	<string name="schedule">Schedule</string>
+	<string name="automatically">automatically</string>
+	<string name="manually">manually</string>
 </resources>

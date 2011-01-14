@@ -102,6 +102,8 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 			iv[index++].setImageResource(R.drawable.stat_sys_ringer_vibrate);
 
 		ImageView statusIv = (ImageView) view.findViewById(R.id.status_img);
+		tv = (TextView) view.findViewById(R.id.profile_active_time);
+		tv.setText("");
 
 		int active = cursor.getInt(mIndexActive);
 
@@ -122,7 +124,6 @@ public class ProfileAdapter extends ResourceCursorAdapter {
 				statusIv.setImageResource(R.drawable.active_none);
 			else {
 				statusIv.setImageResource(R.drawable.active_manual_time);
-				tv = (TextView) view.findViewById(R.id.profile_active_time);
 
 				long hour = duration / 3600;
 				long minute = (duration % 3600) / 60;

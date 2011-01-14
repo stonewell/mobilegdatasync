@@ -1,11 +1,101 @@
 <resources>
+	<string name="title_profiles">模式</string>
+	<string name="title_schedules">日程</string>
+	<string name="current_profile">当前激活的模式:</string>
+
+	<string name="wifi">无线网络</string>
+	<string name="gps">GPS</string>
+	<string name="bluetooth">蓝牙</string>
+	<string name="mute">静音</string>
+	<string name="devices">设备</string>
+	<string name="ringtone_and_volume">铃声与音量</string>
+	<string name="phone">电话</string>
+	<string name="notification">通知</string>
+	<string name="email">邮件</string>
+	<string name="alarm">闹钟</string>
+	<string name="volume">音量</string>
+	<string name="ringtone">铃声</string>
+	<string name="vibrate">震动</string>
+	<string name="name">名称:</string>
+	<string name="default_ringtone">默认</string>
+	<string name="empty_name_is_not_allowed">必须输入名称!</string>
+	<string name="update_exist">更新</string>
+	<string name="save_current">保存</string>
+	<string name="same_name_existing">已经有同名的模式，请选择下一步</string>
+	<string name="empty_profiles_message">
+		"没有配置模式.\n\n要增加新的模式, 按
+		<font fgcolor="#ffffffff">
+			<b>菜单</b>
+		</font>
+		并且选择:\n
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>新增</b>
+			</font>
+			创建新的模式\n
+		</li>
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>导入/导出</b>
+			</font>
+			\n
+		</li>
+		"
+	</string>
+	<string name="empty_schedules_message">
+		"没有配置日程.\n\n要增加新的日程, 按
+		<font fgcolor="#ffffffff">
+			<b>菜单</b>
+		</font>
+		并且选择:\n
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>新增</b>
+			</font>
+			创建新的日程\n
+		</li>
+		\n
+		<li>
+			<font fgcolor="#ffffffff">
+				<b>导入/导出</b>
+			</font>
+			\n
+		</li>
+		"
+	</string>
+	<string name="enable">激活</string>
+	<string name="disable">停止</string>
+	<string name="disable_confirm">停止使用选择的模式?</string>
+	<string name="enable_profile">激活</string>
+	<string name="enable_profile_time">激活一段时间</string>
+	<string name="hour">小时</string>
+	<string name="minute">分钟</string>
+	<string name="expire_time_is_not_valid">输入的过期时间无效！</string>
+	<string name="profile_expire_template">{0}后过期</string>
+	<string name="single_hour">小时</string>
+	<string name="single_minute">分钟</string>
+	<string name="single_second">秒</string>
+	<string name="multi_hour">小时</string>
+	<string name="multi_minute">分钟</string>
+	<string name="multi_second">秒</string>
+	<string name="label_time">时间</string>
+	<string name="label_profile">模式</string>
+	<string name="label_repeat">重复</string>
+	<string name="label_schedule_label">标签</string>
+	<string name="label_location">地点</string>
 	<string name="label_latitude">纬度</string>
 	<string name="label_longitude">经度</string>
 	<string name="label_altitude">海拔</string>
 	<string name="label_use_altitude">使用海拔</string>
 	<string name="label_use">使用</string>
 	<string name="phone_data_conn">移动数据链接</string>
-	<string name="notification_enable_profile">已经激活模式{0}!</string>
+	<string name="notification_enable_profile">{1}已经{2}激活模式{0}!</string>
 	<string name="notification_enable_profile_title">模式</string>
-	<string name="notification_enable_profile_fail">激活模式{0}失败!</string>
+	<string name="notification_enable_profile_fail">{1}{2}激活模式{0}失败!</string>
+	<string name="schedule">日程</string>
+	<string name="automatically">自动</string>
+	<string name="manually">手动</string>
 </resources>

@@ -128,10 +128,10 @@ public class Alarms {
 
 			while (c.moveToNext()) {
 				long actTime = c.getLong(idxActTime);
-				long expireTime = c.getLong(idxExpireTime);
+				long expireTime = c.getLong(idxExpireTime) * 1000;
 
 				if (actTime <= System.currentTimeMillis()
-						&& actTime + expireTime > System.currentTimeMillis()) {
+						&& (actTime + expireTime) > System.currentTimeMillis()) {
 					if (alarm == null) {
 						alarm = new Alarm();
 						alarm.time = actTime + expireTime;

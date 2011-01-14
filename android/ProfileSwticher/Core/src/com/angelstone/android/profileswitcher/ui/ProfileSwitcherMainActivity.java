@@ -32,6 +32,7 @@ public class ProfileSwitcherMainActivity extends TabActivity {
 		if (intent != null
 				&& intent.getBooleanExtra(ProfileSwitcherConstants.DATA_NOTIFY,
 						false)) {
+			intent = new Intent(intent);
 			intent.setClass(getApplicationContext(),
 					ProfileSwitcherService.class);
 
