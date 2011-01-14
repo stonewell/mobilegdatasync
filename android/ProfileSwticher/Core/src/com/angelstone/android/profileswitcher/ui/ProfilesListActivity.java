@@ -28,6 +28,7 @@ import com.angelstone.android.profileswitcher.utils.ProfileSwitcherUtils;
 public class ProfilesListActivity extends ContentListBaseActivity {
 	private Cursor mCursor;
 	private int mContextMenuStartId;
+	private TimerProfileUpdateTask mTimerTask = new TimerProfileUpdateTask();
 
 	private ContentObserver mObserver = new ContentObserver(new Handler()) {
 
@@ -56,6 +57,8 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 				mObserver);
 
 		updateView();
+		
+		mTimerTask.execute(mCursor);
 	}
 
 	@Override
@@ -120,6 +123,19 @@ public class ProfilesListActivity extends ContentListBaseActivity {
 		super.onDestroy();
 
 		getContentResolver().unregisterContentObserver(mObserver);
+		mTimerTask.stop();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mTimerTask.pause();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mTimerTask.resume();
 	}
 
 	@Override
