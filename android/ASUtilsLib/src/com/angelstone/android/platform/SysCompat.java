@@ -66,4 +66,6 @@ public abstract class SysCompat {
 	public abstract CharSequence getPhoneTypeLabel(int type);
 	
 	public abstract Bitmap getPhoto(int photoId, int defaultResource);
+	
+	public abstract boolean enableBluetooth(boolean enable);
 }

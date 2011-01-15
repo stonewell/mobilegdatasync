@@ -2,6 +2,7 @@ package com.angelstone.android.platform;
 
 import android.app.Notification;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -61,5 +62,15 @@ public class CompatEclair extends CompatDonut {
 		} finally {
 			c.close();
 		}
+	}
+
+	@Override
+	public boolean enableBluetooth(boolean enable) {
+		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+		
+		if (adapter == null)
+			return true;
+		
+		return enable ? adapter.enable() : adapter.disable();
 	}
 }
