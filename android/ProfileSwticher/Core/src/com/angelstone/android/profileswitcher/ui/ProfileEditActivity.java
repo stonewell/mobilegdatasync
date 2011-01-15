@@ -59,10 +59,16 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		CheckBox cb = (CheckBox) findViewById(R.id.check_gps);
 		cb.setOnClickListener(this);
 		cb.setChecked(mProfile.isGpsConfigured());
+		// TODO no permissions for GPS
+		cb.setVisibility(View.GONE);
+		cb.setChecked(false);
 
 		ToggleButton tb = (ToggleButton) findViewById(R.id.toggle_gps);
 		tb.setChecked(mProfile.isGpsEnable());
 		tb.setEnabled(mProfile.isGpsConfigured());
+		// TODO no permissions for GPS
+		tb.setVisibility(View.GONE);
+		tb.setChecked(false);
 
 		cb = (CheckBox) findViewById(R.id.check_wifi);
 		cb.setOnClickListener(this);
@@ -103,6 +109,10 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		tb = (ToggleButton) findViewById(R.id.toggle_enable_phone);
 		tb.setChecked(mProfile.isPhoneEnable());
 		tb.setEnabled(mProfile.isPhoneConfigured());
+		tb.setOnClickListener(this);
+		
+		if (mProfile.isPhoneConfigured())
+			enableBlueToothSetting(tb);
 
 		cb = (CheckBox) findViewById(R.id.check_enable_phone_data_conn);
 		cb.setOnClickListener(this);
@@ -146,53 +156,20 @@ public class ProfileEditActivity extends EditBaseActivity implements
 	}
 
 	private Profile loadProfile(long id) {
-		Profile p = new Profile();
 
 		if (id == -1)
-			return p;
+			return new Profile();
 
 		Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, id);
 
 		Cursor c = getContentResolver().query(uri, null, null, null, null);
+		Profile p = null;
 
 		try {
 			if (c.moveToNext()) {
-				int idxName = c.getColumnIndex(Profile.COLUMN_NAME);
-				int idxFlags = c.getColumnIndex(Profile.COLUMN_FLAGS);
-
-				int idxDevices = c.getColumnIndex(Profile.COLUMN_DEVICES);
-
-				int idxEmailVolume = c
-						.getColumnIndex(Profile.COLUMN_EMAIL_VOLUME);
-				int idxPhoneVolume = c
-						.getColumnIndex(Profile.COLUMN_PHONE_VOLUME);
-				int idxNotifyVolume = c
-						.getColumnIndex(Profile.COLUMN_NOTIFY_VOLUME);
-				int idxAlarmVolume = c
-						.getColumnIndex(Profile.COLUMN_ALARM_VOLUME);
-
-				int idxPhoneRingtone = c
-						.getColumnIndex(Profile.COLUMN_PHONE_RING_TONE);
-				int idxNotifyRingtone = c
-						.getColumnIndex(Profile.COLUMN_NOTIFY_RING_TONE);
-				int idxAlarmRingtone = c
-						.getColumnIndex(Profile.COLUMN_ALARM_RING_TONE);
-				int idxEmailRingtone = c
-						.getColumnIndex(Profile.COLUMN_EMAIL_RING_TONE);
-
-				p.setName(c.getString(idxName));
-				p.setEmailRingtone(c.getString(idxEmailRingtone));
-				p.setEmailVolume(c.getInt(idxEmailVolume));
-				p.setPhoneRingtone(c.getString(idxPhoneRingtone));
-				p.setPhoneVolume(c.getInt(idxPhoneVolume));
-				p.setNotificationRingtone(c.getString(idxNotifyRingtone));
-				p.setNotificationVolume(c.getInt(idxNotifyVolume));
-				p.setAlarmRingtone(c.getString(idxAlarmRingtone));
-				p.setAlarmVolume(c.getInt(idxAlarmVolume));
-
-				// Set flags later since set volumn ringtone will change flags
-				p.setFlags(c.getInt(idxFlags));
-				p.setDevices(c.getInt(idxDevices));
+				p = new Profile(c);
+			} else {
+				p = new Profile();
 			}
 		} finally {
 			c.close();
@@ -292,9 +269,24 @@ public class ProfileEditActivity extends EditBaseActivity implements
 			showRingtones();
 		}
 			break;
+		case R.id.toggle_enable_phone: {
+			enableBlueToothSetting(v);
+		}
+			break;
 		default:
 			break;
 		}
+	}
+
+	private void enableBlueToothSetting(View v) {
+		findViewById(R.id.check_bluetooth).setEnabled(
+				((ToggleButton) v).isChecked());
+
+		if (!((ToggleButton) v).isChecked())
+			((CheckBox) findViewById(R.id.check_bluetooth)).setChecked(false);
+
+		findViewById(R.id.toggle_bluetooth).setEnabled(
+				((ToggleButton) v).isChecked() && ((CheckBox) findViewById(R.id.check_bluetooth)).isChecked());
 	}
 
 	@Override
@@ -381,7 +373,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 								Uri uri = ContentUris.withAppendedId(
 										Profile.CONTENT_URI, mId);
 								getContentResolver().delete(uri, null, null);
-								
+
 								finish();
 							}
 						}).setNegativeButton(android.R.string.cancel, null)
@@ -635,7 +627,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 	}
 
 	private void selectRingtone(TextView v, String phoneRingtone) {
-		
+
 		try {
 			if (TextUtils.isEmpty(phoneRingtone))
 				mCurrentSelectedRingtoneUri = null;
@@ -644,7 +636,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		} catch (Throwable t) {
 			mCurrentSelectedRingtoneUri = null;
 		}
-		
+
 		v.setText(getRingtoneName(mCurrentSelectedRingtoneUri));
 	}
 
@@ -744,7 +736,7 @@ public class ProfileEditActivity extends EditBaseActivity implements
 
 		if (mId < 0) {
 			Uri uri = getContentResolver().insert(Profile.CONTENT_URI, values);
-			
+
 			mId = ContentUris.parseId(uri);
 		} else {
 			Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, mId);

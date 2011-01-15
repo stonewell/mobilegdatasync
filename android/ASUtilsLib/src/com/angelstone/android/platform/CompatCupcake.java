@@ -3,6 +3,7 @@ package com.angelstone.android.platform;
 import java.util.Map;
 
 import android.app.Service;
+import android.bluetooth.BluetoothDevice;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Contacts;
 import android.telephony.gsm.SmsMessage;
+import android.util.Log;
 
 import com.angelstone.android.R;
 
@@ -46,7 +48,8 @@ public class CompatCupcake extends SysCompat {
 			String sender = msg.getOriginatingAddress();
 
 			if (messages.containsKey(sender)) {
-				messages.put(sender, messages.get(sender) + msg.getMessageBody());
+				messages.put(sender,
+						messages.get(sender) + msg.getMessageBody());
 			} else {
 				messages.put(sender, msg.getMessageBody());
 			}
@@ -63,7 +66,31 @@ public class CompatCupcake extends SysCompat {
 	}
 
 	public Bitmap getPhoto(int photoId, int defaultResource) {
-		Uri uri = ContentUris.withAppendedId(Contacts.People.CONTENT_URI, photoId);
-		return Contacts.People.loadContactPhoto(mCtx, uri, defaultResource, null);
+		Uri uri = ContentUris.withAppendedId(Contacts.People.CONTENT_URI,
+				photoId);
+		return Contacts.People.loadContactPhoto(mCtx, uri, defaultResource,
+				null);
+	}
+
+	@Override
+	public boolean enableBluetooth(boolean enable) {
+		String serviceName = null;
+		try {
+			serviceName = (String) Context.class.getField("BLUETOOTH_SERVICE")
+					.get(null);
+			BluetoothDevice manager = (BluetoothDevice) mCtx
+					.getApplicationContext().getSystemService(serviceName);
+
+			if (manager == null)
+				return false;
+
+			return enable ? (Boolean) BluetoothDevice.class.getMethod("enable")
+					.invoke(manager) : (Boolean) BluetoothDevice.class
+					.getMethod("disable").invoke(manager);
+		} catch (Throwable t) {
+			Log.e(mCtx.getString(R.string.app_name), "enable Bluetooth fail:"
+					+ serviceName, t);
+			return false;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.angelstone.android.profileswitcher.store;
 
+import android.database.Cursor;
 import android.net.Uri;
 
 public class Profile implements DatabaseValues {
@@ -89,6 +90,9 @@ public class Profile implements DatabaseValues {
 	private int mFlags = 0;
 	private int mDevices = 0;
 	private String mName = "";
+	private int mActive = Profile.ACTIVE_NONE;
+	private long mActiveTime = 0;
+	private long mExpireTime = 0;
 
 	public int getPhoneVolume() {
 		return mPhoneVolume;
@@ -548,5 +552,76 @@ public class Profile implements DatabaseValues {
 			mDevices |= DEVICE_PHONE_DATA_CONN_ENABLE;
 		else
 			mDevices &= ~DEVICE_PHONE_DATA_CONN_ENABLE;
+	}
+	
+	public Profile() {
+		
+	}
+	
+	public Profile(Cursor c) {
+		int idxName = c.getColumnIndex(Profile.COLUMN_NAME);
+		int idxFlags = c.getColumnIndex(Profile.COLUMN_FLAGS);
+
+		int idxDevices = c.getColumnIndex(Profile.COLUMN_DEVICES);
+
+		int idxEmailVolume = c
+				.getColumnIndex(Profile.COLUMN_EMAIL_VOLUME);
+		int idxPhoneVolume = c
+				.getColumnIndex(Profile.COLUMN_PHONE_VOLUME);
+		int idxNotifyVolume = c
+				.getColumnIndex(Profile.COLUMN_NOTIFY_VOLUME);
+		int idxAlarmVolume = c
+				.getColumnIndex(Profile.COLUMN_ALARM_VOLUME);
+
+		int idxPhoneRingtone = c
+				.getColumnIndex(Profile.COLUMN_PHONE_RING_TONE);
+		int idxNotifyRingtone = c
+				.getColumnIndex(Profile.COLUMN_NOTIFY_RING_TONE);
+		int idxAlarmRingtone = c
+				.getColumnIndex(Profile.COLUMN_ALARM_RING_TONE);
+		int idxEmailRingtone = c
+				.getColumnIndex(Profile.COLUMN_EMAIL_RING_TONE);
+
+		setName(c.getString(idxName));
+		setEmailRingtone(c.getString(idxEmailRingtone));
+		setEmailVolume(c.getInt(idxEmailVolume));
+		setPhoneRingtone(c.getString(idxPhoneRingtone));
+		setPhoneVolume(c.getInt(idxPhoneVolume));
+		setNotificationRingtone(c.getString(idxNotifyRingtone));
+		setNotificationVolume(c.getInt(idxNotifyVolume));
+		setAlarmRingtone(c.getString(idxAlarmRingtone));
+		setAlarmVolume(c.getInt(idxAlarmVolume));
+
+		// Set flags later since set volumn ringtone will change flags
+		setFlags(c.getInt(idxFlags));
+		setDevices(c.getInt(idxDevices));
+		
+		setActive(c.getInt(c.getColumnIndex(Profile.COLUMN_ACTIVE)));
+		setActiveTime(c.getLong(c.getColumnIndex(Profile.COLUMN_ACTIVATE_TIME)));
+		setExpireTime(c.getLong(c.getColumnIndex(Profile.COLUMN_EXPIRE_TIME)));
+	}
+
+	public int getActive() {
+		return mActive;
+	}
+
+	public void setActive(int active) {
+		mActive = active;
+	}
+
+	public long getActiveTime() {
+		return mActiveTime;
+	}
+
+	public void setActiveTime(long activeTime) {
+		mActiveTime = activeTime;
+	}
+
+	public long getExpireTime() {
+		return mExpireTime;
+	}
+
+	public void setExpireTime(long expireTime) {
+		mExpireTime = expireTime;
 	}
 }
