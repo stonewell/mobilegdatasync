@@ -491,6 +491,8 @@ class ProfileSwitcherHandler extends Handler {
 
 		switch (active) {
 		case Profile.ACTIVE_AUTO:
+			clearOtherAutoActiveProfile(profileId);
+			
 			if (isManualActiveProfileExists())
 				return;
 			break;
@@ -508,6 +510,18 @@ class ProfileSwitcherHandler extends Handler {
 		}
 
 		ProfileSwitcherUtils.enableProfile(mContext, profileId, scheduleId);
+	}
+
+	private void clearOtherAutoActiveProfile(long profileId) {
+		ContentValues values = new ContentValues();
+		values.put(Profile.COLUMN_ACTIVE, Profile.ACTIVE_NONE);
+
+		mContext.getContentResolver().update(
+				Profile.CONTENT_URI,
+				values,
+				Profile.COLUMN_ACTIVE + "=? AND " + Profile.COLUMN_ID + "!=?",
+				new String[] { String.valueOf(Profile.ACTIVE_AUTO),
+						String.valueOf(profileId) });
 	}
 
 	private boolean isManualActiveProfileExists() {
