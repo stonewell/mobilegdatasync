@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
@@ -82,20 +83,11 @@ public class ProfileSwitcherUtils {
 			if (p.getActive() == Profile.ACTIVE_NONE)
 				return;
 
-			Profile oldP = saveCurrentProfile(context);
+			realUpdateDeviceUsingProfile(context, p);
 
-			if (realUpdateDeviceUsingProfile(context, p)) {
-				notifyProfileEnabled(context, p.getName(), true,
-						p.getActive() == Profile.ACTIVE_AUTO, scheduleId);
-			} else {
-				notifyProfileEnabled(
-						context,
-						TextUtils.isEmpty(p.getName()) ? String
-								.valueOf(profileId) : p.getName(), false,
-						p.getActive() == Profile.ACTIVE_AUTO, scheduleId);
+			notifyProfileEnabled(context, p.getName(), true,
+					p.getActive() == Profile.ACTIVE_AUTO, scheduleId);
 
-				realUpdateDeviceUsingProfile(context, oldP);
-			}
 		} catch (Throwable t) {
 			Log.e(ProfileSwitcherConstants.TAG, "enable profile fail", t);
 			ActivityLog.logError(context, ProfileSwitcherConstants.TAG,
@@ -215,14 +207,28 @@ public class ProfileSwitcherUtils {
 		if (p.isBlueToothConfigured())
 			result &= enableBlueTooth(context, p.isBlueToothEnable());
 
-		if (p.isMuteConfigured())
-			result &= enableMute(p.isMuteEnable());
+		boolean muteActive = false;
+		boolean mute = false;
 
-		if (p.isVibrateConfigured())
-			result &= enableVibrate(p.isVibrateEnable());
+		if (p.isMuteConfigured()) {
+			muteActive = true;
+			mute = p.isMuteEnable();
+		}
+
+		boolean vibeActive = false;
+		boolean vibe = false;
+
+		if (p.isVibrateConfigured()) {
+			vibeActive = true;
+			vibe = p.isVibrateEnable();
+		}
+
+		if (muteActive || vibeActive)
+			result &= enableVibrateMute(context, vibeActive, vibe, muteActive,
+					mute);
 
 		if (p.isPhoneDataConnConfigured())
-			result &= enablePhoneDataConn(p.isPhoneDataConnEnable());
+			result &= enablePhoneDataConn(context, p.isPhoneDataConnEnable());
 
 		if (p.isPhoneRingtoneAndVolumeConfigured())
 			result &= setPhoneRingtoneAndVolume(p);
@@ -333,19 +339,63 @@ public class ProfileSwitcherUtils {
 		return sc.enableBluetooth(blueToothEnable);
 	}
 
-	private static boolean enableMute(boolean muteEnable) {
-		// TODO Auto-generated method stub
-		return false;
+	private static boolean enableVibrateMute(Context context,
+			boolean vibeActive, boolean vibe, boolean muteActive, boolean mute) {
+		int callsVibrateSetting = vibe ? AudioManager.VIBRATE_SETTING_ON
+				: AudioManager.VIBRATE_SETTING_OFF;
+
+		AudioManager am = (AudioManager) context
+				.getSystemService(Context.AUDIO_SERVICE);
+
+		int ringMode = am.getRingerMode();
+
+		if (vibeActive && muteActive) {
+			if (vibe) {
+				ringMode = AudioManager.RINGER_MODE_VIBRATE;
+			} else {
+				if (mute)
+					ringMode = AudioManager.RINGER_MODE_SILENT;
+				else
+					ringMode = AudioManager.RINGER_MODE_NORMAL;
+			}
+
+		} else if (vibeActive) {
+			if (vibe) {
+				ringMode = AudioManager.RINGER_MODE_VIBRATE;
+			} else if (ringMode == AudioManager.RINGER_MODE_VIBRATE)
+				ringMode = AudioManager.RINGER_MODE_NORMAL;
+		} else if (muteActive) {
+			if (mute) {
+				ringMode = AudioManager.RINGER_MODE_SILENT;
+			} else if (ringMode == AudioManager.RINGER_MODE_SILENT) {
+				ringMode = AudioManager.RINGER_MODE_NORMAL;
+			}
+		}
+
+		am.setRingerMode(ringMode);
+
+		if (vibeActive) {
+			// 2.3 need to update the setting
+			try {
+				String name = (String) Settings.System.class.getField(
+						"VIBRATE_IN_SILENT").get(null);
+				Settings.System.putInt(context.getContentResolver(), name,
+						vibe ? 1 : 0);
+			} catch (Throwable t) {
+
+			}
+			am.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER,
+					callsVibrateSetting);
+		}
+
+		return true;
 	}
 
-	private static boolean enableVibrate(boolean vibrateEnable) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	private static boolean enablePhoneDataConn(Context context,
+			boolean phoneDataConnEnable) {
+		SysCompat sc = SysCompat.register(context);
 
-	private static boolean enablePhoneDataConn(boolean phoneDataConnEnable) {
-		// TODO Auto-generated method stub
-		return false;
+		return sc.enableMobileNetwork(phoneDataConnEnable);
 	}
 
 	private static boolean setPhoneRingtoneAndVolume(Profile p) {
@@ -366,15 +416,5 @@ public class ProfileSwitcherUtils {
 	private static boolean setAlarmRingtoneAndVolume(Profile p) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	public static Profile saveCurrentProfile(Context context) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static Profile loadSavedProfile(Context context) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

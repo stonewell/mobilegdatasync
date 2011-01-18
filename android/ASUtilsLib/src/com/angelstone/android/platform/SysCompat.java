@@ -53,6 +53,8 @@ public abstract class SysCompat {
 			return new CompatDonut(ctx);
 		else if (release.equals("2.2"))
 			return new CompatFroyo(ctx);
+		else if (release.equals("2.3"))
+			return new CompatFroyo(ctx);
 		else
 			// 2.0/2.0.1/2.1
 			return new CompatEclair(ctx);
@@ -68,4 +70,6 @@ public abstract class SysCompat {
 	public abstract Bitmap getPhoto(int photoId, int defaultResource);
 	
 	public abstract boolean enableBluetooth(boolean enable);
+	
+	public abstract boolean enableMobileNetwork(boolean enable);
 }
