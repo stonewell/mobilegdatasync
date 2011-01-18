@@ -93,4 +93,9 @@ public class CompatCupcake extends SysCompat {
 			return false;
 		}
 	}
+
+	@Override
+	public boolean enableMobileNetwork(boolean enable) {
+		return true;
+	}
 }

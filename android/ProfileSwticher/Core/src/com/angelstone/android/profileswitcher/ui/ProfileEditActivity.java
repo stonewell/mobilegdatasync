@@ -117,10 +117,16 @@ public class ProfileEditActivity extends EditBaseActivity implements
 		cb = (CheckBox) findViewById(R.id.check_enable_phone_data_conn);
 		cb.setOnClickListener(this);
 		cb.setChecked(mProfile.isPhoneDataConnConfigured());
+		// TODO no permissions for Mobile Data
+		cb.setVisibility(View.GONE);
+		cb.setChecked(false);
 
 		tb = (ToggleButton) findViewById(R.id.toggle_enable_phone_data_conn);
 		tb.setChecked(mProfile.isPhoneDataConnEnable());
 		tb.setEnabled(mProfile.isPhoneDataConnConfigured());
+		// TODO no permissions for Mobile Data
+		tb.setVisibility(View.GONE);
+		tb.setChecked(false);
 
 		cb = (CheckBox) findViewById(R.id.check_phone);
 		cb.setOnClickListener(this);
