@@ -1,0 +1,18 @@
+<resources>
+	<string-array name="SupportedContentProviderUriArray">
+		<item>content://com.angelstone.anroid.profileswitcher/profile</item>
+		<item>content://com.angelstone.anroid.profileswitcher/schedule</item>
+		<item>content://com.angelstone.android.dailyjournal/settings</item>
+		<item>content://com.angelstone.android.dailyjournal/journal</item>
+		<item>content://com.angelstone.android.dailyjournal/paymethod</item>
+		<item>content://com.angelstone.android.dailyjournal/category</item>
+	</string-array>
+	<string-array name="SupportedContentProviderNameArray">
+		<item>Profiles</item>
+		<item>Schedules</item>
+		<item>Journal Settings</item>
+		<item>Journals</item>
+		<item>Pay Methods</item>
+		<item>Journal Category</item>
+	</string-array>
+</resources>
