@@ -3,13 +3,13 @@ package com.angelstone.android.backup.contentprovider;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -146,9 +146,25 @@ public class BackupContentProviderView extends GenericActivity {
 		Uri uri = null;
 		String[] col_names = null;
 
+		HashMap<String, String> uris = new HashMap<String, String>();
+		for (int i = 0; i < mCheckedItems.length; i++) {
+			if (mCheckedItems[i]) {
+				uris.put(mItems[i].toString(), mItems[i].toString());
+			}
+		}
+
 		while ((line = br.readLine()) != null) {
 			if (line.startsWith("URI:")) {
-				uri = Uri.parse(line.substring("URI:".length()));
+				String uriString = line.substring("URI:".length());
+
+				uri = Uri.parse(uriString);
+
+				if (!uris.containsKey(uriString)) {
+					uri = null;
+				} else {
+					ActivityLog.logInfo(this, getString(R.string.app_name),
+							"import uri:" + uriString);
+				}
 			} else if (line.startsWith("COL:")) {
 				col_names = line.substring("COL:".length()).split(",");
 			} else if (uri != null && col_names != null) {
