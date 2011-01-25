@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.angelstone.android.ui.GenericActivity;
+import com.angelstone.android.utils.ASTextUtils;
 import com.angelstone.android.utils.ActivityLog;
 
 public class BackupContentProviderView extends GenericActivity {
@@ -94,7 +97,7 @@ public class BackupContentProviderView extends GenericActivity {
 						"no data found for uri:" + uriString);
 				return;
 			}
-			
+
 			// export uri
 			writer.append("URI:").append(uriString);
 			writer.newLine();
@@ -108,19 +111,25 @@ public class BackupContentProviderView extends GenericActivity {
 				writer.append(c.getColumnName(i));
 			}
 			writer.newLine();
-			
-			//export data
-			while(c.moveToNext()) {
+
+			// export data
+			while (c.moveToNext()) {
 				for (int i = 0; i < count; i++) {
 					if (i > 0)
 						writer.append(",");
-					writer.append(c.getString(i));
+					String t = c.getString(i);
+
+					if (t == null) {
+						writer.append("null");
+					} else {
+						writer.append(ASTextUtils.toText(t.getBytes()));
+					}
 				}
 				writer.newLine();
 			}
-			
+
 			writer.flush();
-			
+
 			ActivityLog.logInfo(this, getString(R.string.app_name),
 					"all data exported for uri:" + uriString);
 		} finally {
@@ -131,7 +140,37 @@ public class BackupContentProviderView extends GenericActivity {
 
 	@Override
 	protected int importFrom(BufferedReader br) throws IOException {
-		// TODO Auto-generated method stub
-		return super.importFrom(br);
+		int import_count = 0;
+
+		String line = null;
+		Uri uri = null;
+		String[] col_names = null;
+
+		while ((line = br.readLine()) != null) {
+			if (line.startsWith("URI:")) {
+				uri = Uri.parse(line.substring("URI:".length()));
+			} else if (line.startsWith("COL:")) {
+				col_names = line.substring("COL:".length()).split(",");
+			} else if (uri != null && col_names != null) {
+				String[] valuesText = line.split(",");
+
+				ContentValues values = new ContentValues();
+
+				for (int i = 0; i < valuesText.length; i++) {
+					if (valuesText[i].equals("null")) {
+					} else {
+						values.put(col_names[i],
+								new String(ASTextUtils.fromText(valuesText[i])));
+					}
+				}
+
+				getContentResolver().insert(uri, values);
+				import_count++;
+			}
+		}
+
+		if (import_count == 0)
+			return IMPORT_NO_RECORD;
+		return IMPORT_SUCCESS;
 	}
 }
