@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Parcel;
+import android.util.Log;
 
 import com.angelstone.android.profileswitcher.ProfileSwitcherConstants;
 import com.angelstone.android.profileswitcher.store.Profile;
@@ -98,10 +99,16 @@ public class Alarms {
 	 * alarms, activates next alert.
 	 */
 	public static void setNextAlert(final Context context) {
+		Log.e("ProfileSwitcher","setNextAlert");
 		Alarm alarm = getManualWithTimeAlarm(context);
 
 		if (alarm == null)
 			alarm = calculateNextAlert(context);
+		else {
+			Alarm alarmTmp = calculateNextAlert(context);
+			if (alarmTmp != null && alarmTmp.time < alarm.time)
+				alarm = alarmTmp;
+		}
 
 		if (alarm != null) {
 			enableAlert(context, alarm, alarm.time);

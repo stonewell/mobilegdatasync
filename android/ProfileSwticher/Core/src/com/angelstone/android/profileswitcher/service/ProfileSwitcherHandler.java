@@ -368,8 +368,17 @@ class ProfileSwitcherHandler extends Handler {
 			}
 
 			if (profileId > 0) {
-				ProfileSwitcherUtils.activateProfile(mContext, profileId,
+				//if last known profile is auto activate profile
+				//we activate the latest auto activate profile 
+				if (active != Profile.ACTIVE_AUTO) {
+					ProfileSwitcherUtils.activateProfile(mContext, profileId,
 						active, expireTime);
+				} else {
+					if (!doActivateLatestSchedule()) {
+						//if no profile activate, clear all auto active profile
+						clearOtherAutoActiveProfile(-1);
+					}
+				}
 			} else if (activeLatestSchedule) {
 				doActivateLatestSchedule();
 			}
@@ -381,7 +390,7 @@ class ProfileSwitcherHandler extends Handler {
 
 	}
 
-	private void doActivateLatestSchedule() {
+	private boolean doActivateLatestSchedule() {
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
@@ -399,7 +408,7 @@ class ProfileSwitcherHandler extends Handler {
 
 		try {
 			if (cursor == null || cursor.getCount() == 0) {
-				return;
+				return false;
 			}
 
 			long profileId = -1;
@@ -437,7 +446,10 @@ class ProfileSwitcherHandler extends Handler {
 			if (profileId > 0) {
 				ProfileSwitcherUtils.activateProfile(mContext, profileId,
 						Profile.ACTIVE_AUTO, 0, scheduleId);
+				return true;
 			}
+			
+			return false;
 		} finally {
 			if (cursor != null)
 				cursor.close();
