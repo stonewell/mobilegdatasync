@@ -48,7 +48,6 @@ class TimerProfileUpdateTask extends AsyncTask<Cursor, Integer, Integer> {
 	}
 
 	public void pause() {
-		Log.e("pause","1!!!!!!pause");
 		mPause = true;
 		synchronized (mWaiter) {
 			mWaiter.notify();
@@ -56,7 +55,6 @@ class TimerProfileUpdateTask extends AsyncTask<Cursor, Integer, Integer> {
 	}
 
 	public void resume() {
-		Log.e("pause","1!!!!!!pause");
 		mPause = false;
 		synchronized (mWaiter) {
 			mWaiter.notify();
