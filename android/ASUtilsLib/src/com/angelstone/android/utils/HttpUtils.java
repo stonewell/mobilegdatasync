@@ -14,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
@@ -32,6 +33,31 @@ public class HttpUtils {
 		params.add(new BasicNameValuePair(paramName, uploadData));
 		HttpEntity entity = null;
 		entity = new UrlEncodedFormEntity(params,"UTF-8");
+
+		HttpPost post = new HttpPost(url);
+		post.addHeader(entity.getContentType());
+		post.setEntity(entity);
+		HttpClient mHttpClient = null;
+
+		mHttpClient = createHttpClient();
+		resp = mHttpClient.execute(post);
+		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			return getResponse(resp);
+		} else {
+			return String.valueOf(resp.getStatusLine().getStatusCode()) + ":"
+					+ getResponse(resp);
+		}
+	}
+
+	public static String postData(Context context, String url, String paramName,
+			byte[] uploadData) throws IOException {
+		HttpResponse resp;
+
+		//final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		//params.add(new BasicNameValuePair(paramName, HtmuploadData));
+		HttpEntity entity = null;
+		//entity = new UrlEncodedFormEntity(params,"UTF-8");
+		entity = new ByteArrayEntity(uploadData);
 
 		HttpPost post = new HttpPost(url);
 		post.addHeader(entity.getContentType());

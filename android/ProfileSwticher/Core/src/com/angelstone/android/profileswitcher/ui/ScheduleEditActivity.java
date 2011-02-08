@@ -671,7 +671,9 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 
 		if (mId < 0) {
-			getContentResolver().insert(Schedule.CONTENT_URI, values);
+			Uri uri = getContentResolver().insert(Schedule.CONTENT_URI, values);
+			
+			mId = ContentUris.parseId(uri);
 		} else {
 			Uri uri = ContentUris.withAppendedId(Schedule.CONTENT_URI, mId);
 			getContentResolver().update(uri, values, null, null);
