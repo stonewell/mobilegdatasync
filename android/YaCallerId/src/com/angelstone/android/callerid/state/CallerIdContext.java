@@ -25,6 +25,6 @@ public class CallerIdContext {
 		if (mCurrentState == null)
 			mCurrentState = new NormalState();
 		
-		mCurrentState.action(action);
+		mCurrentState.action(this, action);
 	}
 }
