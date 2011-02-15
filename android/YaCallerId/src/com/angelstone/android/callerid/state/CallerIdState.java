@@ -10,7 +10,7 @@ public class CallerIdState {
 		
 	}
 	
-	public void action(CallerIdAction action) {
+	public void action(CallerIdContext context, CallerIdAction action) {
 		
 	}
 }
