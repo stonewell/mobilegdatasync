@@ -1,5 +1,9 @@
 package com.angelstone.android.callerid.ui;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +30,10 @@ import android.widget.TextView;
 import com.android.internal.telephony.ITelephony;
 import com.angelstone.android.callerid.CallerIdConstants;
 import com.angelstone.android.callerid.R;
+import com.angelstone.android.callerid.store.CallerId;
+import com.angelstone.android.callerid.store.CallerIdManager;
 import com.angelstone.android.callerid.utils.PhotoLoader;
+import com.angelstone.android.phonetools.utils.PhoneNumberMatcher;
 import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.utils.ActivityLog;
 
@@ -43,6 +50,8 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 	private HandlerThread mHandlerThread = null;
 	private Handler mHandler = null;
 	private TelephonyManager mTelephonyManager = null;
+	private CallerIdManager mCallerIdManager;
+	private PhoneNumberMatcher mCallerIdMatcher;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +59,11 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+		mSysCompat = SysCompat.register(this);
 
-		// flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
-		flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+		int flags = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+
 		flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-		flags |= WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
 		getWindow().addFlags(flags);
 
@@ -68,11 +76,11 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		mLock.setReferenceCounted(false);
 		mLock.acquire();
 
+		initialize();
+		
 		mTelephony = ITelephony.Stub.asInterface(ServiceManager
 				.getService(Context.TELEPHONY_SERVICE));
 		mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
-		mSysCompat = SysCompat.register(this);
 
 		mHide = false;
 		mPhotoLoader = new PhotoLoader(this, R.drawable.ic_contact_list_picture);
@@ -319,4 +327,71 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		return mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK;
 	}
 
+	private void initCallerIdMatcher() {
+		mCallerIdMatcher = new PhoneNumberMatcher();
+		mCallerIdMatcher.getCountryCodes().add("+86");
+		mCallerIdMatcher.getAreaCodes().add("010");
+		mCallerIdMatcher.build();
+
+		updateCallerIdNumbers();
+	}
+
+	private void initialize() {
+		mCallerIdManager = new CallerIdManager(CallerIdConstants.AUTHORITY);
+		
+		initCallerIdMatcher();
+	}
+
+	private void updateCallerIdNumbers() {
+		HashMap<String, Long> newNumbers = new HashMap<String, Long>();
+
+		Cursor c = mCallerIdManager.getCallerIds(this);
+
+		try {
+			int idxNumber = c.getColumnIndex(CallerId.COL_NUMBER);
+			int idxId = c.getColumnIndex(CallerId.COL_ID);
+
+			while (c.moveToNext()) {
+				newNumbers.put(c.getString(idxNumber), c.getLong(idxId));
+			}
+		} finally {
+			c.close();
+		}
+
+		updateNumberMatcher(mCallerIdMatcher, newNumbers);
+	}
+
+	private void updateNumberMatcher(PhoneNumberMatcher matcher,
+			HashMap<String, Long> newNumbers) {
+		Set<String> oldNumbers = new HashSet<String>(matcher.getNumbers().keySet());
+
+		for (String n : oldNumbers) {
+			if (!newNumbers.containsKey(n))
+				matcher.removeNumber(n);
+			else
+				newNumbers.remove(n);
+		}
+
+		for (String n : newNumbers.keySet()) {
+			if (validNumber(n))
+				matcher.addNumber(n, newNumbers.get(n));
+		}
+	}
+
+	private boolean validNumber(String n) {
+		if (TextUtils.isEmpty(n))
+			return false;
+
+		if (!(n.charAt(0) == '+') && !(n.charAt(0) >= '0' && n.charAt(0) <= '9')) {
+			return false;
+		}
+
+		for (int i = 1; i < n.length(); i++) {
+			if (!(n.charAt(i) >= '0' && n.charAt(i) <= '9')) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

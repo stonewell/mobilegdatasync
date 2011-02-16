@@ -2,14 +2,18 @@ package com.angelstone.android.callerid.state;
 
 public class WakeupState extends CallerIdState {
 
+	WakeupState() {
+		super(3);
+	}
+	
 	@Override
 	public void action(CallerIdContext context, CallerIdAction action) {
-		switch (action) {
+		switch (action.mActionType) {
 		case Action_Ring:
-			context.moveToState(new ShownState());
+			context.moveToState(action, new ShownState());
 			break;
 		case Action_Sleep:
-			context.moveToState(new NormalState());
+			context.moveToState(action, new NormalState());
 		default:
 			break;
 		}
