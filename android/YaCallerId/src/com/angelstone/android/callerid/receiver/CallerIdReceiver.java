@@ -14,6 +14,7 @@ public class CallerIdReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
+			System.out.println("CallerId receiver got intent:" + intent + "," + intent.getAction());
 			intent.setClass(context, CallerIdService.class);
 			context.startService(intent);
 		} catch (Throwable t) {

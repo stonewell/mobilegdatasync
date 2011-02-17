@@ -17,6 +17,8 @@ public class CallerIdService extends IntentService {
 		if (intent == null)
 			return;
 		
+		System.out.println("CallerId get intent:" + intent.getAction());
+		
 		CallerIdContext callerIdContext = new CallerIdContext();
 		callerIdContext.init(this);
 		callerIdContext.loadFromPreference();
