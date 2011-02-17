@@ -35,6 +35,7 @@ import com.angelstone.android.callerid.store.CallerId;
 import com.angelstone.android.callerid.store.CallerIdManager;
 import com.angelstone.android.callerid.utils.PhotoLoader;
 import com.angelstone.android.phonetools.utils.PhoneNumberMatcher;
+import com.angelstone.android.phonetools.utils.PhoneUtils;
 import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.proxy.ServiceManagerProxy;
 import com.angelstone.android.utils.ActivityLog;
@@ -120,7 +121,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		mNumber = intent.getStringExtra(CallerIdConstants.DATA_INCOMING_NUMBER);
 
 		Object result = mCallerIdMatcher.match(mNumber);
-		
+
 		if (result instanceof Long) {
 			mId = (Long) result;
 		}
@@ -211,7 +212,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 					t.getLocalizedMessage());
 			Log.e(CallerIdConstants.TAG, "Fail when release lock", t);
 		}
-		
+
 		if (!mHide && isRing()) {
 			Intent intent = new Intent(getApplicationContext(),
 					FullScreenCallerIdView.class);
@@ -219,7 +220,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 			intent.putExtra(CallerIdConstants.DATA_PAUSE_Call, true);
 			intent.putExtra(CallerIdConstants.DATA_ID, mId);
 			intent.putExtra(CallerIdConstants.DATA_INCOMING_NUMBER, mNumber);
-			
+
 			startActivity(intent);
 		}
 	}
@@ -347,7 +348,13 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 		try {
 			switch (v.getId()) {
 			case R.id.answerButton:
-				mTelephony.answerRingingCall();
+				try {
+					mTelephony.answerRingingCall();
+				} catch (Throwable t) {
+					// fall back to bluetooth button
+					// http://code.google.com/p/auto-answer/source/browse/trunk/src/com/everysoft/autoanswer/AutoAnswerIntentService.java
+					PhoneUtils.answerPhoneHeadsethook(this);
+				}
 				break;
 			case R.id.endButton:
 				mTelephony.endCall();
