@@ -18,7 +18,6 @@ package com.android.internal.telephony;
 
 import android.os.Bundle;
 import java.util.List;
-import android.telephony.NeighboringCellInfo;
 
 /**
  * Interface used to interact with the phone.  Mostly this is used by the
@@ -204,11 +203,6 @@ interface ITelephony {
     boolean isDataConnectivityPossible();
 
     Bundle getCellLocation();
-
-    /**
-     * Returns the neighboring cell information of the device.
-     */
-    List<NeighboringCellInfo> getNeighboringCellInfo();
 
      int getCallState();
      int getDataActivity();

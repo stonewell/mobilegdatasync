@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.os.ServiceManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,6 +34,7 @@ import com.angelstone.android.callerid.store.CallerIdManager;
 import com.angelstone.android.callerid.utils.PhotoLoader;
 import com.angelstone.android.phonetools.utils.PhoneNumberMatcher;
 import com.angelstone.android.platform.SysCompat;
+import com.angelstone.android.proxy.ServiceManagerProxy;
 import com.angelstone.android.utils.ActivityLog;
 
 public class FullScreenCallerIdView extends Activity implements OnClickListener {
@@ -78,7 +78,7 @@ public class FullScreenCallerIdView extends Activity implements OnClickListener 
 
 		initialize();
 		
-		mTelephony = ITelephony.Stub.asInterface(ServiceManager
+		mTelephony = ITelephony.Stub.asInterface(ServiceManagerProxy
 				.getService(Context.TELEPHONY_SERVICE));
 		mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
