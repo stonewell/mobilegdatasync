@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
 
+import com.angelstone.android.callerid.service.CallerIdScreenMonitorService;
 import com.angelstone.android.callerid.state.CallerIdAction.ActionType;
 
 public class RingingState extends CallerIdState {
@@ -40,7 +41,24 @@ public class RingingState extends CallerIdState {
 
 				context.putExtra("RINGING_NUMBER", intent
 						.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER));
+				
+				Intent serviceIntent = new Intent(context.mContext.getApplicationContext(),
+						CallerIdScreenMonitorService.class);
+				
+				context.mContext.startService(serviceIntent);
 			}
 		}
 	}
+
+	@Override
+	public void leave(CallerIdContext context, CallerIdAction action) {
+		super.leave(context, action);
+		
+		Intent serviceIntent = new Intent(context.mContext.getApplicationContext(),
+				CallerIdScreenMonitorService.class);
+		serviceIntent.putExtra("QUIT", true);
+		
+		context.mContext.startService(serviceIntent);
+	}
+
 }
