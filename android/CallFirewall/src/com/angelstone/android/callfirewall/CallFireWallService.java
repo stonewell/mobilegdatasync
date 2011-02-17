@@ -18,7 +18,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.os.ServiceManager;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -33,6 +32,7 @@ import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
 import com.angelstone.android.phonetools.store.PhoneToolsDatabaseValues;
 import com.angelstone.android.phonetools.utils.PhoneNumberMatcher;
 import com.angelstone.android.platform.SysCompat;
+import com.angelstone.android.proxy.ServiceManagerProxy;
 import com.angelstone.android.utils.ActivityLog;
 
 public class CallFireWallService extends Service {
@@ -271,7 +271,7 @@ public class CallFireWallService extends Service {
 
 		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
-		tpCallModule = ITelephony.Stub.asInterface(ServiceManager
+		tpCallModule = ITelephony.Stub.asInterface(ServiceManagerProxy
 				.getService(Context.TELEPHONY_SERVICE));
 
 		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
