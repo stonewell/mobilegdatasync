@@ -46,15 +46,15 @@ public abstract class SysCompat {
 	}
 
 	public static SysCompat register(Context ctx) {
-		String release = android.os.Build.VERSION.RELEASE;
-		if (release.equals("1.5"))
+		int sdk = android.os.Build.VERSION.SDK_INT;
+		if (sdk == 3)
 			return new CompatCupcake(ctx);
-		else if (release.equals("1.6"))
+		else if (sdk == 4)
 			return new CompatDonut(ctx);
-		else if (release.equals("2.2"))
+		else if (sdk == 8)
 			return new CompatFroyo(ctx);
-		else if (release.equals("2.3"))
-			return new CompatFroyo(ctx);
+		else if (sdk == 9)
+			return new CompatGingerBread(ctx);
 		else
 			// 2.0/2.0.1/2.1
 			return new CompatEclair(ctx);
