@@ -4,4 +4,27 @@
 	<string name="west_longitude">西经</string>
 	<string name="north_latitude">北纬</string>
 	<string name="south_latitude">南纬</string>
+
+	<string name="confirm">确认</string>
+	<string name="help">帮助</string>
+	<string name="agree">同意</string>
+	<string name="disagree">不同意</string>
+	<string name="delete">删除</string>
+	<string name="ret">返回</string>
+	<string name="check_all">选择所有</string>
+	<string name="done">完成</string>
+	<string name="add">新增</string>
+	<string name="or">或者</string>
+	<string name="note">提示</string>
+	<string name="setting">设置</string>
+	<string name="exit">退出</string>
+	<string name="menu">菜单</string>
+	<string name="edit">编辑</string>
+	<string name="clear_all">清除所有</string>
+	<string name="unknown">未知</string>
+	<string name="number">数字</string>
+	<string name="name">名称</string>
+	<string name="save">保存</string>
+	<string name="_new">新建</string>
+	<string name="preference">配置</string>
 </resources>
