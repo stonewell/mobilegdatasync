@@ -98,4 +98,9 @@ public class CompatCupcake extends SysCompat {
 	public boolean enableMobileNetwork(boolean enable) {
 		return true;
 	}
+
+	@Override
+	public Uri getReceiptUri() {
+		return Uri.parse("content://mms-sms/canonical-address/");
+	}
 }

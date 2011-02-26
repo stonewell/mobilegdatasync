@@ -109,7 +109,7 @@ public class PhoneNumberHelpers {
 		try {
 			cur = queryContactByPhoneNumber(context, phoneNum);
 
-			if (cur == null || cur.getCount() < 0)
+			if (cur == null || cur.getCount() <= 0)
 				return null;
 
 			cur.moveToFirst();

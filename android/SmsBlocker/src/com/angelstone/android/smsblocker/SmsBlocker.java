@@ -1,5 +1,6 @@
 package com.angelstone.android.smsblocker;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,8 +17,7 @@ import com.angelstone.android.platform.SysCompat;
 import com.angelstone.android.smsblocker.store.DatabaseValues;
 import com.angelstone.android.utils.ActivityLog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
-import com.google.android.mms.pdu.GenericPdu;
-import com.google.android.mms.pdu.PduParser;
+import com.angelstone.android.utils.ReflectionHelper;
 
 public class SmsBlocker {
 	static {
@@ -55,8 +55,8 @@ public class SmsBlocker {
 					return false;
 			}
 
-			PhoneNumberDisposition disp = PhoneToolsDBManager.getBlackListManager().queryAction(
-					context, sender);
+			PhoneNumberDisposition disp = PhoneToolsDBManager
+					.getBlackListManager().queryAction(context, sender);
 			if (disp.mAction == PhoneNumberDisposition.REJECT) {
 				WriteToLog(messageBody, sender, context);
 
@@ -78,25 +78,34 @@ public class SmsBlocker {
 	public static boolean isMmsBlocked(Intent intent, Context context) {
 		try {
 			byte[] pushData = intent.getByteArrayExtra("data");
-			PduParser parser = new PduParser(pushData);
 
-			GenericPdu pdu = parser.parse();
-			if (pdu != null && pdu.getFrom() != null) {
-				String sender = pdu.getFrom().toString();
+			Class<?> pduParserCls = Class
+					.forName("com.google.android.mms.pdu.PduParser");
+
+			Object parser = ReflectionHelper.newInstance(pduParserCls,
+					new Class<?>[] { byte[].class }, pushData);
+
+			Object pdu = ReflectionHelper.callMethod(pduParserCls, "parse",
+					parser);
+
+			String sender = getFrom(pdu);
+
+			if (sender != null) {
 				sender = PhoneNumberHelpers.delete86String(sender);
 				sender = PhoneNumberHelpers.removeNonNumbericChar(sender);
 
 				ActivityLog
 						.logInfo(context, "MMS Received", "Sender:" + sender);
 
-				if (PhoneToolsDBManager.getSettingsManager().readSetting(context,
-						PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS)) {
+				if (PhoneToolsDBManager.getSettingsManager()
+						.readSetting(context,
+								PhoneToolsDatabaseValues.OPTION_ALLOW_CONTACTS)) {
 					if (PhoneNumberHelpers.isContact(context, sender))
 						return false;
 				}
 
-				PhoneNumberDisposition disp = PhoneToolsDBManager.getBlackListManager().queryAction(
-						context, sender);
+				PhoneNumberDisposition disp = PhoneToolsDBManager
+						.getBlackListManager().queryAction(context, sender);
 				if (disp.mAction == PhoneNumberDisposition.REJECT) {
 					WriteToLog("MMS", sender, context);
 
@@ -109,5 +118,18 @@ public class SmsBlocker {
 					t.getLocalizedMessage());
 		}
 		return false;
+	}
+
+	private static String getFrom(Object pdu) throws SecurityException,
+			IllegalArgumentException, NoSuchMethodException,
+			IllegalAccessException, InvocationTargetException,
+			ClassNotFoundException, NoSuchFieldException {
+		Object headers = ReflectionHelper.callMethod(pdu, "getPduHeaders");
+
+		int from = (Integer) ReflectionHelper.getStaticField(headers, "FROM");
+
+		// call headers.getEncodedStringValue(PduHeaders.FROM)
+		return (String) ReflectionHelper.callMethod(headers,
+				"getEncodedStringValue", new Class<?>[] { int.class }, from);
 	}
 }

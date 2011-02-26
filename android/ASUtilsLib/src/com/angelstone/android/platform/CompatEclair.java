@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.PhoneLookup;
@@ -72,5 +73,10 @@ public class CompatEclair extends CompatDonut {
 			return true;
 		
 		return enable ? adapter.enable() : adapter.disable();
+	}
+
+	@Override
+	public Uri getReceiptUri() {
+		return Uri.parse("content://mms-sms/canonical-addresses/");
 	}
 }
