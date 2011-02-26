@@ -72,4 +72,6 @@ public abstract class SysCompat {
 	public abstract boolean enableBluetooth(boolean enable);
 	
 	public abstract boolean enableMobileNetwork(boolean enable);
+	
+	public abstract Uri getReceiptUri();
 }
