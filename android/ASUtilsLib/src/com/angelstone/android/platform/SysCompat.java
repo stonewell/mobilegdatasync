@@ -74,4 +74,6 @@ public abstract class SysCompat {
 	public abstract boolean enableMobileNetwork(boolean enable);
 	
 	public abstract Uri getReceiptUri();
+	
+	public abstract boolean isScreenOn();
 }

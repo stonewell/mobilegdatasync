@@ -1,12 +1,11 @@
 package com.angelstone.android.callerid.state;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.PowerManager;
 import android.telephony.TelephonyManager;
 
 import com.angelstone.android.callerid.service.CallerIdScreenMonitorService;
 import com.angelstone.android.callerid.state.CallerIdAction.ActionType;
+import com.angelstone.android.platform.SysCompat;
 
 public class RingingState extends CallerIdState {
 	RingingState() {
@@ -31,10 +30,9 @@ public class RingingState extends CallerIdState {
 		super.enter(context, action);
 
 		if (action.mActionType == ActionType.Action_Ring) {
-			PowerManager pm = (PowerManager) context.mContext
-					.getSystemService(Context.POWER_SERVICE);
+			SysCompat sc = SysCompat.register(context.mContext);
 
-			if (pm.isScreenOn()) {
+			if (sc.isScreenOn()) {
 				context.moveToState(action, new ShownState());
 			} else {
 				Intent intent = action.mIntent;

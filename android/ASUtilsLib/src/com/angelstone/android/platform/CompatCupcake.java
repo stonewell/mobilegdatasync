@@ -9,11 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.IBinder;
 import android.provider.Contacts;
 import android.telephony.gsm.SmsMessage;
 import android.util.Log;
 
 import com.angelstone.android.R;
+import com.angelstone.android.utils.ReflectionHelper;
 
 @SuppressWarnings("deprecation")
 public class CompatCupcake extends SysCompat {
@@ -102,5 +104,32 @@ public class CompatCupcake extends SysCompat {
 	@Override
 	public Uri getReceiptUri() {
 		return Uri.parse("content://mms-sms/canonical-address/");
+	}
+
+	private static final java.lang.String DESCRIPTOR = "android.os.IPowerManager";
+	private static final int TRANSACTION_getScreenOnTime = (android.os.IBinder.FIRST_CALL_TRANSACTION + 7);
+
+	@Override
+	public boolean isScreenOn() {
+		android.os.Parcel _data = android.os.Parcel.obtain();
+		android.os.Parcel _reply = android.os.Parcel.obtain();
+		long _result = -1;
+		try {
+			Class<?> smCls = Class.forName("android.os.ServiceManager");
+
+			IBinder mRemote = (IBinder) ReflectionHelper.callMethod(smCls,
+					"getService", null, new Class<?>[] { String.class },
+					new Object[] { Context.POWER_SERVICE });
+			_data.writeInterfaceToken(DESCRIPTOR);
+			mRemote.transact(TRANSACTION_getScreenOnTime, _data, _reply, 0);
+			_reply.readException();
+			_result = _reply.readLong();
+		} catch (Throwable t) {
+			Log.e("Platform", "isScreenOn 1.6 fail", t);
+		} finally {
+			_reply.recycle();
+			_data.recycle();
+		}
+		return _result != 0;
 	}
 }
