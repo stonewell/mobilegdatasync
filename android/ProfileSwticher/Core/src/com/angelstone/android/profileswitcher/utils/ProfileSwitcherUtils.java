@@ -46,22 +46,22 @@ public class ProfileSwitcherUtils {
 
 		context.sendBroadcast(intent);
 	}
-
-	public static float getLocationDistancePreference() {
-		// TODO Load location distance from preference
-		return 50;
-	}
-
-	public static int getLocationUpdateTimePreference() {
-		// TODO Auto-generated method stub
-		return 1;
-	}
-
-	public static float getLocationUpdateDistancePreference() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+//
+//	public static float getLocationDistancePreference() {
+//		// TODO Load location distance from preference
+//		return 50;
+//	}
+//
+//	public static int getLocationUpdateTimePreference() {
+//		// TODO Auto-generated method stub
+//		return 1;
+//	}
+//
+//	public static float getLocationUpdateDistancePreference() {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
+//
 	public static void enableProfile(Context context, long profileId,
 			long scheduleId) {
 		Uri uri = ContentUris.withAppendedId(Profile.CONTENT_URI, profileId);

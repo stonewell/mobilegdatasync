@@ -2,7 +2,6 @@ package com.angelstone.android.profileswitcher.ui;
 
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.util.Log;
 
 class TimerProfileUpdateTask extends AsyncTask<Cursor, Integer, Integer> {
 	private Object mWaiter = new Object();

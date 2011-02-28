@@ -2,7 +2,6 @@ package com.angelstone.android.profileswitcher.ui;
 
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
-import java.text.MessageFormat;
 import java.util.Calendar;
 
 import android.app.AlertDialog;
@@ -10,13 +9,9 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -40,29 +34,26 @@ import com.angelstone.android.profileswitcher.store.Schedule;
 import com.angelstone.android.profileswitcher.utils.Alarms;
 import com.angelstone.android.profileswitcher.utils.ProfileCache;
 import com.angelstone.android.utils.DaysOfWeek;
-import com.angelstone.android.utils.GeoCodeLoader;
-import com.angelstone.android.utils.LocationUtils;
-import com.angelstone.android.utils.PhoneToolsUtil;
 
 public class ScheduleEditActivity extends EditBaseActivity implements
 		OnClickListener {
 	private static final int TIME_DIALOG_ID = 1001;
 	private static final int PROFILE_CHOOSER_DIALOG_ID = 1002;
 	private static final int REPEAT_CHOOSER_DIALOG_ID = 1003;
-	private static final int LOCATION_CHOOSER_DIALOG_ID = 1004;
+	// private static final int LOCATION_CHOOSER_DIALOG_ID = 1004;
 	private static final int LABEL_CHOOSER_DIALOG_ID = 1005;
 	private static final String DATA_ID = "_data_id";
 	private static final String DATA_TIME = "_data_time";
-	private static final String DATA_SAVED_LOC = "_data_saved_loc";
+//	private static final String DATA_SAVED_LOC = "_data_saved_loc";
 	private static final String DATA_PROFILE_ID = "_data_profile_id";
 	private static final String DATA_DAYS_OF_WEEK = "_data_days_of_week";
 	private static final String DATA_LABEL = "_data_label";
-	private static final String DATA_SAVED_LOC_DESC = "_data_saved_loc_desc";
+//	private static final String DATA_SAVED_LOC_DESC = "_data_saved_loc_desc";
 
 	private TextView mTextTimeDesc;
 	private TextView mTextProfileDesc;
 	private TextView mTextRepeatDesc;
-	private TextView mTextLocationDesc;
+//	private TextView mTextLocationDesc;
 	private TextView mTextLabel;
 
 	private long mId;
@@ -79,18 +70,18 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 	private DaysOfWeek mDaysOfWeek;
 	private String[] mWeekDays;
 
-	private LocationManager mLocationManager;
-	private Location mCurrentLoc;
-	private Location mSavedLoc;
-	private GeoCodeLoader mGeoCodeLoader;
-	private String mSavedLocDesc;
+	// private LocationManager mLocationManager;
+	// private Location mCurrentLoc;
+	// private Location mSavedLoc;
+	// private GeoCodeLoader mGeoCodeLoader;
+	// private String mSavedLocDesc;
 
-	private boolean mLocDlgShown;
-	private boolean mUseCurrentLoc;
-	private EditText mEditLatitude;
-	private EditText mEditLongitude;
-	private EditText mEditAltitude;
-	private CheckBox mChkUseAltitude;
+	// private boolean mLocDlgShown;
+	// private boolean mUseCurrentLoc;
+	// private EditText mEditLatitude;
+	// private EditText mEditLongitude;
+	// private EditText mEditAltitude;
+	// private CheckBox mChkUseAltitude;
 
 	private String mLabel = null;
 	private EditText mEditLabel;
@@ -127,47 +118,49 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 	};
 
-	private final LocationListener mLocationListener = new LocationListener() {
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-
-		}
-
-		@Override
-		public void onLocationChanged(Location location) {
-			if (PhoneToolsUtil.isBetterLocation(location, mCurrentLoc)) {
-				Location oldLoc = mCurrentLoc;
-				mCurrentLoc = location;
-
-				if (mLocDlgShown && mUseCurrentLoc
-						&& !isSameLocationAsUI(oldLoc)) {
-					updateLocationUI(mCurrentLoc);
-				}
-			}
-		}
-	};
-
-	private final DialogInterface.OnClickListener mLocationSetListener = new DialogInterface.OnClickListener() {
-
-		@Override
-		public void onClick(DialogInterface dialog, int which) {
-
-			updateSavedLoc(getLocationFromUI());
-
-			updateView();
-		}
-	};
+	// private final LocationListener mLocationListener = new LocationListener()
+	// {
+	//
+	// @Override
+	// public void onStatusChanged(String provider, int status, Bundle extras) {
+	//
+	// }
+	//
+	// @Override
+	// public void onProviderEnabled(String provider) {
+	//
+	// }
+	//
+	// @Override
+	// public void onProviderDisabled(String provider) {
+	//
+	// }
+	//
+	// @Override
+	// public void onLocationChanged(Location location) {
+	// if (PhoneToolsUtil.isBetterLocation(location, mCurrentLoc)) {
+	// Location oldLoc = mCurrentLoc;
+	// mCurrentLoc = location;
+	//
+	// if (mLocDlgShown && mUseCurrentLoc
+	// && !isSameLocationAsUI(oldLoc)) {
+	// updateLocationUI(mCurrentLoc);
+	// }
+	// }
+	// }
+	// };
+	//
+	// private final DialogInterface.OnClickListener mLocationSetListener = new
+	// DialogInterface.OnClickListener() {
+	//
+	// @Override
+	// public void onClick(DialogInterface dialog, int which) {
+	//
+	// updateSavedLoc(getLocationFromUI());
+	//
+	// updateView();
+	// }
+	// };
 
 	private final DialogInterface.OnClickListener mLabelSetListener = new DialogInterface.OnClickListener() {
 
@@ -192,20 +185,19 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		mTextTimeDesc = (TextView) findViewById(R.id.time_desc);
 		mTextProfileDesc = (TextView) findViewById(R.id.profile_desc);
 		mTextRepeatDesc = (TextView) findViewById(R.id.repeat_desc);
-		mTextLocationDesc = (TextView) findViewById(R.id.location_desc);
+		// mTextLocationDesc = (TextView) findViewById(R.id.location_desc);
 		mTextLabel = (TextView) findViewById(R.id.schedule_label);
 
-		int[] tr_ids = new int[] { R.id.tr_location, R.id.tr_profile,
-				R.id.tr_repeat, R.id.tr_schedule_label, R.id.tr_time };
+		int[] tr_ids = new int[] { // R.id.tr_location,
+		R.id.tr_profile, R.id.tr_repeat, R.id.tr_schedule_label, R.id.tr_time };
 
 		for (int id : tr_ids) {
 			TableRow tmp = (TableRow) findViewById(id);
 			tmp.setOnClickListener(this);
 		}
 
-		int[] img_btn_ids = new int[] { R.id.img_btn_location,
-				R.id.img_btn_profile, R.id.img_btn_repeat,
-				R.id.img_btn_schedule_label };
+		int[] img_btn_ids = new int[] { // R.id.img_btn_location,
+		R.id.img_btn_profile, R.id.img_btn_repeat, R.id.img_btn_schedule_label };
 
 		for (int id : img_btn_ids) {
 			ImageButton tmp = (ImageButton) findViewById(id);
@@ -220,7 +212,7 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		mIndexProfileId = mProfileCursor.getColumnIndex(Profile.COLUMN_ID);
 		mProfileCache = new ProfileCache(this, mProfileCursor);
 
-		mGeoCodeLoader = new GeoCodeLoader(this);
+		// mGeoCodeLoader = new GeoCodeLoader(this);
 
 		updateData();
 		updateView();
@@ -238,11 +230,11 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 
 		mTextRepeatDesc.setText(mDaysOfWeek.toString(this, true));
 
-		if (mSavedLocDesc == null) {
-			mGeoCodeLoader.loadGeoCode(mTextLocationDesc, mSavedLoc);
-		} else {
-			mTextLocationDesc.setText(mSavedLocDesc);
-		}
+		// if (mSavedLocDesc == null) {
+		// mGeoCodeLoader.loadGeoCode(mTextLocationDesc, mSavedLoc);
+		// } else {
+		// mTextLocationDesc.setText(mSavedLocDesc);
+		// }
 
 		mTextLabel.setText(mLabel == null ? "" : mLabel);
 	}
@@ -268,18 +260,18 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		case R.id.img_btn_repeat:
 			showDialog(REPEAT_CHOOSER_DIALOG_ID);
 			break;
-		case R.id.tr_location:
-		case R.id.img_btn_location: {
-			if (!PhoneToolsUtil.hasLocProviders(mLocationManager)) {
-				new AlertDialog.Builder(this).setTitle(R.string.label_location)
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.setNegativeButton(android.R.string.cancel, null)
-						.setMessage(R.string.warn_no_loc_providers).show();
-			} else {
-				showDialog(LOCATION_CHOOSER_DIALOG_ID);
-			}
-		}
-			break;
+		// case R.id.tr_location:
+		// case R.id.img_btn_location: {
+		// if (!PhoneToolsUtil.hasLocProviders(mLocationManager)) {
+		// new AlertDialog.Builder(this).setTitle(R.string.label_location)
+		// .setIcon(android.R.drawable.ic_dialog_alert)
+		// .setNegativeButton(android.R.string.cancel, null)
+		// .setMessage(R.string.warn_no_loc_providers).show();
+		// } else {
+		// showDialog(LOCATION_CHOOSER_DIALOG_ID);
+		// }
+		// }
+		// break;
 		case R.id.tr_schedule_label:
 		case R.id.img_btn_schedule_label:
 			showDialog(LABEL_CHOOSER_DIALOG_ID);
@@ -293,11 +285,11 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 
 		}
 			break;
-		case R.id.btn_use_current: {
-			mUseCurrentLoc = true;
-			updateLocationUI(mCurrentLoc);
-		}
-			break;
+		// case R.id.btn_use_current: {
+		// mUseCurrentLoc = true;
+		// updateLocationUI(mCurrentLoc);
+		// }
+		// break;
 		default:
 			break;
 		}
@@ -339,24 +331,24 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 							mDaysOfWeek.getBooleanArray(), mRepeatListener)
 					.create();
 		}
-		case LOCATION_CHOOSER_DIALOG_ID: {
-			LayoutInflater factory = LayoutInflater.from(this);
-			final View v = factory.inflate(R.layout.location_edit, null);
-
-			final CheckBox chkUseAltitude = (CheckBox) v
-					.findViewById(R.id.chk_use_altitude);
-			final Button btnUseCurrentLoc = (Button) v
-					.findViewById(R.id.btn_use_current);
-
-			chkUseAltitude.setOnClickListener(this);
-			btnUseCurrentLoc.setOnClickListener(this);
-
-			return new AlertDialog.Builder(this)
-					.setTitle(R.string.label_location)
-					.setNegativeButton(android.R.string.cancel, null)
-					.setPositiveButton(android.R.string.ok,
-							mLocationSetListener).setView(v).create();
-		}
+			// case LOCATION_CHOOSER_DIALOG_ID: {
+			// LayoutInflater factory = LayoutInflater.from(this);
+			// final View v = factory.inflate(R.layout.location_edit, null);
+			//
+			// final CheckBox chkUseAltitude = (CheckBox) v
+			// .findViewById(R.id.chk_use_altitude);
+			// final Button btnUseCurrentLoc = (Button) v
+			// .findViewById(R.id.btn_use_current);
+			//
+			// chkUseAltitude.setOnClickListener(this);
+			// btnUseCurrentLoc.setOnClickListener(this);
+			//
+			// return new AlertDialog.Builder(this)
+			// .setTitle(R.string.label_location)
+			// .setNegativeButton(android.R.string.cancel, null)
+			// .setPositiveButton(android.R.string.ok,
+			// mLocationSetListener).setView(v).create();
+			// }
 		case LABEL_CHOOSER_DIALOG_ID: {
 			LayoutInflater factory = LayoutInflater.from(this);
 			final View v = factory.inflate(R.layout.label_edit, null);
@@ -378,30 +370,30 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		super.onPrepareDialog(id, dialog);
 
 		switch (id) {
-		case LOCATION_CHOOSER_DIALOG_ID: {
-			mLocDlgShown = true;
-
-			mChkUseAltitude = (CheckBox) dialog
-					.findViewById(R.id.chk_use_altitude);
-			mEditLatitude = (EditText) dialog.findViewById(R.id.latitude);
-			mEditLongitude = (EditText) dialog.findViewById(R.id.longitude);
-			mEditAltitude = (EditText) dialog.findViewById(R.id.altitude);
-			final View rowAltitude = dialog.findViewById(R.id.row_altitude);
-
-			mChkUseAltitude.setChecked(false);
-			rowAltitude.setVisibility(View.GONE);
-
-			mLocDlgShown = true;
-
-			if (mSavedLoc != null) {
-				mUseCurrentLoc = false;
-				updateLocationUI(mSavedLoc);
-			} else {
-				mUseCurrentLoc = true;
-				updateLocationUI(mCurrentLoc);
-			}
-		}
-			break;
+		// case LOCATION_CHOOSER_DIALOG_ID: {
+		// mLocDlgShown = true;
+		//
+		// mChkUseAltitude = (CheckBox) dialog
+		// .findViewById(R.id.chk_use_altitude);
+		// mEditLatitude = (EditText) dialog.findViewById(R.id.latitude);
+		// mEditLongitude = (EditText) dialog.findViewById(R.id.longitude);
+		// mEditAltitude = (EditText) dialog.findViewById(R.id.altitude);
+		// final View rowAltitude = dialog.findViewById(R.id.row_altitude);
+		//
+		// mChkUseAltitude.setChecked(false);
+		// rowAltitude.setVisibility(View.GONE);
+		//
+		// mLocDlgShown = true;
+		//
+		// if (mSavedLoc != null) {
+		// mUseCurrentLoc = false;
+		// updateLocationUI(mSavedLoc);
+		// } else {
+		// mUseCurrentLoc = true;
+		// updateLocationUI(mCurrentLoc);
+		// }
+		// }
+		// break;
 		case LABEL_CHOOSER_DIALOG_ID: {
 			mEditLabel = (EditText) dialog.findViewById(R.id.label);
 
@@ -420,13 +412,16 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 
 		mDaysOfWeek = new DaysOfWeek(0);
 
-		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-		mCurrentLoc = mLocationManager.getLastKnownLocation(PhoneToolsUtil.getLocProvider(mLocationManager));
-		mLocationManager.requestLocationUpdates(PhoneToolsUtil.getLocProvider(mLocationManager), 0, 0,
-				mLocationListener);
-
-		updateSavedLoc(null);
+		// mLocationManager = (LocationManager)
+		// getSystemService(Context.LOCATION_SERVICE);
+		//
+		// mCurrentLoc =
+		// mLocationManager.getLastKnownLocation(PhoneToolsUtil.getLocProvider(mLocationManager));
+		// mLocationManager.requestLocationUpdates(PhoneToolsUtil.getLocProvider(mLocationManager),
+		// 0, 0,
+		// mLocationListener);
+		//
+		// updateSavedLoc(null);
 
 		if (mId < 0)
 			return;
@@ -451,12 +446,12 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			mProfileId = c
 					.getLong(c.getColumnIndex(Schedule.COLUMN_PROFILE_ID));
 
-			String locStr = c.getString(c
-					.getColumnIndex(Schedule.COLUMN_LOCATION));
-
-			Location location = LocationUtils.locationFromString(locStr);
-
-			updateSavedLoc(location);
+//			String locStr = c.getString(c
+//					.getColumnIndex(Schedule.COLUMN_LOCATION));
+//
+//			Location location = LocationUtils.locationFromString(locStr);
+//
+//			updateSavedLoc(location);
 		} finally {
 			c.close();
 		}
@@ -466,133 +461,134 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
 
-		mLocationManager.removeUpdates(mLocationListener);
-		mGeoCodeLoader.stop();
+		// mLocationManager.removeUpdates(mLocationListener);
+		// mGeoCodeLoader.stop();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mLocationManager.removeUpdates(mLocationListener);
-		mGeoCodeLoader.pause();
+		// mLocationManager.removeUpdates(mLocationListener);
+		// mGeoCodeLoader.pause();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		mLocationManager.requestLocationUpdates(PhoneToolsUtil.getLocProvider(mLocationManager), 0, 0,
-				mLocationListener);
-
-		mGeoCodeLoader.resume();
-
-		updateSavedLoc(mSavedLoc, mSavedLocDesc);
+		// mLocationManager.requestLocationUpdates(PhoneToolsUtil.getLocProvider(mLocationManager),
+		// 0, 0,
+		// mLocationListener);
+		//
+		// mGeoCodeLoader.resume();
+		//
+		// updateSavedLoc(mSavedLoc, mSavedLocDesc);
 	}
 
-	protected boolean isSameLocationAsUI(Location oldLoc) {
-		if (oldLoc == null)
-			return false;
-
-		return oldLoc.equals(getLocationFromUI());
-	}
-
-	protected void updateLocationUI(final Location loc) {
-		if (loc == null)
-			return;
-
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				mEditAltitude.setText(String.valueOf(loc.getAltitude()));
-				mEditLatitude.setText(String.valueOf(loc.getLatitude()));
-				mEditLongitude.setText(String.valueOf(loc.getLongitude()));
-			}
-		});
-	}
-
-	protected Location getLocationFromUI() {
-		double altitude = 0;
-		double longitude = 0;
-		double latitude = 0;
-
-		String strLongitude = mEditLongitude.getText().toString();
-		String strLatitude = mEditLatitude.getText().toString();
-
-		if (TextUtils.isEmpty(strLatitude) || TextUtils.isEmpty(strLongitude)) {
-			showToast(MessageFormat.format(
-					getString(R.string.invalid_location_template),
-					new Object[] { getString(R.string.label_latitude),
-							getString(R.string.label_longitude) }));
-			return null;
-		}
-
-		String strAltitude = null;
-
-		if (mChkUseAltitude.isChecked()) {
-			strAltitude = mEditAltitude.getText().toString();
-
-			if (TextUtils.isEmpty(strAltitude)) {
-				showToast(MessageFormat.format(
-						getString(R.string.invalid_location_template_2),
-						new Object[] { getString(R.string.label_latitude),
-								getString(R.string.label_longitude),
-								getString(R.string.label_altitude) }));
-				return null;
-			}
-		}
-
-		try {
-			longitude = Double.parseDouble(strLongitude);
-			latitude = Double.parseDouble(strLatitude);
-
-			if (!TextUtils.isEmpty(strAltitude))
-				altitude = Double.parseDouble(strAltitude);
-		} catch (Throwable t) {
-			if (mChkUseAltitude.isChecked()) {
-				showToast(MessageFormat.format(
-						getString(R.string.invalid_location_template_2),
-						new Object[] { getString(R.string.label_latitude),
-								getString(R.string.label_longitude),
-								getString(R.string.label_altitude) }));
-			} else {
-				showToast(MessageFormat.format(
-						getString(R.string.invalid_location_template),
-						new Object[] { getString(R.string.label_latitude),
-								getString(R.string.label_longitude) }));
-			}
-			return null;
-		}
-
-		Location loc = new Location(mCurrentLoc);
-		loc.setLatitude(latitude);
-		loc.setLongitude(longitude);
-
-		if (mChkUseAltitude.isChecked()) {
-			loc.setAltitude(altitude);
-		} else {
-			loc.removeAltitude();
-		}
-
-		return loc;
-	}
-
-	protected void updateSavedLoc(Location location) {
-		updateSavedLoc(location, null);
-	}
-
-	protected void updateSavedLoc(Location location, String defaultDesc) {
-		mSavedLoc = location;
-
-		mLocDlgShown = false;
-		mUseCurrentLoc = false;
-
-		if (defaultDesc == null) {
-			mGeoCodeLoader.loadGeoCode(mTextLocationDesc, location);
-		} else {
-			mTextLocationDesc.setText(defaultDesc);
-		}
-	}
+	// protected boolean isSameLocationAsUI(Location oldLoc) {
+	// if (oldLoc == null)
+	// return false;
+	//
+	// return oldLoc.equals(getLocationFromUI());
+	// }
+	//
+	// protected void updateLocationUI(final Location loc) {
+	// if (loc == null)
+	// return;
+	//
+	// runOnUiThread(new Runnable() {
+	//
+	// @Override
+	// public void run() {
+	// mEditAltitude.setText(String.valueOf(loc.getAltitude()));
+	// mEditLatitude.setText(String.valueOf(loc.getLatitude()));
+	// mEditLongitude.setText(String.valueOf(loc.getLongitude()));
+	// }
+	// });
+	// }
+	//
+	// protected Location getLocationFromUI() {
+	// double altitude = 0;
+	// double longitude = 0;
+	// double latitude = 0;
+	//
+	// String strLongitude = mEditLongitude.getText().toString();
+	// String strLatitude = mEditLatitude.getText().toString();
+	//
+	// if (TextUtils.isEmpty(strLatitude) || TextUtils.isEmpty(strLongitude)) {
+	// showToast(MessageFormat.format(
+	// getString(R.string.invalid_location_template),
+	// new Object[] { getString(R.string.label_latitude),
+	// getString(R.string.label_longitude) }));
+	// return null;
+	// }
+	//
+	// String strAltitude = null;
+	//
+	// if (mChkUseAltitude.isChecked()) {
+	// strAltitude = mEditAltitude.getText().toString();
+	//
+	// if (TextUtils.isEmpty(strAltitude)) {
+	// showToast(MessageFormat.format(
+	// getString(R.string.invalid_location_template_2),
+	// new Object[] { getString(R.string.label_latitude),
+	// getString(R.string.label_longitude),
+	// getString(R.string.label_altitude) }));
+	// return null;
+	// }
+	// }
+	//
+	// try {
+	// longitude = Double.parseDouble(strLongitude);
+	// latitude = Double.parseDouble(strLatitude);
+	//
+	// if (!TextUtils.isEmpty(strAltitude))
+	// altitude = Double.parseDouble(strAltitude);
+	// } catch (Throwable t) {
+	// if (mChkUseAltitude.isChecked()) {
+	// showToast(MessageFormat.format(
+	// getString(R.string.invalid_location_template_2),
+	// new Object[] { getString(R.string.label_latitude),
+	// getString(R.string.label_longitude),
+	// getString(R.string.label_altitude) }));
+	// } else {
+	// showToast(MessageFormat.format(
+	// getString(R.string.invalid_location_template),
+	// new Object[] { getString(R.string.label_latitude),
+	// getString(R.string.label_longitude) }));
+	// }
+	// return null;
+	// }
+	//
+	// Location loc = new Location(mCurrentLoc);
+	// loc.setLatitude(latitude);
+	// loc.setLongitude(longitude);
+	//
+	// if (mChkUseAltitude.isChecked()) {
+	// loc.setAltitude(altitude);
+	// } else {
+	// loc.removeAltitude();
+	// }
+	//
+	// return loc;
+	// }
+	//
+	// protected void updateSavedLoc(Location location) {
+	// updateSavedLoc(location, null);
+	// }
+	//
+	// protected void updateSavedLoc(Location location, String defaultDesc) {
+	// mSavedLoc = location;
+	//
+	// mLocDlgShown = false;
+	// mUseCurrentLoc = false;
+	//
+	// if (defaultDesc == null) {
+	// mGeoCodeLoader.loadGeoCode(mTextLocationDesc, location);
+	// } else {
+	// mTextLocationDesc.setText(defaultDesc);
+	// }
+	// }
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -622,13 +618,13 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 			if (!TextUtils.isEmpty(label))
 				mLabel = label;
 
-			Location loc = savedInstanceState.getParcelable(DATA_SAVED_LOC);
-			if (loc != null)
-				mSavedLoc = loc;
-
-			label = savedInstanceState.getString(DATA_SAVED_LOC_DESC);
-			if (!TextUtils.isEmpty(label))
-				mSavedLocDesc = label;
+			// Location loc = savedInstanceState.getParcelable(DATA_SAVED_LOC);
+			// if (loc != null)
+			// mSavedLoc = loc;
+			//
+			// label = savedInstanceState.getString(DATA_SAVED_LOC_DESC);
+			// if (!TextUtils.isEmpty(label))
+			// mSavedLocDesc = label;
 
 			updateView();
 		}
@@ -647,16 +643,16 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 
 		outState.putInt(DATA_DAYS_OF_WEEK, mDaysOfWeek.getCoded());
 
-		if (mSavedLoc != null) {
-			outState.putParcelable(DATA_SAVED_LOC, mSavedLoc);
-
-			String saved = mTextLocationDesc.getText().toString();
-
-			if (!saved.equals(LocationUtils.locationDefaultDisplay(this,
-					mSavedLoc))) {
-				outState.putString(DATA_SAVED_LOC_DESC, saved);
-			}
-		}
+		// if (mSavedLoc != null) {
+		// outState.putParcelable(DATA_SAVED_LOC, mSavedLoc);
+		//
+		// String saved = mTextLocationDesc.getText().toString();
+		//
+		// if (!saved.equals(LocationUtils.locationDefaultDisplay(this,
+		// mSavedLoc))) {
+		// outState.putString(DATA_SAVED_LOC_DESC, saved);
+		// }
+		// }
 
 		if (!TextUtils.isEmpty(mLabel))
 			outState.putString(DATA_LABEL, mLabel);
@@ -672,18 +668,20 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 
 		if (mId < 0) {
 			Uri uri = getContentResolver().insert(Schedule.CONTENT_URI, values);
-			
+
 			mId = ContentUris.parseId(uri);
 		} else {
 			Uri uri = ContentUris.withAppendedId(Schedule.CONTENT_URI, mId);
 			getContentResolver().update(uri, values, null, null);
 		}
-		
+
 		Alarms.setNextAlert(this);
 	}
 
 	private boolean validateAndCreateValues(ContentValues values) {
-		if (mTime == null && mSavedLoc == null) {
+		if (mTime == null
+		// && mSavedLoc == null
+		) {
 			showToast(getString(R.string.no_time_and_loc_set),
 					Toast.LENGTH_LONG);
 
@@ -713,17 +711,17 @@ public class ScheduleEditActivity extends EditBaseActivity implements
 		}
 		values.put(Schedule.COLUMN_PROFILE_ID, mProfileId);
 
-		if (mSavedLoc != null) {
-			String sb = LocationUtils.locationToString(mSavedLoc);
-			values.put(Schedule.COLUMN_LOCATION, sb);
-		}
+//		if (mSavedLoc != null) {
+//			String sb = LocationUtils.locationToString(mSavedLoc);
+//			values.put(Schedule.COLUMN_LOCATION, sb);
+//		}
 
 		if (!TextUtils.isEmpty(mLabel)) {
 			values.put(Schedule.COLUMN_LABEL, mLabel);
 		}
 
 		values.put(Schedule.COLUMN_ENABLE, 1);
-		
+
 		return true;
 	}
 

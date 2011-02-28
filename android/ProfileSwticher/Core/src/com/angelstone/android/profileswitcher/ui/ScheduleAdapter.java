@@ -16,11 +16,10 @@ import com.angelstone.android.profileswitcher.store.Schedule;
 import com.angelstone.android.profileswitcher.utils.ProfileCache;
 import com.angelstone.android.utils.DaysOfWeek;
 import com.angelstone.android.utils.GeoCodeLoader;
-import com.angelstone.android.utils.LocationUtils;
 
 public class ScheduleAdapter extends ResourceCursorAdapter {
 	private int mIndexStartTime;
-	private int mIndexLocation;
+//	private int mIndexLocation;
 	private int mIndexDaysOfWeek;
 	private int mIndexProfileId;
 	private int mIndexLabel;
@@ -28,13 +27,13 @@ public class ScheduleAdapter extends ResourceCursorAdapter {
 
 	private DateFormat mTimeFormat;
 	private ProfileCache mProfileCache;
-	private GeoCodeLoader mGeoCodeLoader;
+//	private GeoCodeLoader mGeoCodeLoader;
 
 	public ScheduleAdapter(Context context, Cursor c, ProfileCache profileCache, GeoCodeLoader geoCodeLoader) {
 		super(context, R.layout.schedule_list_item, c, true);
 
 		mIndexStartTime = c.getColumnIndex(Schedule.COLUMN_START_TIME);
-		mIndexLocation = c.getColumnIndex(Schedule.COLUMN_LOCATION);
+//		mIndexLocation = c.getColumnIndex(Schedule.COLUMN_LOCATION);
 		mIndexDaysOfWeek = c.getColumnIndex(Schedule.COLUMN_REPEAT_WEEKDAYS);
 		mIndexProfileId = c.getColumnIndex(Schedule.COLUMN_PROFILE_ID);
 		mIndexLabel = c.getColumnIndex(Schedule.COLUMN_LABEL);
@@ -42,7 +41,7 @@ public class ScheduleAdapter extends ResourceCursorAdapter {
 
 		mTimeFormat = android.text.format.DateFormat.getTimeFormat(context);
 		mProfileCache = profileCache;
-		mGeoCodeLoader = geoCodeLoader;
+//		mGeoCodeLoader = geoCodeLoader;
 	}
 
 	@Override
@@ -61,16 +60,16 @@ public class ScheduleAdapter extends ResourceCursorAdapter {
 			tv.setVisibility(View.GONE);
 		}
 
-		tv = (TextView) v.findViewById(R.id.item_schedule_location);
+//		tv = (TextView) v.findViewById(R.id.item_schedule_location);
 
-		String loc = c.getString(mIndexLocation);
-
-		if (TextUtils.isEmpty(loc)) {
-			tv.setVisibility(View.GONE);
-		} else {
-			tv.setVisibility(View.VISIBLE);
-			mGeoCodeLoader.loadGeoCode(tv, LocationUtils.locationFromString(loc));
-		}
+//		String loc = c.getString(mIndexLocation);
+//
+//		if (TextUtils.isEmpty(loc)) {
+//			tv.setVisibility(View.GONE);
+//		} else {
+//			tv.setVisibility(View.VISIBLE);
+//			mGeoCodeLoader.loadGeoCode(tv, LocationUtils.locationFromString(loc));
+//		}
 
 		tv = (TextView) v.findViewById(R.id.item_schedule_daysofweek);
 
