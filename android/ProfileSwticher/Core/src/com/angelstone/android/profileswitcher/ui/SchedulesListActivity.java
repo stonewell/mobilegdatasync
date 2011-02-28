@@ -22,14 +22,13 @@ import com.angelstone.android.profileswitcher.store.Profile;
 import com.angelstone.android.profileswitcher.store.Schedule;
 import com.angelstone.android.profileswitcher.utils.Alarms;
 import com.angelstone.android.profileswitcher.utils.ProfileCache;
-import com.angelstone.android.utils.GeoCodeLoader;
 
 public class SchedulesListActivity extends ContentListBaseActivity implements
 		OnItemClickListener {
 	private Cursor mCursor;
 	private Cursor mProfileCursor;
 	private ProfileCache mProfileCache;
-	private GeoCodeLoader mGeoCodeLoader;
+//	private GeoCodeLoader mGeoCodeLoader;
 	private int mIndexEnableSchedule;
 
 	private ContentObserver mObserver = new ContentObserver(new Handler()) {
@@ -55,10 +54,10 @@ public class SchedulesListActivity extends ContentListBaseActivity implements
 		mProfileCursor = managedQuery(Profile.CONTENT_URI, null, null, null,
 				null);
 		mProfileCache = new ProfileCache(this, mProfileCursor);
-		mGeoCodeLoader = new GeoCodeLoader(this);
+//		mGeoCodeLoader = new GeoCodeLoader(this);
 
 		v.setAdapter(new ScheduleAdapter(this, mCursor, mProfileCache,
-				mGeoCodeLoader));
+				null));
 		v.setOnItemClickListener(this);
 
 		registerForContextMenu(v);
@@ -132,20 +131,20 @@ public class SchedulesListActivity extends ContentListBaseActivity implements
 
 		getContentResolver().unregisterContentObserver(mObserver);
 		mProfileCache.clear();
-		mGeoCodeLoader.stop();
+//		mGeoCodeLoader.stop();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 
-		mGeoCodeLoader.pause();
+//		mGeoCodeLoader.pause();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mGeoCodeLoader.resume();
+//		mGeoCodeLoader.resume();
 	}
 
 	@Override
