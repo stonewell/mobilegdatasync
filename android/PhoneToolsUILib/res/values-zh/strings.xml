@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="check_btn_sms_allow_contacts">允许所有联系人的号码。</string>
+
+	<string name="add_number_string">增加电话号码</string>
+	<string name="phoneNumberStr">电话号码</string>
+	<string name="add_from_contact_string">从联系人导入</string>
+	<string name="add_from_call_record_string">从通话记录导入</string>
+	<string name="add_from_sms_record_string">从短信记录导入</string>
+	<string name="add_phone_number_from">增加电话号码 ...</string>
+	<string name="pls_select">请选择</string>
+	<string name="income_number_list_string">来电列表</string>
+	<string name="remove_from_contacts_confirm">阻止该联系人号码，同时从联系人里删除么?</string>
+	<string name="NoRecord">无记录.</string>
+	<string name="EmptyNumberIsNotAllowed">号码不能为空.</string>
+	<string name="TheNumberAlreadyExists">该号码已经被阻止了.</string>
+	<string name="PleaseWait">请稍候...</string>
+	<string name="AddedToBlacklist">增加阻止号码成功</string>
+	<string name="AddToBlacklist">增加到阻止号码列表</string>
+	<string name="ClearAllRecords">删除所有记录</string>
+	<string name="ChangeTo">修改为</string>
+	<string name="BlacklistCleared">阻止列表已清除</string>
+	<string name="add_bl_number_from_contact_string">联系人</string>
+	<string name="add_bl_number_from_call_record_string">通话记录</string>
+	<string name="add_bl_number_from_sms_record_string">短信记录</string>
+	<string name="add_bl_number_from_input_string">输入号码</string>
+	<string name="add_from_string">增加号码:</string>
+	<string name="input_number_dlg_title_string">请输入号码</string>
+	<string name="PleaseSelectOneNumberAtLeast">请至少选择一个号码.</string>
+	<string name="how_many_number_selected_string">已选择的号码</string>
+	<string name="showSelectedNumbers">显示已显示的号码</string>
+	<string name="selectedNumbersTitle">已选择的号码</string>
+	<string name="logDetailInfo">详细信息</string>
+	<string name="hold_down_to_edit">长按以编辑记录</string>
+	<string name="press_menu_to_view_selected_numbers">使用 \"菜单\" 键查看已选择的记录</string>
+	<string name="empty_blocked_records">(空)\r\n无阻止记录.</string>
+
+	<string name="bl_root_mgr_user_guide_string_1">(空) \r\n无阻止号码.\r\n\r\n</string>
+
+	<string name="bl_root_mgr_user_guide_string_2">使用\"增加\"按钮增加记录	</string>
+	<string name="not_spam">不是垃圾号码</string>
+	<string name="add_number_to_allow_list">把号码{0}增加到允许列表?</string>
+	<string name="number_in_list_continue_update">号码作阻止列表里已经存在了.</string>
+</resources>
