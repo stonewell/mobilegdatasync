@@ -3,7 +3,7 @@
 	<string name="app_name">Sms&amp;MMS Blocker</string>
 	<string name="add_number_block_sms">Block SMS&amp;MMS from selected number(s)</string>
 
-	<string name="main_copyright">Copyright(C) 2010 Angel &amp; Stone.</string>
+	<string name="main_copyright">Copyright(C) 2011 Angel &amp; Stone.</string>
 	<string name="main_allright">All rights reserved</string>
 
 	<string name="Blacklist">Sms&amp;MMS Process Rules</string>
@@ -11,10 +11,9 @@
 	<string name="block_sms_log">Blocked SMS&amp;MMS</string>
 	<string name="activity_log_title">Sms&amp;MMS Blocker Log</string>
 	<string name="app_descrip">A Sms&amp;MMS blocker application, using full number or prefix number matching</string>
-	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com.\n
-		Many thanks to Xiong Peng and YiFan."</string>
+	<string name="app_credits">"Any problem or suggestion please send to jingnan.si@gmail.com."</string>
+		
 	<string name="block_from_number">Block sms&amp;MMS from the number</string>
-	
 	<string name="filter_reject_sms_content">Content</string>
 	<string name="phone_number_list_string">Sms&amp;MMS Process Rules</string>
 </resources>

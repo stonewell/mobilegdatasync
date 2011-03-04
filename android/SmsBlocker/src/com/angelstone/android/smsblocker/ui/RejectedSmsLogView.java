@@ -27,7 +27,6 @@ import android.widget.TextView;
 import com.angelstone.android.phonetools.store.BlackListManager.BlockListAction;
 import com.angelstone.android.phonetools.store.EventLog;
 import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
-import com.angelstone.android.phonetools.ui.ClearWaitingDialog;
 import com.angelstone.android.smsblocker.R;
 import com.angelstone.android.smsblocker.store.DatabaseValues;
 import com.angelstone.android.utils.PhoneNumberHelpers;
@@ -80,10 +79,9 @@ public class RejectedSmsLogView extends Activity implements
 		refreshList();
 
 		mObserver = new EventLogObserver(mHandler);
-		getContentResolver()
-				.registerContentObserver(
-						new EventLog().getContentUri(DatabaseValues.AUTHORITY), true,
-						mObserver);
+		getContentResolver().registerContentObserver(
+				new EventLog().getContentUri(DatabaseValues.AUTHORITY), true,
+				mObserver);
 	}
 
 	protected void onDestroy() {
@@ -118,16 +116,21 @@ public class RejectedSmsLogView extends Activity implements
 					.setTitle(R.string.delete_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
 									mCursor.moveToPosition(mPosition);
-									PhoneToolsDBManager.getEventLogManager().deleteLog(
-											RejectedSmsLogView.this,
-											mCursor.getInt(mCursor.getColumnIndex(EventLog.COL_ID)));
+									PhoneToolsDBManager
+											.getEventLogManager()
+											.deleteLog(
+													RejectedSmsLogView.this,
+													mCursor.getInt(mCursor
+															.getColumnIndex(EventLog.COL_ID)));
 								}
 							})
 					.setNegativeButton(android.R.string.cancel,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
 									/* User clicked Cancel so do some stuff */
 								}
 							}).create();
@@ -153,17 +156,22 @@ public class RejectedSmsLogView extends Activity implements
 				.setMessage(text)
 				.setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
 								String realnumber = PhoneNumberHelpers
 										.removeNonNumbericChar(number);
 								if (PhoneToolsDBManager.getBlackListManager()
-										.blacklistContainsNumber(RejectedSmsLogView.this,
+										.blacklistContainsNumber(
+												RejectedSmsLogView.this,
 												realnumber) == BlockListAction.NO_NUMBER) {
-									PhoneToolsDBManager.getBlackListManager().blacklistAddNumber(
-											RejectedSmsLogView.this, realnumber, false);
+									PhoneToolsDBManager.getBlackListManager()
+											.blacklistAddNumber(
+													RejectedSmsLogView.this,
+													realnumber, false);
 								} else {
 									PhoneToolsDBManager.getBlackListManager()
-											.blacklistUpdateNumber(RejectedSmsLogView.this,
+											.blacklistUpdateNumber(
+													RejectedSmsLogView.this,
 													realnumber, false);
 								}
 
@@ -171,19 +179,14 @@ public class RejectedSmsLogView extends Activity implements
 
 								mCursor.requery();
 							}
-						})
-				.setNegativeButton(android.R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								/* User clicked Cancel so do some stuff */
-							}
-						}).create();
+						}).setNegativeButton(android.R.string.cancel, null)
+				.create();
 		ad.show();
 	}
 
 	private void clearNotSpamLogs(String number) {
-		Cursor cur = PhoneToolsDBManager.getEventLogManager().getEventLogs(this,
-				EventLog.COL_NUMBER + "=?", new String[] { number });
+		Cursor cur = PhoneToolsDBManager.getEventLogManager().getEventLogs(
+				this, EventLog.COL_NUMBER + "=?", new String[] { number });
 		try {
 			int bodyIndex = cur.getColumnIndex(EventLog.COL_CONTENT);
 			int timeIndex = cur.getColumnIndex(EventLog.COL_TIME);
@@ -206,7 +209,8 @@ public class RejectedSmsLogView extends Activity implements
 
 		menu.clear();
 		menu.add(0, 0, 0, R.string.ClearAllRecords).setIcon(
-				this.getResources().getDrawable(android.R.drawable.ic_menu_delete));
+				this.getResources().getDrawable(
+						android.R.drawable.ic_menu_delete));
 
 		if (mCursor != null) {
 			if (mCursor.getCount() == 0) {
@@ -232,24 +236,17 @@ public class RejectedSmsLogView extends Activity implements
 			AlertDialog ad = new AlertDialog.Builder(this)
 					.setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.note)
+					.setMessage(R.string.clear_all_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-									Intent intent = new Intent();
-									intent.setClass(RejectedSmsLogView.this,
-											ClearWaitingDialog.class);
-									intent.putExtra("clear_type", CLEAR_CALL_LOG);
-									startActivityForResult(intent, 2);
-
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									PhoneToolsDBManager
+											.getEventLogManager()
+											.deleteLogs(RejectedSmsLogView.this);
 								}
-							})
-					.setNegativeButton(android.R.string.cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int whichButton) {
-
-									/* User clicked Cancel so do some stuff */
-								}
-							}).create();
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 
 			ad.show();
 
@@ -265,19 +262,22 @@ public class RejectedSmsLogView extends Activity implements
 				R.layout.call_reject_record_item, mCursor)));
 		if (mCursor != null) {
 			if (mCursor.getCount() != 0) {
-				LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, 0);
+				LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+						0, 0);
 				TextView tv = (TextView) findViewById(R.id.empty_record_text);
 				tv.setLayoutParams(param);
 
 			} else {
-				LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC, WC);
+				LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+						FC, WC);
 				param.weight = 1;
 				TextView tv = (TextView) findViewById(R.id.empty_record_text);
 				tv.setLayoutParams(param);
 			}
 		} else {
 
-			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC, FC);
+			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(FC,
+					FC);
 			TextView tv = (TextView) findViewById(R.id.empty_record_text);
 			tv.setLayoutParams(param);
 		}

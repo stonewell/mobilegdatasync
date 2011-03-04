@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="east_longitude">东经</string>
-	<string name="west_longitude">西经</string>
-	<string name="north_latitude">北纬</string>
-	<string name="south_latitude">南纬</string>
+	<string name="activity_log_title">日志</string>
+
+	<string name="view_logs">日志</string>
+	<string name="about">关于</string>
+	<string name="preference">配置</string>
+	<string name="import_export">导入/到出</string>
+	<string name="import_from_sdcard">从SD卡导入</string>
+	<string name="export_to_sdcard">导出到SD卡</string>
+	<string name="unkown_error_template">{0} 文件 {1} 失败, 错误:{2}</string>
+	<string name="success_template">{0} 文件 {1}</string>
+	<string name="can_not_write_template">不能写入文件 {1}</string>
+	<string name="can_not_create_template">无法创建文件 {1}</string>
+	<string name="no_record_template">{0} 未发现记录</string>
 
 	<string name="confirm">确认</string>
 	<string name="help">帮助</string>
@@ -26,5 +35,23 @@
 	<string name="name">名称</string>
 	<string name="save">保存</string>
 	<string name="_new">新建</string>
-	<string name="preference">配置</string>
+
+	<string name="clear_all_confirm">清除所有记录么?</string>
+	<string name="delete_confirm">删除选中的记录么?</string>
+	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
+		to identify repetition schedule: special case for when the alarm is set to 
+		repeat every day -->
+	<string name="every_day">每天</string>
+
+	<!-- Repeat options that appear under an alarm on main Alarm Clock screen 
+		to identify repetition schedule: special case for when the alarm is set to 
+		never repeat -->
+	<string name="never">从不</string>
+
+	<string name="east_longitude">东经</string>
+	<string name="west_longitude">西经</string>
+	<string name="north_latitude">北纬</string>
+	<string name="south_latitude">南纬</string>
+
+
 </resources>

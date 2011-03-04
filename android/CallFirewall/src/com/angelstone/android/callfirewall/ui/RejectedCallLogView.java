@@ -29,7 +29,6 @@ import com.angelstone.android.callfirewall.R;
 import com.angelstone.android.phonetools.store.BlackListManager.BlockListAction;
 import com.angelstone.android.phonetools.store.EventLog;
 import com.angelstone.android.phonetools.store.PhoneToolsDBManager;
-import com.angelstone.android.phonetools.ui.ClearWaitingDialog;
 import com.angelstone.android.utils.PhoneNumberHelpers;
 import com.angelstone.android.utils.SmsHelper;
 
@@ -81,8 +80,8 @@ public class RejectedCallLogView extends Activity implements
 
 		mObserver = new EventLogObserver(mHandler);
 		getContentResolver().registerContentObserver(
-				new EventLog().getContentUri(CallFireWallConstants.AUTHORITY), true,
-				mObserver);
+				new EventLog().getContentUri(CallFireWallConstants.AUTHORITY),
+				true, mObserver);
 	}
 
 	protected void onDestroy() {
@@ -127,14 +126,8 @@ public class RejectedCallLogView extends Activity implements
 													mCursor.getInt(mCursor
 															.getColumnIndex(EventLog.COL_ID)));
 								}
-							})
-					.setNegativeButton(android.R.string.cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									/* User clicked Cancel so do some stuff */
-								}
-							}).create();
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 			ad.show();
 
 			break;
@@ -180,14 +173,8 @@ public class RejectedCallLogView extends Activity implements
 
 								mCursor.requery();
 							}
-						})
-				.setNegativeButton(android.R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								/* User clicked Cancel so do some stuff */
-							}
-						}).create();
+						}).setNegativeButton(android.R.string.cancel, null)
+				.create();
 		ad.show();
 	}
 
@@ -243,27 +230,17 @@ public class RejectedCallLogView extends Activity implements
 			AlertDialog ad = new AlertDialog.Builder(this)
 					.setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.note)
+					.setMessage(R.string.clear_all_confirm)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
-									Intent intent = new Intent();
-									intent.setClass(RejectedCallLogView.this,
-											ClearWaitingDialog.class);
-									intent.putExtra("clear_type",
-											CLEAR_CALL_LOG);
-									startActivityForResult(intent, 2);
-
+									PhoneToolsDBManager.getEventLogManager()
+											.deleteLogs(
+													RejectedCallLogView.this);
 								}
-							})
-					.setNegativeButton(android.R.string.cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-
-									/* User clicked Cancel so do some stuff */
-								}
-							}).create();
+							}).setNegativeButton(android.R.string.cancel, null)
+					.create();
 
 			ad.show();
 

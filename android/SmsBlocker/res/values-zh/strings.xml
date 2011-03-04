@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">短信防火墙</string>
+	<string name="add_number_block_sms">阻止来自选中号码的短信</string>
+
+	<string name="Blacklist">阻止号码列表</string>
+	<string name="BlacklistSMSBlockLog">已阻止的短信</string>
+	<string name="block_sms_log">已阻止的短信</string>
+	<string name="activity_log_title">短信防火墙日志</string>
+	<string name="app_descrip">短信防火墙，支持前缀匹配号码，支持区号国家号匹配</string>
+	<string name="app_credits">"有问题请发送邮件至jingnan.si@gmail.com."</string>
+	<string name="block_from_number">阻止号码</string>
+	
+	<string name="filter_reject_sms_content">内容</string>
+	<string name="phone_number_list_string">阻止号码列表</string>
 </resources>
