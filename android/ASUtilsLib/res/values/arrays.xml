@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string-array name="proxytypes">
+		<item>HTTP</item>
+		<item>SOCKS</item>
+	</string-array>
+</resources>
