@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -26,17 +25,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.angelstone.android.R;
 import com.angelstone.android.net.ProxySocketFactory;
 
 public class HttpUtils {
 	public static final int REGISTRATION_TIMEOUT = 60 * 1000; // ms
 
-	public static String postData(Context context, String url,
-			String paramName, String uploadData) throws IOException {
+	public static String postData(String url, String paramName,
+			String uploadData, Proxy proxy) throws IOException {
 		HttpResponse resp;
 
 		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -49,7 +44,7 @@ public class HttpUtils {
 		post.setEntity(entity);
 		HttpClient mHttpClient = null;
 
-		mHttpClient = createHttpClient(context);
+		mHttpClient = createHttpClient(proxy);
 		resp = mHttpClient.execute(post);
 		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			return getResponse(resp);
@@ -59,8 +54,8 @@ public class HttpUtils {
 		}
 	}
 
-	public static String postData(Context context, String postUrl,
-			String paramName, byte[] uploadData) throws IOException {
+	public static String postData(String postUrl, byte[] uploadData, Proxy proxy)
+			throws IOException {
 		HttpResponse resp;
 
 		HttpEntity entity = new ByteArrayEntity(uploadData);
@@ -70,7 +65,7 @@ public class HttpUtils {
 		post.setEntity(entity);
 		HttpClient mHttpClient = null;
 
-		mHttpClient = createHttpClient(context);
+		mHttpClient = createHttpClient(proxy);
 		resp = mHttpClient.execute(post);
 		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			return getResponse(resp);
@@ -105,9 +100,9 @@ public class HttpUtils {
 	 * 
 	 * @throws UnknownHostException
 	 */
-	private static HttpClient createHttpClient(Context context)
+	private static HttpClient createHttpClient(Proxy proxy)
 			throws UnknownHostException {
-		SchemeRegistry registry = registerCustomizedSocketFactory(context);
+		SchemeRegistry registry = registerCustomizedSocketFactory(proxy);
 
 		HttpClient mHttpClient = new DefaultHttpClient();
 		final HttpParams params = mHttpClient.getParams();
@@ -121,44 +116,13 @@ public class HttpUtils {
 		return mHttpClient;
 	}
 
-	private static SchemeRegistry registerCustomizedSocketFactory(
-			Context context) throws UnknownHostException {
-		Proxy proxy = createProxyFromPreference(context);
+	private static SchemeRegistry registerCustomizedSocketFactory(Proxy proxy)
+			throws UnknownHostException {
 
 		Scheme http = new Scheme("http", new ProxySocketFactory(proxy), 80);
 
 		SchemeRegistry sr = new SchemeRegistry();
 		sr.register(http);
 		return sr;
-	}
-
-	private static Proxy createProxyFromPreference(Context context)
-			throws UnknownHostException {
-		SharedPreferences perf = context.getSharedPreferences(
-				context.getPackageName() + "_preferences", 0);
-
-		if (!perf.getBoolean("proxy_enable", false))
-			return null;
-
-		String[] proxy_types = context.getResources().getStringArray(
-				R.array.proxytypes);
-
-		String proxy_type = perf.getString("proxy_type", proxy_types[0]);
-		String proxy_host = perf.getString("proxy_host", null);
-		String proxy_port = perf.getString("proxy_port", null);
-
-		if (proxy_host == null || proxy_port == null)
-			return null;
-
-		try {
-			return new Proxy(Proxy.Type.valueOf(proxy_type),
-					new InetSocketAddress(proxy_host,
-							Integer.parseInt(proxy_port)));
-		} catch (Throwable t) {
-			ActivityLog.logError(context, context.getString(R.string.app_name),
-					t.getMessage());
-
-			return null;
-		}
 	}
 }
