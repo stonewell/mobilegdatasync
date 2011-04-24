@@ -6,5 +6,8 @@
 	<classpathentry kind="src" path="ASUtilsLib_src"/>
 	<classpathentry kind="src" path="PhoneToolsLib_src"/>
 	<classpathentry kind="src" path="PhoneToolsUILib_src"/>
+	<classpathentry exported="true" kind="lib" path="/ASUtilsLib/libs/activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="/ASUtilsLib/libs/additionnal.jar"/>
+	<classpathentry exported="true" kind="lib" path="/ASUtilsLib/libs/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
