@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -31,7 +33,7 @@ public class HttpUtils {
 	public static final int REGISTRATION_TIMEOUT = 60 * 1000; // ms
 
 	public static String postData(String url, String paramName,
-			String uploadData, Proxy proxy) throws IOException {
+			String uploadData, Proxy proxy, int timeout) throws IOException {
 		HttpResponse resp;
 
 		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -44,7 +46,7 @@ public class HttpUtils {
 		post.setEntity(entity);
 		HttpClient mHttpClient = null;
 
-		mHttpClient = createHttpClient(proxy);
+		mHttpClient = createHttpClient(proxy, timeout, url);
 		resp = mHttpClient.execute(post);
 		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			return getResponse(resp);
@@ -54,7 +56,8 @@ public class HttpUtils {
 		}
 	}
 
-	public static String postData(String postUrl, byte[] uploadData, Proxy proxy)
+	public static String postData(String postUrl, 
+			byte[] uploadData, Object proxy, int timeout)
 			throws IOException {
 		HttpResponse resp;
 
@@ -65,7 +68,7 @@ public class HttpUtils {
 		post.setEntity(entity);
 		HttpClient mHttpClient = null;
 
-		mHttpClient = createHttpClient(proxy);
+		mHttpClient = createHttpClient(proxy, timeout, postUrl);
 		resp = mHttpClient.execute(post);
 		if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			return getResponse(resp);
@@ -100,15 +103,15 @@ public class HttpUtils {
 	 * 
 	 * @throws UnknownHostException
 	 */
-	private static HttpClient createHttpClient(Proxy proxy)
-			throws UnknownHostException {
-		SchemeRegistry registry = registerCustomizedSocketFactory(proxy);
+	private static HttpClient createHttpClient(Object proxy, int timeout, String url)
+			throws UnknownHostException, MalformedURLException {
+		SchemeRegistry registry = registerCustomizedSocketFactory(proxy, url);
 
 		HttpClient mHttpClient = new DefaultHttpClient();
 		final HttpParams params = mHttpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
-		HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT);
-		ConnManagerParams.setTimeout(params, REGISTRATION_TIMEOUT);
+		HttpConnectionParams.setConnectionTimeout(params, timeout > 0 ? timeout * 1000 : REGISTRATION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(params, timeout > 0 ? timeout * 1000 : REGISTRATION_TIMEOUT);
+		ConnManagerParams.setTimeout(params, timeout > 0 ? timeout * 1000 : REGISTRATION_TIMEOUT);
 
 		mHttpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(
 				params, registry), params);
@@ -116,10 +119,12 @@ public class HttpUtils {
 		return mHttpClient;
 	}
 
-	private static SchemeRegistry registerCustomizedSocketFactory(Proxy proxy)
-			throws UnknownHostException {
+	private static SchemeRegistry registerCustomizedSocketFactory(Object proxy, String url)
+			throws UnknownHostException, MalformedURLException {
 
-		Scheme http = new Scheme("http", new ProxySocketFactory(proxy), 80);
+		int port = new URL(url).getPort();
+		
+		Scheme http = new Scheme("http", new ProxySocketFactory(proxy), port >= 0 ? port : 80);
 
 		SchemeRegistry sr = new SchemeRegistry();
 		sr.register(http);

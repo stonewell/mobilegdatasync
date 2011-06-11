@@ -4,8 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="src" path="ASUtilsLib_src"/>
-	<classpathentry kind="src" path="PhoneToolsUILib_src"/>
-	<classpathentry kind="src" path="PhoneToolsLib_src"/>
 	<classpathentry exported="true" kind="lib" path="/ASUtilsLib/libs/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="/ASUtilsLib/libs/additionnal.jar"/>
 	<classpathentry exported="true" kind="lib" path="/ASUtilsLib/libs/mail.jar"/>
